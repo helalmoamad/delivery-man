@@ -22,26 +22,33 @@ class OrdersPage extends StatelessWidget {
             String token = GlobalFunctions.getFcmToken();
             await ordersController.getOrderStatusData(token: token);
           },
-          page: Column(
-            children: [
-              OrderStatusWidget(ordersController: ordersController),
-              ////////////////////////////////////
-              Expanded(
-                child: HandlingErrors.pageErrorHandling(
-                  isCircleShown: ordersController.isGetOrdersCircleShown,
-                  isNoInternetConnection:
-                      ordersController.isGetOrdersNoInternetConnection,
-                  onTapTry: () async {
-                    String token = GlobalFunctions.getFcmToken();
-                    await ordersController.getListOrderData(
-                        token: token,
-                        status: ordersController.orderStatus,
-                        offset: 1);
-                  },
-                  page: OrderList(ordersController: ordersController),
-                ),
-              )
-            ],
+          page: RefreshIndicator(
+            onRefresh: () async {
+              debugPrint('refresh');
+              String token = GlobalFunctions.getFcmToken();
+              await ordersController.getOrderStatusData(token: token);
+            },
+            child: Column(
+              children: [
+                OrderStatusWidget(ordersController: ordersController),
+                ////////////////////////////////////
+                Expanded(
+                  child: HandlingErrors.pageErrorHandling(
+                    isCircleShown: ordersController.isGetOrdersCircleShown,
+                    isNoInternetConnection:
+                        ordersController.isGetOrdersNoInternetConnection,
+                    onTapTry: () async {
+                      String token = GlobalFunctions.getFcmToken();
+                      await ordersController.getListOrderData(
+                          token: token,
+                          status: ordersController.orderStatus,
+                          offset: 1);
+                    },
+                    page: OrderList(ordersController: ordersController),
+                  ),
+                )
+              ],
+            ),
           ),
         );
       })),

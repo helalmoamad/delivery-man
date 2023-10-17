@@ -177,6 +177,7 @@ class OrdersController extends GetxController {
     }, (getOrderStatusData) async {
       orderStatusData = getOrderStatusData;
       orderStatus = orderStatusData[0].toString();
+      selectedOrderStatus = 0;
       hideGetOrderStatusCircleIndicator();
       hideGetOrderStatusNoInternetPage();
       await getListOrderData(token: token, status: orderStatus, offset: 1);

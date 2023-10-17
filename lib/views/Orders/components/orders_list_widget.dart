@@ -12,27 +12,33 @@ class OrderList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final orders = ordersController.ordersData.data!.orders!;
-    return ListView.builder(
-      controller: ordersController.scrollController,
-      itemCount: orders.length + 1,
-      itemBuilder: (context, index) {
-        if (index < orders.length) {
-          return buildOrderWidget(index, orders);
-        } else {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Center(
-              child: ordersController.noMoreItems
-                  ? const Text('No More Items')
-                  : const CircularProgressIndicator(),
-            ),
+    return orders.isEmpty
+        ? const Center(child: Text('Data Is Empty'))
+        : ListView.builder(
+            controller: ordersController.scrollController,
+            itemCount: orders.length + 1,
+            itemBuilder: (context, index) {
+              if (index < orders.length) {
+                return buildOrderWidget(index, orders);
+              } else {
+                if (orders.length > 4) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Center(
+                      child: ordersController.noMoreItems
+                          ? const Text('No More Items')
+                          : const CircularProgressIndicator(),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              }
+            },
           );
-        }
-      },
-    );
   }
 
-  Container buildOrderWidget(int index, List<Order> orders) {
+  Widget buildOrderWidget(int index, List<Order> orders) {
     return Container(
         width: double.infinity,
         height: 160,
