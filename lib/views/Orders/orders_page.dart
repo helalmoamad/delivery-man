@@ -1,3 +1,4 @@
+import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/Orders/orders_controller.dart';
@@ -23,6 +24,7 @@ class OrdersPage extends StatelessWidget {
             await ordersController.getOrderStatusData(token: token);
           },
           page: RefreshIndicator(
+            color: AppColors.primaryDark,
             onRefresh: () async {
               debugPrint('refresh');
               String token = GlobalFunctions.getFcmToken();

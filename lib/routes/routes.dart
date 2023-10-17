@@ -3,6 +3,7 @@ import '../controllers/Auth/auth_binding.dart';
 import '../controllers/Orders/orders_bindings.dart';
 import '../views/Auth/login_page.dart';
 import '../views/Main/main_page.dart';
+import '../views/OrderDetails/orders_details_page.dart';
 import '../views/Orders/orders_page.dart';
 import '../views/Welcome/splash_page.dart';
 
@@ -11,6 +12,7 @@ class Routes {
   static const loginPage = '/loginPage';
   static const mainPage = '/mainPage';
   static const orderssPage = '/orderssPage';
+  static const ordersDetailsPage = '/ordersDetailsPage';
 }
 
 class AppRoutes {
@@ -43,6 +45,12 @@ class AppRoutes {
       binding: OrdersBinding(),
       transition: Transition.fade,
       transitionDuration: const Duration(milliseconds: 0),
+    ),
+    GetPage(
+      name: Routes.ordersDetailsPage,
+      page: () => OrdersDetailsPage(),
+      transition: Transition.fade,
+      transitionDuration: const Duration(milliseconds: 200),
     ),
   ];
 }

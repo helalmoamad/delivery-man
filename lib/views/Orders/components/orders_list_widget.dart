@@ -1,6 +1,8 @@
 import 'package:delivery_man_app/models/Orders/list_order_model.dart';
+import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../controllers/Orders/orders_controller.dart';
 import '../../../shared/constants/color_constants.dart';
 
@@ -41,7 +43,7 @@ class OrderList extends StatelessWidget {
   Widget buildOrderWidget(int index, List<Order> orders) {
     return Container(
         width: double.infinity,
-        height: 160,
+        height: 220,
         color: (index % 2 == 0) ? AppColors.lightGray : AppColors.white,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -114,7 +116,7 @@ class OrderList extends StatelessWidget {
                       maxline: 1),
                   /////
                   TextWidget(
-                      text: orders[index].orderAmount.toString(),
+                      text: orders[index].orderAmountFormatted.toString(),
                       color: AppColors.blackDark,
                       fontSize: 12,
                       fontWeight: FontWeight.normal,
@@ -173,6 +175,27 @@ class OrderList extends StatelessWidget {
                       textAlign: TextAlign.start,
                       maxline: 1),
                 ],
+              ),
+
+              ///
+              const SizedBox(
+                height: 30,
+              ),
+              ////
+              InkWell(
+                onTap: () {
+                  Get.toNamed(Routes.ordersDetailsPage, arguments: [index]);
+                },
+                child: const Align(
+                  alignment: Alignment.bottomRight,
+                  child: TextWidget(
+                      text: 'View Details',
+                      color: AppColors.blackDark,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      textAlign: TextAlign.start,
+                      maxline: 1),
+                ),
               ),
             ],
           ),

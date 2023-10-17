@@ -70,39 +70,40 @@ class Order {
   final bool? showReturnRequest;
   final bool? editReturnRequest;
   final bool? orderCanExchange;
+  final List<Detail>? details;
 
-  Order({
-    this.id,
-    this.customerId,
-    this.paymentStatus,
-    this.orderStatus,
-    this.paymentMethod,
-    this.transactionRef,
-    this.orderAmount,
-    this.orderAmountFormatted,
-    this.shippingAddress,
-    this.shippingAddressData,
-    this.billingAddress,
-    this.billingAddressData,
-    this.discountAmount,
-    this.discountAmountFormatted,
-    this.discountType,
-    this.couponCode,
-    this.shippingMethodId,
-    this.shippingCost,
-    this.shippingCostFormatted,
-    this.orderGroupId,
-    this.verificationCode,
-    this.orderNote,
-    this.sellerId,
-    this.createdAt,
-    this.orderCanReturn,
-    this.orderHasReturnRequest,
-    this.returnRequestId,
-    this.showReturnRequest,
-    this.editReturnRequest,
-    this.orderCanExchange,
-  });
+  Order(
+      {this.id,
+      this.customerId,
+      this.paymentStatus,
+      this.orderStatus,
+      this.paymentMethod,
+      this.transactionRef,
+      this.orderAmount,
+      this.orderAmountFormatted,
+      this.shippingAddress,
+      this.shippingAddressData,
+      this.billingAddress,
+      this.billingAddressData,
+      this.discountAmount,
+      this.discountAmountFormatted,
+      this.discountType,
+      this.couponCode,
+      this.shippingMethodId,
+      this.shippingCost,
+      this.shippingCostFormatted,
+      this.orderGroupId,
+      this.verificationCode,
+      this.orderNote,
+      this.sellerId,
+      this.createdAt,
+      this.orderCanReturn,
+      this.orderHasReturnRequest,
+      this.returnRequestId,
+      this.showReturnRequest,
+      this.editReturnRequest,
+      this.orderCanExchange,
+      this.details});
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
         id: json["id"],
@@ -141,6 +142,10 @@ class Order {
         showReturnRequest: json["show_return_request"],
         editReturnRequest: json["edit_return_request"],
         orderCanExchange: json["order_can_exchange"],
+        details: json["details"] == null
+            ? []
+            : List<Detail>.from(
+                json["details"]!.map((x) => Detail.fromJson(x))),
       );
 }
 
@@ -211,5 +216,144 @@ class IngAddressData {
         email: json["email"],
         cost: json["cost"],
         duration: json["duration"],
+      );
+}
+
+class Detail {
+  final int? id;
+  final dynamic orderId;
+  final dynamic productId;
+  final ProductDetails? productDetails;
+  final dynamic qty;
+  final dynamic price;
+  final dynamic tax;
+  final dynamic discount;
+  final dynamic priceAfterDiscount;
+  final dynamic deliveryStatus;
+  final dynamic paymentStatus;
+  final dynamic shippingMethodId;
+  final dynamic variant;
+  final dynamic discountType;
+  final dynamic isStockDecreased;
+  final dynamic refundRequest;
+  final dynamic refundRequestStatus;
+  final dynamic isOdooProduct;
+  final dynamic odooId;
+  final dynamic odooOrderId;
+
+  Detail({
+    this.id,
+    this.orderId,
+    this.productId,
+    this.productDetails,
+    this.qty,
+    this.price,
+    this.tax,
+    this.discount,
+    this.priceAfterDiscount,
+    this.deliveryStatus,
+    this.paymentStatus,
+    this.shippingMethodId,
+    this.variant,
+    this.discountType,
+    this.isStockDecreased,
+    this.refundRequest,
+    this.refundRequestStatus,
+    this.isOdooProduct,
+    this.odooId,
+    this.odooOrderId,
+  });
+
+  factory Detail.fromJson(Map<String, dynamic> json) => Detail(
+        id: json["id"],
+        orderId: json["order_id"],
+        productId: json["product_id"],
+        productDetails: json["product_details"] == null
+            ? null
+            : ProductDetails.fromJson(json["product_details"]),
+        qty: json["qty"],
+        price: json["price"],
+        tax: json["tax"],
+        discount: json["discount"],
+        priceAfterDiscount: json["price_after_discount"],
+        deliveryStatus: json["delivery_status"],
+        paymentStatus: json["payment_status"],
+        shippingMethodId: json["shipping_method_id"],
+        variant: json["variant"],
+        discountType: json["discount_type"],
+        isStockDecreased: json["is_stock_decreased"],
+        refundRequest: json["refund_request"],
+        refundRequestStatus: json["refund_request_status"],
+        isOdooProduct: json["is_odoo_product"],
+        odooId: json["odoo_id"],
+        odooOrderId: json["odoo_order_id"],
+      );
+}
+
+class ProductDetails {
+  final int? id;
+  final dynamic name;
+  final dynamic slug;
+  final dynamic shareLink;
+  final dynamic details;
+  final dynamic thumbnail;
+  final List<String>? images;
+  final dynamic price;
+  final dynamic priceFormatted;
+  final dynamic offerPrice;
+  final dynamic offerPriceFormatted;
+  final bool? isFavourite;
+  final bool? inStock;
+  final Rating? rating;
+
+  ProductDetails({
+    this.id,
+    this.name,
+    this.slug,
+    this.shareLink,
+    this.details,
+    this.thumbnail,
+    this.images,
+    this.price,
+    this.priceFormatted,
+    this.offerPrice,
+    this.offerPriceFormatted,
+    this.isFavourite,
+    this.inStock,
+    this.rating,
+  });
+
+  factory ProductDetails.fromJson(Map<String, dynamic> json) => ProductDetails(
+        id: json["id"],
+        name: json["name"],
+        slug: json["slug"],
+        shareLink: json["share_link"],
+        details: json["details"],
+        thumbnail: json["thumbnail"],
+        images: json["images"] == null
+            ? []
+            : List<String>.from(json["images"]!.map((x) => x)),
+        price: json["price"],
+        priceFormatted: json["price_formatted"],
+        offerPrice: json["offer_price"],
+        offerPriceFormatted: json["offer_price_formatted"],
+        isFavourite: json["is_favourite"],
+        inStock: json["in_stock"],
+        rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
+      );
+}
+
+class Rating {
+  final dynamic overallRating;
+  final dynamic totalRating;
+
+  Rating({
+    this.overallRating,
+    this.totalRating,
+  });
+
+  factory Rating.fromJson(Map<String, dynamic> json) => Rating(
+        overallRating: json["overall_rating"],
+        totalRating: json["total_rating"],
       );
 }

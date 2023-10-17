@@ -20,6 +20,7 @@ dependencies:
   internet_connection_checker: 
   auto_size_text:
   flutter_spinkit:
+  cached_network_image:
 
 
 
