@@ -25,6 +25,10 @@ class OrdersController extends GetxController {
   GetOrderStatusDataProvider getOrderStatusDataProvider =
       Get.find<GetOrderStatusDataProvider>();
 
+  final ScrollController scrollController = ScrollController();
+  int paginationOffset = 2;
+  bool noMoreItems = false;
+
   // ///////////////////////////
   void showGetOrdersCircleIndicator() {
     isGetOrdersCircleShown = true;
@@ -75,11 +79,20 @@ class OrdersController extends GetxController {
     debugPrint('Order Controller Init');
     String token = GlobalFunctions.getFcmToken();
     await getOrderStatusData(token: token);
+
+    scrollController.addListener(() async {
+      if (scrollController.position.maxScrollExtent ==
+          scrollController.offset) {
+        debugPrint('scrollController');
+        await getListOrderWithPaginationData(token: token, status: orderStatus);
+      }
+    });
   }
 
   @override
   void onClose() async {
     super.onClose();
+    scrollController.dispose();
     debugPrint('Order Controller closed');
   }
 
@@ -89,7 +102,7 @@ class OrdersController extends GetxController {
     orderStatus = status;
     if (index != selectedOrderStatus) {
       selectedOrderStatus = index;
-      await getListOrderData(token: token, status: orderStatus);
+      await getListOrderData(token: token, status: orderStatus, offset: 1);
     }
 
     update();
@@ -99,10 +112,13 @@ class OrdersController extends GetxController {
   Future<void> getListOrderData({
     required String token,
     required String status,
+    required int offset,
   }) async {
     showGetOrdersCircleIndicator();
-    final failureOrGetOrdersData =
-        await getListOrderDataProvider.call(token: token, status: status);
+    paginationOffset = 2;
+    noMoreItems = false;
+    final failureOrGetOrdersData = await getListOrderDataProvider.call(
+        token: token, status: status, offset: offset);
     failureOrGetOrdersData.fold((failure) {
       HandlingErrors.networkErrorrHandling(
           failure: failure,
@@ -113,6 +129,37 @@ class OrdersController extends GetxController {
       hideGetOrdersCircleIndicator();
       hideGetOrdersNoInternetPage();
     });
+  }
+
+///////////////////////////////////
+  Future<void> getListOrderWithPaginationData({
+    required String token,
+    required String status,
+  }) async {
+    if (noMoreItems) {
+      debugPrint('No More Items');
+    } else {
+      final failureOrGetOrdersData = await getListOrderDataProvider.call(
+          token: token, status: status, offset: paginationOffset);
+      failureOrGetOrdersData.fold((failure) {
+        HandlingErrors.networkErrorrHandling(
+            failure: failure,
+            hideCircleIndicator: () {},
+            showNoInternetPage: () {});
+      }, (getOrdersData) {
+        if (getOrdersData.data!.orders!.isEmpty) {
+          noMoreItems = true;
+          debugPrint('No More Items');
+        } else {
+          paginationOffset++;
+          ordersData.data!.total = getOrdersData.data!.total;
+          ordersData.data!.limit = getOrdersData.data!.limit;
+          ordersData.data!.offset = getOrdersData.data!.offset;
+          ordersData.data!.orders!.addAll(getOrdersData.data!.orders!);
+        }
+        update();
+      });
+    }
   }
 
   ///////////////////////////////////
@@ -132,7 +179,7 @@ class OrdersController extends GetxController {
       orderStatus = orderStatusData[0].toString();
       hideGetOrderStatusCircleIndicator();
       hideGetOrderStatusNoInternetPage();
-      await getListOrderData(token: token, status: orderStatus);
+      await getListOrderData(token: token, status: orderStatus, offset: 1);
     });
   }
 }

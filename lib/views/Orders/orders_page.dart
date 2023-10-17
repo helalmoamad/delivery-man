@@ -34,7 +34,9 @@ class OrdersPage extends StatelessWidget {
                   onTapTry: () async {
                     String token = GlobalFunctions.getFcmToken();
                     await ordersController.getListOrderData(
-                        token: token, status: ordersController.orderStatus);
+                        token: token,
+                        status: ordersController.orderStatus,
+                        offset: 1);
                   },
                   page: OrderList(ordersController: ordersController),
                 ),

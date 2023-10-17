@@ -17,7 +17,7 @@ class OrderStatusWidget extends StatelessWidget {
       child: SizedBox(
         height: 30,
         child: ListView.separated(
-          itemCount: 5,
+          itemCount: ordersController.orderStatusData.length,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             return InkWell(

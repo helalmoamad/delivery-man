@@ -16,9 +16,9 @@ class ListOrderModel {
 }
 
 class ListOrderDataModel {
-  final int? total;
-  final int? limit;
-  final int? offset;
+  int? total;
+  dynamic limit;
+  int? offset;
   final List<Order>? orders;
 
   ListOrderDataModel({

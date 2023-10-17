@@ -7,9 +7,7 @@ import 'api_constants.dart';
 
 abstract class OrdersApiService {
   Future<ListOrderModel> getListOrderDataApi(
-    String token,
-    String status,
-  );
+      {required String token, required String status, required int offset});
 
   Future<List<dynamic>> getOrderStatusDataApi(
     String token,
@@ -23,12 +21,12 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
 
   @override
   Future<ListOrderModel> getListOrderDataApi(
-    String token,
-    String status,
-  ) async {
+      {required String token,
+      required String status,
+      required int offset}) async {
     clientController.reOpenClient();
     final uri = Uri.parse(
-        '${ApiConstants.baseUrl}/${ApiConstants.newVersion}/delivery_man/orders?order_status=$status');
+        '${ApiConstants.baseUrl}/${ApiConstants.newVersion}/delivery_man/orders?order_status=$status&limit=5&offset=$offset');
     final response = await clientController.client.get(uri, headers: {
       'Content-type': 'application/json',
       'Accept': 'application/json',

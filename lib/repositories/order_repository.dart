@@ -11,14 +11,14 @@ class OrdersRepository {
 
   OrdersRepository({required this.ordersApiService, required this.networkInfo});
 
-  Future<Either<Failure, ListOrderModel>> getListOrderData({
-    required String token,
-    required String status,
-  }) async {
+  Future<Either<Failure, ListOrderModel>> getListOrderData(
+      {required String token,
+      required String status,
+      required int offset}) async {
     if (await networkInfo.isConnected) {
       try {
-        final orderDataResponse =
-            await ordersApiService.getListOrderDataApi(token, status);
+        final orderDataResponse = await ordersApiService.getListOrderDataApi(
+            token: token, status: status, offset: offset);
         return Right(orderDataResponse);
       } on ServerException {
         return left(ServerFailure());
