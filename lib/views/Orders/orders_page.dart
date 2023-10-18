@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import '../../controllers/Orders/orders_controller.dart';
 import '../../shared/global_functions/global_functions.dart';
 import '../../shared/handling_errors.dart/handling_errors.dart';
+import '../../shared/widgets/custom_app_bar.dart';
+import '../../shared/widgets/custom_drawer.dart';
 import 'components/order_status_widget.dart';
 import 'components/orders_list_widget.dart';
 
@@ -14,46 +16,49 @@ class OrdersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(body: GetBuilder<OrdersController>(builder: (_) {
-        return HandlingErrors.pageErrorHandling(
-          isCircleShown: ordersController.isGetOrderStatusCircleShown,
-          isNoInternetConnection:
-              ordersController.isGetOrderStatusNoInternetConnection,
-          onTapTry: () async {
-            String token = GlobalFunctions.getFcmToken();
-            await ordersController.getOrderStatusData(token: token);
-          },
-          page: RefreshIndicator(
-            color: AppColors.primaryDark,
-            onRefresh: () async {
-              debugPrint('refresh');
-              String token = GlobalFunctions.getFcmToken();
-              await ordersController.getOrderStatusData(token: token);
-            },
-            child: Column(
-              children: [
-                OrderStatusWidget(ordersController: ordersController),
-                ////////////////////////////////////
-                Expanded(
-                  child: HandlingErrors.pageErrorHandling(
-                    isCircleShown: ordersController.isGetOrdersCircleShown,
-                    isNoInternetConnection:
-                        ordersController.isGetOrdersNoInternetConnection,
-                    onTapTry: () async {
-                      String token = GlobalFunctions.getFcmToken();
-                      await ordersController.getListOrderData(
-                          token: token,
-                          status: ordersController.orderStatus,
-                          offset: 1);
-                    },
-                    page: OrderList(ordersController: ordersController),
-                  ),
-                )
-              ],
-            ),
-          ),
-        );
-      })),
+      child: Scaffold(
+          appBar: customAppBar(title: 'Orders', actions: []),
+          drawer: const CustomDrawer(),
+          body: GetBuilder<OrdersController>(builder: (_) {
+            return HandlingErrors.pageErrorHandling(
+              isCircleShown: ordersController.isGetOrderStatusCircleShown,
+              isNoInternetConnection:
+                  ordersController.isGetOrderStatusNoInternetConnection,
+              onTapTry: () async {
+                String token = GlobalFunctions.getFcmToken();
+                await ordersController.getOrderStatusData(token: token);
+              },
+              page: RefreshIndicator(
+                color: AppColors.primaryDark,
+                onRefresh: () async {
+                  debugPrint('refresh');
+                  String token = GlobalFunctions.getFcmToken();
+                  await ordersController.getOrderStatusData(token: token);
+                },
+                child: Column(
+                  children: [
+                    OrderStatusWidget(ordersController: ordersController),
+                    ////////////////////////////////////
+                    Expanded(
+                      child: HandlingErrors.pageErrorHandling(
+                        isCircleShown: ordersController.isGetOrdersCircleShown,
+                        isNoInternetConnection:
+                            ordersController.isGetOrdersNoInternetConnection,
+                        onTapTry: () async {
+                          String token = GlobalFunctions.getFcmToken();
+                          await ordersController.getListOrderData(
+                              token: token,
+                              status: ordersController.orderStatus,
+                              offset: 1);
+                        },
+                        page: OrderList(ordersController: ordersController),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          })),
     );
   }
 }

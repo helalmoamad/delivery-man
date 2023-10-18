@@ -2,6 +2,7 @@ import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/Orders/orders_controller.dart';
+import '../../shared/widgets/custom_app_bar.dart';
 import 'components/order_details.dart';
 
 class OrdersDetailsPage extends StatelessWidget {
@@ -14,9 +15,7 @@ class OrdersDetailsPage extends StatelessWidget {
     final order = ordersController.ordersData.data!.orders![orderIndex];
     return SafeArea(
         child: Scaffold(
-            appBar: AppBar(
-              title: const Text('Order Details'),
-            ),
+            appBar: customAppBar(title: 'Order Details', actions: []),
             body: GetBuilder<OrdersController>(builder: (_) {
               return
                   // OrderDetails();

@@ -1,18 +1,41 @@
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
+import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:delivery_man_app/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_storage/get_storage.dart';
-import 'app_binding.dart';
+import 'app_bindings.dart';
+import 'language/localization.dart';
+
+MaterialColor getMaterialColor(Color color) {
+  final int red = color.red;
+  final int green = color.green;
+  final int blue = color.blue;
+
+  final Map<int, Color> shades = {
+    50: Color.fromRGBO(red, green, blue, .1),
+    100: Color.fromRGBO(red, green, blue, .2),
+    200: Color.fromRGBO(red, green, blue, .3),
+    300: Color.fromRGBO(red, green, blue, .4),
+    400: Color.fromRGBO(red, green, blue, .5),
+    500: Color.fromRGBO(red, green, blue, .6),
+    600: Color.fromRGBO(red, green, blue, .7),
+    700: Color.fromRGBO(red, green, blue, .8),
+    800: Color.fromRGBO(red, green, blue, .9),
+    900: Color.fromRGBO(red, green, blue, 1),
+  };
+
+  return MaterialColor(color.value, shades);
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   // statusBarColor
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: AppColors.blackDark,
+    statusBarColor: AppColors.statusBarColor,
   ));
   runApp(const MyApp());
 }
@@ -31,6 +54,11 @@ class MyApp extends StatelessWidget {
       title: 'Delivery Man',
       debugShowCheckedModeBanner: false,
       theme: Themes.lightTheme,
+      //for language
+      locale: Locale(GetStorage().read<String>('lang').toString()),
+      fallbackLocale: const Locale(LangConstants.ene),
+      translations: LocalizationApp(),
+      ////
       getPages: AppRoutes.routes,
       initialRoute: Routes.splashPage,
       initialBinding: AppBinding(),

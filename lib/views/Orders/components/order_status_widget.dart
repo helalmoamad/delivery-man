@@ -28,15 +28,29 @@ class OrderStatusWidget extends StatelessWidget {
 
                 debugPrint(ordersController.orderStatus);
               },
-              child: TextWidget(
-                  text: ordersController.orderStatusData[index].toString(),
-                  color: AppColors.blackDark,
-                  fontSize: 15,
-                  fontWeight: index == ordersController.selectedOrderStatus
-                      ? FontWeight.bold
-                      : FontWeight.normal,
-                  textAlign: TextAlign.start,
-                  maxline: 1),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextWidget(
+                      text: ordersController.orderStatusData[index].toString(),
+                      color: AppColors.blackDark,
+                      fontSize: 15,
+                      fontWeight: index == ordersController.selectedOrderStatus
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      textAlign: TextAlign.start,
+                      maxline: 1),
+
+                  ///////////
+                  index == ordersController.selectedOrderStatus
+                      ? Container(
+                          width: 80,
+                          height: 2,
+                          color: AppColors.primaryDark,
+                        )
+                      : Container()
+                ],
+              ),
             );
           },
           separatorBuilder: (context, index) {

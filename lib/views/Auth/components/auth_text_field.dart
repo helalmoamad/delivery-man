@@ -45,7 +45,7 @@ class CustomTextField extends StatelessWidget {
       style: const TextStyle(
         color: AppColors.blackDark,
         fontWeight: FontWeight.normal,
-        // fontFamily: 'Montserrat',
+        fontFamily: 'Montserrat',
         fontSize: 14,
       ),
       decoration: InputDecoration(

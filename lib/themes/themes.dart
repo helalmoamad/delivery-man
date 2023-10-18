@@ -2,16 +2,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../main.dart';
 import '../shared/constants/color_constants.dart';
 
 class Themes {
   static ThemeData lightTheme = ThemeData(
-    primarySwatch: Colors.blue,
+    primarySwatch: getMaterialColor(AppColors.primaryDark),
     brightness: Brightness.light,
     appBarTheme: AppBarTheme(
         //for status bar
         systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: AppColors.blackLight,
+            statusBarColor: AppColors.statusBarColor,
             statusBarIconBrightness: Brightness.light),
         titleTextStyle: const TextStyle(
             color: AppColors.primaryDark, fontWeight: FontWeight.w600),

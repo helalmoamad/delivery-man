@@ -14,4 +14,5 @@ class AppColors {
   static const Color blackDark = Color.fromARGB(255, 0, 0, 0);
   static const Color textFieldHintColor = Color(0xFFE1E1E1);
   static const Color textLightColor = Color(0xFF605A65);
+  static const Color statusBarColor = Color.fromARGB(255, 126, 26, 15);
 }

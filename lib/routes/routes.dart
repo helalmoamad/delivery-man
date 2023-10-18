@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import '../controllers/Auth/auth_binding.dart';
 import '../controllers/Orders/orders_bindings.dart';
 import '../views/Auth/login_page.dart';
-import '../views/Main/main_page.dart';
 import '../views/OrderDetails/orders_details_page.dart';
 import '../views/Orders/orders_page.dart';
 import '../views/Welcome/splash_page.dart';
@@ -31,14 +30,7 @@ class AppRoutes {
     ),
     ///////////
     /// app route //////////////////////////////
-    GetPage(
-      name: Routes.mainPage,
-      page: () => MainPage(),
-      // binding: MainBinding(),
-      transitionDuration: const Duration(milliseconds: 0),
-    ),
 
-    /// ///////////////////////
     GetPage(
       name: Routes.orderssPage,
       page: () => OrdersPage(),
