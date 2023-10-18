@@ -5,9 +5,11 @@ import '../../../shared/widgets/text_widget.dart';
 
 class TitleSectionWidget extends StatelessWidget {
   final String title;
+  final String index;
   const TitleSectionWidget({
     super.key,
     required this.title,
+    required this.index,
   });
 
   @override
@@ -18,13 +20,24 @@ class TitleSectionWidget extends StatelessWidget {
       color: Get.isDarkMode ? AppColors.blackDark : AppColors.lightGray,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-        child: TextWidget(
-            text: title,
-            color: AppColors.blackDark,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            textAlign: TextAlign.start,
-            maxline: 1),
+        child: Row(
+          children: [
+            TextWidget(
+                text: index,
+                color: AppColors.blackDark,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                textAlign: TextAlign.start,
+                maxline: 1),
+            TextWidget(
+                text: title,
+                color: AppColors.blackDark,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                textAlign: TextAlign.start,
+                maxline: 1),
+          ],
+        ),
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'package:delivery_man_app/shared/constants/lang_constants.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../models/Auth/login_model.dart';
@@ -79,5 +81,25 @@ class AuthController extends GetxController {
       GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
     ]);
     Get.offAllNamed(Routes.loginPage);
+  }
+
+  //for setting language
+
+  Future<void> changeLanguage(String lang) async {
+    if (GlobalFunctions.getLanLocal() == lang) {
+      return;
+    }
+    if (lang == LangConstants.ara) {
+      await saveLanguage(LangConstants.ara);
+    } else {
+      await saveLanguage(LangConstants.ene);
+    }
+    await Get.updateLocale(Locale(lang));
+    update();
+  }
+
+  Future<void> saveLanguage(String lang) async {
+    await GlobalFunctions.setLanLocal(lanLocal: lang);
+    // await GetStorage().save();
   }
 }

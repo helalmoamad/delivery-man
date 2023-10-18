@@ -1,5 +1,7 @@
 import 'package:delivery_man_app/models/Orders/list_order_model.dart';
 import 'package:delivery_man_app/routes/routes.dart';
+import 'package:delivery_man_app/shared/constants/lang_constants.dart';
+import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -28,7 +30,7 @@ class OrderList extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Center(
                       child: ordersController.noMoreItems
-                          ? const Text('No More Items')
+                          ? Text('No More Items'.tr)
                           : const CircularProgressIndicator(),
                     ),
                   );
@@ -51,8 +53,8 @@ class OrderList extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const TextWidget(
-                  text: 'Order Summary :',
+              TextWidget(
+                  text: '${'Order Summary'.tr} :',
                   color: AppColors.blackDark,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -66,7 +68,7 @@ class OrderList extends StatelessWidget {
               ////
               TextWidget(
                   text:
-                      'Payment Status ${orders[index].paymentStatus.toString()}',
+                      '${'Payment Status'.tr} ${orders[index].paymentStatus.toString()}',
                   color: orders[index].paymentStatus.toString() == 'paid'
                       ? Colors.green
                       : Colors.red,
@@ -82,8 +84,8 @@ class OrderList extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const TextWidget(
-                      text: 'Order Status :',
+                  TextWidget(
+                      text: '${'Order Status'.tr} :',
                       color: AppColors.blackDark,
                       fontSize: 12,
                       fontWeight: FontWeight.normal,
@@ -107,8 +109,8 @@ class OrderList extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const TextWidget(
-                      text: 'Order Amount :',
+                  TextWidget(
+                      text: '${'Order Amount'.tr} :',
                       color: AppColors.blackDark,
                       fontSize: 12,
                       fontWeight: FontWeight.normal,
@@ -133,8 +135,8 @@ class OrderList extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const TextWidget(
-                      text: 'Payment Method :',
+                  TextWidget(
+                      text: '${'Payment Method'.tr} :',
                       color: AppColors.blackDark,
                       fontSize: 12,
                       fontWeight: FontWeight.normal,
@@ -159,8 +161,8 @@ class OrderList extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const TextWidget(
-                      text: 'Order unique id :',
+                  TextWidget(
+                      text: '${'Order unique id'.tr} :',
                       color: AppColors.blackDark,
                       fontSize: 12,
                       fontWeight: FontWeight.normal,
@@ -186,10 +188,12 @@ class OrderList extends StatelessWidget {
                 onTap: () {
                   Get.toNamed(Routes.ordersDetailsPage, arguments: [index]);
                 },
-                child: const Align(
-                  alignment: Alignment.bottomRight,
+                child: Align(
+                  alignment: GlobalFunctions.getLanLocal() == LangConstants.ara
+                      ? Alignment.bottomLeft
+                      : Alignment.bottomRight,
                   child: TextWidget(
-                      text: 'View Details',
+                      text: 'View Details'.tr,
                       color: AppColors.blackDark,
                       fontSize: 15,
                       fontWeight: FontWeight.bold,

@@ -22,12 +22,14 @@ class OrderDetails extends StatelessWidget {
         children: [
           ////////////////////////////////
           TitleSectionWidget(
-            title: '#${detailsIndex + 1}  Product',
+            title: 'Product'.tr,
+            index: '#${detailsIndex + 1}  ',
           ),
           productsSection(order),
           ////////////////////////////
-          const TitleSectionWidget(
-            title: 'General Info',
+          TitleSectionWidget(
+            title: 'General Info'.tr,
+            index: '',
           ),
           /////////////////////
           generalInfoSection(order),
@@ -45,32 +47,33 @@ class OrderDetails extends StatelessWidget {
       itemBuilder: (context, index) {
         if (index == 0) {
           return OrderDetailsWidget(
-              title: 'Price',
+              title: 'Price'.tr,
               value: order.details![detailsIndex].price.toString());
         }
         if (index == 1) {
           return OrderDetailsWidget(
-              title: 'Tax', value: order.details![detailsIndex].tax.toString());
+              title: 'Tax'.tr,
+              value: order.details![detailsIndex].tax.toString());
         }
         if (index == 2) {
           return OrderDetailsWidget(
-              title: 'Discount',
+              title: 'Discount'.tr,
               value: order.details![detailsIndex].discount.toString());
         }
         if (index == 3) {
           return OrderDetailsWidget(
-              title: 'Price After Discount',
+              title: 'Price After Discount'.tr,
               value:
                   order.details![detailsIndex].priceAfterDiscount.toString());
         }
         if (index == 4) {
           return OrderDetailsWidget(
-              title: 'Delivery Status',
+              title: 'Delivery Status'.tr,
               value: order.details![detailsIndex].deliveryStatus.toString());
         }
         if (index == 5) {
           return OrderDetailsWidget(
-              title: 'Payment Status',
+              title: 'Payment Status'.tr,
               value: order.details![detailsIndex].paymentStatus.toString());
         }
         return null;

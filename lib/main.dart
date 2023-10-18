@@ -1,6 +1,7 @@
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
+import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: Themes.lightTheme,
       //for language
-      locale: Locale(GetStorage().read<String>('lang').toString()),
+      locale: Locale(GlobalFunctions.getLanLocal()),
       fallbackLocale: const Locale(LangConstants.ene),
       translations: LocalizationApp(),
       ////

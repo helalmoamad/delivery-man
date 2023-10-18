@@ -15,7 +15,7 @@ class OrdersDetailsPage extends StatelessWidget {
     final order = ordersController.ordersData.data!.orders![orderIndex];
     return SafeArea(
         child: Scaffold(
-            appBar: customAppBar(title: 'Order Details', actions: []),
+            appBar: customAppBar(title: 'Order Details'.tr, actions: []),
             body: GetBuilder<OrdersController>(builder: (_) {
               return
                   // OrderDetails();

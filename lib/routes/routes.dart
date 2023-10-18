@@ -12,6 +12,7 @@ class Routes {
   static const mainPage = '/mainPage';
   static const orderssPage = '/orderssPage';
   static const ordersDetailsPage = '/ordersDetailsPage';
+  static const languagePage = '/languagePage';
 }
 
 class AppRoutes {
@@ -28,9 +29,8 @@ class AppRoutes {
       binding: AuthBinding(),
       transitionDuration: const Duration(milliseconds: 500),
     ),
-    ///////////
-    /// app route //////////////////////////////
 
+    /// app route //////////////////////////////
     GetPage(
       name: Routes.orderssPage,
       page: () => OrdersPage(),
@@ -38,11 +38,12 @@ class AppRoutes {
       transition: Transition.fade,
       transitionDuration: const Duration(milliseconds: 0),
     ),
+    ///////
     GetPage(
       name: Routes.ordersDetailsPage,
       page: () => OrdersDetailsPage(),
       transition: Transition.fade,
-      transitionDuration: const Duration(milliseconds: 200),
+      transitionDuration: const Duration(milliseconds: 500),
     ),
   ];
 }
