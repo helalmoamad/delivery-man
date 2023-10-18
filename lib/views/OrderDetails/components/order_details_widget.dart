@@ -20,6 +20,7 @@ class OrderDetailsWidget extends StatelessWidget {
       children: [
         Expanded(
           child: Container(
+            padding: const EdgeInsets.all(3),
             height: 37,
             decoration: BoxDecoration(
                 color: Get.isDarkMode ? AppColors.darkGrey : AppColors.white,
@@ -37,6 +38,7 @@ class OrderDetailsWidget extends StatelessWidget {
         ),
         Expanded(
           child: Container(
+            padding: const EdgeInsets.all(3),
             height: 37,
             decoration: BoxDecoration(
                 color: Get.isDarkMode ? AppColors.darkGrey : AppColors.white,
