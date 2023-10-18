@@ -39,12 +39,12 @@ class OrderDetails extends StatelessWidget {
                 ////////////////////////////////
                 shippingAdressInfoSection(order),
                 //////////
-                TitleSectionWidget(
-                  title: 'Billing Address Info'.tr,
-                  index: '',
-                ),
-                ////////////////////////////////
-                billingAdressInfoSection(order)
+                // TitleSectionWidget(
+                //   title: 'Billing Address Info'.tr,
+                //   index: '',
+                // ),
+                // ////////////////////////////////
+                // billingAdressInfoSection(order)
               ],
             ),
             Padding(
@@ -181,52 +181,52 @@ class OrderDetails extends StatelessWidget {
     );
   }
 
-  Widget billingAdressInfoSection(final Order order) {
-    return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: 7,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return OrderDetailsWidget(
-              title: 'Contact Person Name'.tr,
-              value: order.billingAddressData!.contactPersonName.toString());
-        }
-        if (index == 1) {
-          return OrderDetailsWidget(
-              title: 'Address Type'.tr,
-              value: order.billingAddressData!.addressType.toString());
-        }
-        if (index == 2) {
-          return OrderDetailsWidget(
-              title: 'Address'.tr,
-              value: order.billingAddressData!.address.toString());
-        }
-        if (index == 3) {
-          return OrderDetailsWidget(
-              title: 'City'.tr,
-              value: order.billingAddressData!.city.toString());
-        }
-        if (index == 4) {
-          return OrderDetailsWidget(
-              title: 'Country'.tr,
-              value: order.billingAddressData!.country.toString());
-        }
-        if (index == 5) {
-          return OrderDetailsWidget(
-              title: 'Phone'.tr,
-              value: '+971 ${order.billingAddressData!.phone}');
-        }
-        if (index == 6) {
-          return OrderDetailsWidget(
-              title: 'Email'.tr,
-              value: order.billingAddressData!.email.toString());
-        }
+  // Widget billingAdressInfoSection(final Order order) {
+  //   return ListView.builder(
+  //     physics: const NeverScrollableScrollPhysics(),
+  //     shrinkWrap: true,
+  //     itemCount: 7,
+  //     itemBuilder: (context, index) {
+  //       if (index == 0) {
+  //         return OrderDetailsWidget(
+  //             title: 'Contact Person Name'.tr,
+  //             value: order.billingAddressData!.contactPersonName.toString());
+  //       }
+  //       if (index == 1) {
+  //         return OrderDetailsWidget(
+  //             title: 'Address Type'.tr,
+  //             value: order.billingAddressData!.addressType.toString());
+  //       }
+  //       if (index == 2) {
+  //         return OrderDetailsWidget(
+  //             title: 'Address'.tr,
+  //             value: order.billingAddressData!.address.toString());
+  //       }
+  //       if (index == 3) {
+  //         return OrderDetailsWidget(
+  //             title: 'City'.tr,
+  //             value: order.billingAddressData!.city.toString());
+  //       }
+  //       if (index == 4) {
+  //         return OrderDetailsWidget(
+  //             title: 'Country'.tr,
+  //             value: order.billingAddressData!.country.toString());
+  //       }
+  //       if (index == 5) {
+  //         return OrderDetailsWidget(
+  //             title: 'Phone'.tr,
+  //             value: '+971 ${order.billingAddressData!.phone}');
+  //       }
+  //       if (index == 6) {
+  //         return OrderDetailsWidget(
+  //             title: 'Email'.tr,
+  //             value: order.billingAddressData!.email.toString());
+  //       }
 
-        return null;
-      },
-    );
-  }
+  //       return null;
+  //     },
+  //   );
+  // }
 
   Widget generalInfoSection(final Order order, int detailsIndex) {
     return ListView.builder(

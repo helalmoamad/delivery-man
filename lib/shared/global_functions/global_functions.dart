@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../constants/lang_constants.dart';
+
 class GlobalFunctions {
   static Future<void> setLanLocal({required String lanLocal}) async {
     await GetStorage().write('lang', lanLocal);
   }
 
   static String getLanLocal() {
-    String? lanLocal = GetStorage().read<String>('lang');
-    return lanLocal!;
+    String lanLocal = GetStorage().read<String>('lang') ?? LangConstants.ene;
+    return lanLocal;
   }
 
   static Future<void> setFcmToken({required String token}) async {

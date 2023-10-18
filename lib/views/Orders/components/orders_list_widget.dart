@@ -45,7 +45,7 @@ class OrderList extends StatelessWidget {
   Widget buildOrderWidget(int index, List<Order> orders) {
     return Container(
         width: double.infinity,
-        height: 220,
+        height: 250,
         color: (index % 2 == 0) ? AppColors.lightGray : AppColors.white,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -72,7 +72,7 @@ class OrderList extends StatelessWidget {
                   color: orders[index].paymentStatus.toString() == 'paid'
                       ? Colors.green
                       : Colors.red,
-                  fontSize: 10,
+                  fontSize: 11,
                   fontWeight: FontWeight.normal,
                   textAlign: TextAlign.start,
                   maxline: 1),
@@ -87,7 +87,7 @@ class OrderList extends StatelessWidget {
                   TextWidget(
                       text: '${'Order Status'.tr} :',
                       color: AppColors.blackDark,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.normal,
                       textAlign: TextAlign.start,
                       maxline: 1),
@@ -95,7 +95,7 @@ class OrderList extends StatelessWidget {
                   TextWidget(
                       text: orders[index].orderStatus.toString(),
                       color: AppColors.blackDark,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.normal,
                       textAlign: TextAlign.start,
                       maxline: 1),
@@ -112,7 +112,7 @@ class OrderList extends StatelessWidget {
                   TextWidget(
                       text: '${'Order Amount'.tr} :',
                       color: AppColors.blackDark,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.normal,
                       textAlign: TextAlign.start,
                       maxline: 1),
@@ -120,7 +120,7 @@ class OrderList extends StatelessWidget {
                   TextWidget(
                       text: orders[index].orderAmountFormatted.toString(),
                       color: AppColors.blackDark,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.normal,
                       textAlign: TextAlign.start,
                       maxline: 1),
@@ -138,7 +138,7 @@ class OrderList extends StatelessWidget {
                   TextWidget(
                       text: '${'Payment Method'.tr} :',
                       color: AppColors.blackDark,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.normal,
                       textAlign: TextAlign.start,
                       maxline: 1),
@@ -146,7 +146,7 @@ class OrderList extends StatelessWidget {
                   TextWidget(
                       text: orders[index].paymentMethod.toString(),
                       color: AppColors.blackDark,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.normal,
                       textAlign: TextAlign.start,
                       maxline: 1),
@@ -164,7 +164,7 @@ class OrderList extends StatelessWidget {
                   TextWidget(
                       text: '${'Order unique id'.tr} :',
                       color: AppColors.blackDark,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.normal,
                       textAlign: TextAlign.start,
                       maxline: 1),
@@ -172,7 +172,7 @@ class OrderList extends StatelessWidget {
                   TextWidget(
                       text: orders[index].id.toString(),
                       color: AppColors.blackDark,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.normal,
                       textAlign: TextAlign.start,
                       maxline: 1),
@@ -181,7 +181,7 @@ class OrderList extends StatelessWidget {
 
               ///
               const SizedBox(
-                height: 30,
+                height: 25,
               ),
               ////
               InkWell(
