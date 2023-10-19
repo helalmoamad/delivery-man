@@ -3,19 +3,29 @@ import 'package:flutter/material.dart';
 
 import '../constants/color_constants.dart';
 
-AppBar customAppBar({required String title, required List<Widget>? actions}) {
+AppBar customAppBar({required String title, required Widget button}) {
   return AppBar(
     elevation: 5,
     shadowColor: AppColors.lightGray,
     centerTitle: false,
     backgroundColor: AppColors.white,
-    title: TextWidget(
-        text: title,
-        color: AppColors.primaryDark,
-        fontSize: 15,
-        fontWeight: FontWeight.bold,
-        textAlign: TextAlign.start,
-        maxline: 1),
-    actions: actions,
+    title: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          flex: 3,
+          child: TextWidget(
+              text: title,
+              color: AppColors.primaryDark,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              textAlign: TextAlign.start,
+              maxline: 1),
+        ),
+        ////////
+        Expanded(flex: 2, child: button)
+      ],
+    ),
+    // actions: actions,
   );
 }

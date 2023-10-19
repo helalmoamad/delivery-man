@@ -186,7 +186,10 @@ class OrderList extends StatelessWidget {
               ////
               InkWell(
                 onTap: () {
-                  Get.toNamed(Routes.ordersDetailsPage, arguments: [index]);
+                  ordersController.orderIndex = index;
+                  Get.toNamed(
+                    Routes.ordersDetailsPage,
+                  );
                 },
                 child: Align(
                   alignment: GlobalFunctions.getLanLocal() == LangConstants.ara

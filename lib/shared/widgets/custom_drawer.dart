@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 
 import '../../controllers/Auth/auth_controller.dart';
 import '../constants/color_constants.dart';
-import 'dialog_widget.dart';
+import '../helpers/screen_size_utils.dart';
+import 'app_buttons.dart';
+import 'app_dialogs.dart';
 
 class CustomDrawer extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
@@ -106,12 +108,34 @@ class CustomDrawer extends StatelessWidget {
                 textAlign: TextAlign.start,
                 maxline: 1),
             onTap: () {
-              DialogWidget.showDialogWidget(
-                  context: context,
-                  title: 'Are you sure to logout ?'.tr,
-                  onConfirm: () async {
-                    await authController.logOut();
-                  });
+              AppDialogs.showAppDialogWidget(
+                context: context,
+                title: 'Are you sure to logout ?'.tr,
+                actions: [
+                  AppButton.normalButton(
+                    title: 'Confirm'.tr,
+                    shadow: false,
+                    width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                    height: 30,
+                    titleColor: AppColors.white,
+                    backgroundColor: AppColors.primaryDark,
+                    onPress: () async {
+                      await authController.logOut();
+                    },
+                  ),
+                  ///////////////
+                  AppButton.normalButton(
+                      title: 'Back'.tr,
+                      shadow: false,
+                      width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                      backgroundColor: AppColors.white,
+                      titleColor: AppColors.primaryDark,
+                      height: 30,
+                      onPress: () {
+                        Get.back();
+                      })
+                ],
+              );
             },
           )
         ],

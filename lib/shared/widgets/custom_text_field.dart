@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../shared/constants/color_constants.dart';
+import '../constants/color_constants.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -12,6 +12,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputType textInputType;
   final int maxLines;
   final bool isHintColor;
+  final double contentPadding;
   // ignore: prefer_typing_uninitialized_variables
   final validator;
   // ignore: prefer_typing_uninitialized_variables
@@ -29,7 +30,8 @@ class CustomTextField extends StatelessWidget {
       this.maxLines = 1,
       this.textInputType = TextInputType.text,
       this.labelText = '',
-      this.isLableText = true})
+      this.isLableText = true,
+      this.contentPadding = 10})
       : super(key: key);
 
   @override
@@ -49,7 +51,7 @@ class CustomTextField extends StatelessWidget {
         fontSize: 14,
       ),
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.all(10),
+        contentPadding: EdgeInsets.all(contentPadding),
         labelText: isLableText ? labelText : null,
         hintText: hintText,
         hintStyle: const TextStyle(

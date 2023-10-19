@@ -41,5 +41,12 @@ const Map<String, String> en = {
   'Phone': 'Phone',
   'Country': 'Country',
   'Email': 'Email',
-  'Billing Address Info': 'Billing Address Info',
+  'Start Delivering': 'Start Delivering',
+  'Delivered': 'Delivered',
+  'Enter The Cash Amount': 'Enter The Cash Amount',
+  'Cash Amount': 'Cash Amount',
+  'Cash Amount should not be empty': 'Cash Amount should not be empty',
+  'Confirm The Process': 'Confirm The Process',
+  'Stop Record': 'Stop Record',
+  'Play Record': 'Play Record',
 };

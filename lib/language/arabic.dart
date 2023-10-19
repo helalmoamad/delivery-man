@@ -41,5 +41,12 @@ const Map<String, String> ar = {
   'Phone': 'الهاتف',
   'Country': 'الدولة',
   'Email': 'الإيميل',
-  'Billing Address Info': 'عنوان وصول الفواتير',
+  'Start Delivering': 'بدء التسليم',
+  'Delivered': 'تم التوصيل',
+  'Enter The Cash Amount': 'أدخل قيمة المبلغ',
+  'Cash Amount': 'قيمة المبلغ',
+  'Cash Amount should not be empty': 'قيمة المبلغ لايجب أن تكون فارغة',
+  'Confirm The Process': 'تأكيد العملية',
+  'Stop Record': 'إيقاف التسجيل',
+  'Play Record': 'تشغيل التسجيل',
 };

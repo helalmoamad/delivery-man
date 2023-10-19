@@ -7,7 +7,7 @@ import '../../models/Auth/login_model.dart';
 import '../../shared/constants/color_constants.dart';
 import '../../shared/widgets/app_buttons.dart';
 import '../../shared/widgets/circle_indecator_widget.dart';
-import 'components/auth_text_field.dart';
+import '../../shared/widgets/custom_text_field.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});

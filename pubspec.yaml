@@ -21,6 +21,8 @@ dependencies:
   auto_size_text:
   flutter_spinkit:
   cached_network_image:
+  record: 4.4.4
+  audioplayers:
 
 
 

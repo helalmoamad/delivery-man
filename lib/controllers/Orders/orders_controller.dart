@@ -1,6 +1,8 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:record/record.dart';
 import '../../models/Orders/list_order_model.dart';
 import '../../providers/Orders_providers.dart/get_order_list_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_status_data.dart';
@@ -16,6 +18,8 @@ class OrdersController extends GetxController {
   late ListOrderModel ordersData;
   late List<dynamic> orderStatusData;
 
+  int orderIndex = 0;
+
   late String orderStatus;
   int selectedOrderStatus = 0;
 
@@ -28,6 +32,14 @@ class OrdersController extends GetxController {
   final ScrollController scrollController = ScrollController();
   int paginationOffset = 2;
   bool noMoreItems = false;
+
+  late Record record;
+  late AudioPlayer audioPlayer;
+  bool isStartDeliveryButton = true;
+  bool isPlayRecordButton = false;
+  bool isRecording = false;
+  bool isRecordPlaying = false;
+  String? audioPath = '';
 
   // ///////////////////////////
   void showGetOrdersCircleIndicator() {
@@ -73,6 +85,21 @@ class OrdersController extends GetxController {
     update();
   }
 
+  void changeDeliveringButton(bool isStartDelivery) {
+    isStartDeliveryButton = isStartDelivery;
+    update();
+  }
+
+  void changePlayRecordButton(bool isPlayRecord) {
+    isPlayRecordButton = isPlayRecord;
+    update();
+  }
+
+  void changeIsPlaying(bool isPlaying) {
+    isRecordPlaying = isPlaying;
+    update();
+  }
+
   @override
   void onInit() async {
     super.onInit();
@@ -87,12 +114,18 @@ class OrdersController extends GetxController {
         await getListOrderWithPaginationData(token: token, status: orderStatus);
       }
     });
+
+    record = Record();
+    audioPlayer = AudioPlayer();
   }
 
   @override
   void onClose() async {
     super.onClose();
     scrollController.dispose();
+    record.dispose();
+    audioPlayer.dispose();
+
     debugPrint('Order Controller closed');
   }
 
@@ -106,6 +139,51 @@ class OrdersController extends GetxController {
     }
 
     update();
+  }
+
+  Future<void> startRecording() async {
+    try {
+      if (await record.hasPermission()) {
+        await record.start();
+        isRecording = true;
+        update();
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> stopRecording() async {
+    try {
+      if (await record.hasPermission()) {
+        audioPath = await record.stop();
+        isRecording = false;
+        update();
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> playRecording() async {
+    try {
+      Source urlSource = UrlSource(audioPath!);
+      await audioPlayer.play(urlSource);
+
+      audioPlayer.onPlayerComplete.listen((event) {
+        changeIsPlaying(false);
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> stopPlayingRecording() async {
+    try {
+      await audioPlayer.stop();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   ///////////////////////////////////

@@ -1,3 +1,4 @@
+import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/color_constants.dart';
@@ -6,8 +7,9 @@ class AppButton {
   static normalButton({
     required String title,
     VoidCallback? onPress,
-    Color? backgroundColor = AppColors.darkGrey,
-    Color? titleColor = Colors.white,
+    Color backgroundColor = AppColors.darkGrey,
+    Color titleColor = Colors.white,
+    double titleSize = 14,
     bool shadow = true,
     double height = 50,
     double width = double.infinity,
@@ -27,13 +29,23 @@ class AppButton {
                 ]
               : null,
         ),
-        child: Text(
-          title,
-          style: TextStyle(
-            color: titleColor,
-            fontWeight: FontWeight.bold,
-          ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: TextWidget(
+              text: title,
+              color: titleColor,
+              fontSize: titleSize,
+              fontWeight: FontWeight.bold,
+              textAlign: TextAlign.start,
+              maxline: 1),
         ),
+        // Text(
+        //   title,
+        //   style: TextStyle(
+        //     color: titleColor,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        // ),
       ),
     );
   }

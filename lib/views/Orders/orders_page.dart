@@ -17,7 +17,7 @@ class OrdersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          appBar: customAppBar(title: 'Orders'.tr, actions: []),
+          appBar: customAppBar(title: 'Orders'.tr, button: Container()),
           drawer: CustomDrawer(),
           body: GetBuilder<OrdersController>(builder: (_) {
             return HandlingErrors.pageErrorHandling(
