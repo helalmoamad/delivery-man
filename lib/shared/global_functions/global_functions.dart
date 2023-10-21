@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../constants/lang_constants.dart';
@@ -31,5 +32,85 @@ class GlobalFunctions {
     bool isLoggedIn = GetStorage().read<bool>('isLoggedIn') ?? false;
     debugPrint('isLoggedIn :  ${isLoggedIn.toString()}');
     return isLoggedIn;
+  }
+
+  static String orderStatusText({required String inputText}) {
+    String text = '';
+
+    switch (inputText) {
+      case 'pending':
+        {
+          text = 'Pending'.tr;
+          break;
+        }
+
+      case 'processing':
+        {
+          text = 'Processing'.tr;
+          break;
+        }
+
+      case 'ready_to_shipping':
+        {
+          text = 'Ready To Shipping'.tr;
+          break;
+        }
+
+      case 'shipped':
+        {
+          text = 'Shipped'.tr;
+          break;
+        }
+
+      case 'out_for_delivery':
+        {
+          text = 'Out For Delivery'.tr;
+          break;
+        }
+
+      case 'delivered':
+        {
+          text = 'Delivered'.tr;
+          break;
+        }
+
+      case 'partial_return':
+        {
+          text = 'Partial Return'.tr;
+          break;
+        }
+
+      case 'returned':
+        {
+          text = 'Returned'.tr;
+          break;
+        }
+
+      case 'failed':
+        {
+          text = 'Failed'.tr;
+          break;
+        }
+
+      case 'canceled':
+        {
+          text = 'Canceled'.tr;
+          break;
+        }
+
+      case 'canceled_archived':
+        {
+          text = 'Canceled Archived'.tr;
+          break;
+        }
+
+      default:
+        {
+          text = 'New Status';
+          break;
+        }
+    }
+
+    return text;
   }
 }

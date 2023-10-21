@@ -12,7 +12,6 @@ class Routes {
   static const mainPage = '/mainPage';
   static const orderssPage = '/orderssPage';
   static const ordersDetailsPage = '/ordersDetailsPage';
-  static const languagePage = '/languagePage';
 }
 
 class AppRoutes {

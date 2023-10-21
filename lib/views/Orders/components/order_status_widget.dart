@@ -1,3 +1,4 @@
+import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import '../../../controllers/Orders/orders_controller.dart';
 import '../../../shared/constants/color_constants.dart';
@@ -32,7 +33,9 @@ class OrderStatusWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextWidget(
-                      text: ordersController.orderStatusData[index].toString(),
+                      text: GlobalFunctions.orderStatusText(
+                          inputText: ordersController.orderStatusData[index]
+                              .toString()),
                       color: AppColors.blackDark,
                       fontSize: 15,
                       fontWeight: index == ordersController.selectedOrderStatus
