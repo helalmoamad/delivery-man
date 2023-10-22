@@ -1,3 +1,4 @@
+import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
@@ -76,6 +77,22 @@ class CustomDrawer extends StatelessWidget {
                 textAlign: TextAlign.start,
                 maxline: 1),
             onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.qr_code,
+              color: AppColors.primaryDark,
+            ),
+            title: TextWidget(
+                text: 'Scan QR'.tr,
+                color: AppColors.blackDark,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                textAlign: TextAlign.start,
+                maxline: 1),
+            onTap: () {
+              Get.toNamed(Routes.scanQRPage);
+            },
           ),
           ListTile(
             leading: const Icon(

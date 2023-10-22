@@ -59,4 +59,8 @@ const Map<String, String> ar = {
   'Failed': 'فشل',
   'Canceled': 'مُلغى',
   'Canceled Archived': 'مُلغى و مؤرشف',
+  'Scan QR': 'مسح الـ QR',
+  'Assign To Vehicle': 'الربط مع عربة',
+  'Scan a code': 'امسح الرمز',
+  'Result': 'النتيجة',
 };

@@ -59,4 +59,8 @@ const Map<String, String> en = {
   'Failed': 'Failed',
   'Canceled': 'Canceled',
   'Canceled Archived': 'Canceled Archived',
+  'Scan QR': 'Scan QR',
+  'Assign To Vehicle': 'Assign To Vehicle',
+  'Scan a code': 'Scan a code',
+  'Result': 'Result',
 };
