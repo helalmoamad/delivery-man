@@ -20,6 +20,8 @@ class AuthRepository {
         return Right(authResponse);
       } on ServerException {
         return left(ServerFailure());
+      } on WrongDataException {
+        return left(WrongDataFailure());
       }
     } else {
       return Left(OfflineFailure());

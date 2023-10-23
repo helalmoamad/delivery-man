@@ -12,7 +12,7 @@ import '../../shared/widgets/snackbar_widgets.dart';
 
 class AuthController extends GetxController {
   bool isCircleShown = false;
-  bool isNoInternetConnection = false;
+  // bool isNoInternetConnection = false;
   bool isLogin = false;
   bool isObscure = true;
 
@@ -41,15 +41,15 @@ class AuthController extends GetxController {
   }
 
 ///////////////////////////////////
-  void showNoInternetPage() {
-    isNoInternetConnection = true;
-    update();
-  }
+  // void showNoInternetPage() {
+  //   isNoInternetConnection = true;
+  //   update();
+  // }
 
-  void hideNoInternetPage() {
-    isNoInternetConnection = false;
-    update();
-  }
+  // void hideNoInternetPage() {
+  //   isNoInternetConnection = false;
+  //   update();
+  // }
 /////////////////////////////
 
   Future<void> login({required LoginModel loginModel}) async {
@@ -64,12 +64,15 @@ class AuthController extends GetxController {
       userData = getUserData;
       isLogin = true;
       Future.wait([
-        GlobalFunctions.setFcmToken(token: userData.token),
+        GlobalFunctions.setFcmToken(token: userData.accessToken!),
+        GlobalFunctions.setName(name: userData.name!),
+        GlobalFunctions.setEmail(email: userData.email!),
+        GlobalFunctions.setMobilePhone(mobilePhone: userData.mobilePhone!),
         GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
       ]);
       hideCircleIndicator();
       Get.offAllNamed(Routes.orderssPage);
-      SnackBarWidgets.showSuccessSnackBar('Login Succeeded', '');
+      SnackBarWidgets.showSuccessSnackBar('Login Succeeded'.tr, '');
     });
   }
 
@@ -78,6 +81,9 @@ class AuthController extends GetxController {
     isLogin = false;
     Future.wait([
       storageBox.remove('token'),
+      storageBox.remove('mobilePhone'),
+      storageBox.remove('name'),
+      storageBox.remove('email'),
       GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
     ]);
     Get.offAllNamed(Routes.loginPage);
@@ -100,6 +106,5 @@ class AuthController extends GetxController {
 
   Future<void> saveLanguage(String lang) async {
     await GlobalFunctions.setLanLocal(lanLocal: lang);
-    // await GetStorage().save();
   }
 }

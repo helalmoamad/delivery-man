@@ -12,7 +12,7 @@ import '../../shared/widgets/custom_text_field.dart';
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
   final formKey = GlobalKey<FormState>();
-  final TextEditingController phoneKey = TextEditingController();
+  final TextEditingController userNameKey = TextEditingController();
   final TextEditingController passKey = TextEditingController();
   final AuthController authController = Get.find<AuthController>();
 
@@ -39,19 +39,19 @@ class LoginPage extends StatelessWidget {
                         )),
                     /////////////////////
                     SizedBox(
-                      height: ScreenSizeUtils.getHeightInPercent(context, 15),
+                      height: ScreenSizeUtils.getHeightInPercent(context, 5),
                     ),
                     //////////////////////
-                    const TextWidget(
-                        text: 'Log in',
+                    TextWidget(
+                        text: 'Login'.tr,
                         color: AppColors.blackDark,
-                        fontSize: 20,
+                        fontSize: 23,
                         fontWeight: FontWeight.bold,
                         textAlign: TextAlign.start,
                         maxline: 1),
                     /////////////////////
                     SizedBox(
-                      height: ScreenSizeUtils.getHeightInPercent(context, 5),
+                      height: ScreenSizeUtils.getHeightInPercent(context, 15),
                     ),
                     //////////////////////
                     buildBody(context)
@@ -83,14 +83,12 @@ class LoginPage extends StatelessWidget {
           children: [
             CustomTextField(
               textInputType: TextInputType.text,
-              controller: phoneKey,
-              hintText: 'Enter  Phone Number',
-              labelText: 'Phone Number',
+              controller: userNameKey,
+              hintText: 'Enter  User Name'.tr,
+              labelText: 'User Name'.tr,
               validator: (value) {
                 if (value.isEmpty) {
-                  return 'Phone Number should not be empty';
-                } else if (value!.length < 10) {
-                  return 'Enter valid Phone Number';
+                  return 'User Name should not be empty'.tr;
                 }
               },
               prefixIcon: null,
@@ -104,14 +102,12 @@ class LoginPage extends StatelessWidget {
             CustomTextField(
               textInputType: TextInputType.visiblePassword,
               controller: passKey,
-              hintText: 'Enter  Password',
-              labelText: 'Password',
+              hintText: 'Enter  Password'.tr,
+              labelText: 'Password'.tr,
               isObscure: authController.isObscure,
               validator: (value) {
                 if (value.isEmpty) {
-                  return 'Password should not be empty';
-                } else if (value!.length < 8) {
-                  return 'Password should not be less than 8 characters';
+                  return 'Password should not be empty'.tr;
                 }
               },
               prefixIcon: null,
@@ -136,8 +132,8 @@ class LoginPage extends StatelessWidget {
               title: 'LOGIN'.tr,
               onPress: () async {
                 if (formKey.currentState!.validate()) {
-                  final loginData =
-                      LoginModel(phone: phoneKey.text, password: passKey.text);
+                  final loginData = LoginModel(
+                      username: userNameKey.text, password: passKey.text);
                   await authController.login(loginModel: loginData);
                 }
               },

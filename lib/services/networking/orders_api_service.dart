@@ -30,7 +30,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     final response = await clientController.client.get(uri, headers: {
       'Content-type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': token,
+      'Authorization': 'Bearer $token',
       'Connection': 'keep-alive',
     });
     debugPrint('1');
@@ -56,7 +56,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     final response = await clientController.client.get(uri, headers: {
       'Content-type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': token,
+      'Authorization': 'Bearer $token',
       'Connection': 'keep-alive',
     });
     debugPrint('1');

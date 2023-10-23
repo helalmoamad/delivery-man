@@ -7,7 +7,7 @@ class SnackBarWidgets {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color.fromARGB(255, 158, 15, 5),
         colorText: Colors.white,
-        duration: const Duration(seconds: 1),
+        duration: const Duration(seconds: 2),
         icon: const Icon(Icons.error, color: Colors.white));
   }
 
@@ -18,7 +18,7 @@ class SnackBarWidgets {
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.green,
       colorText: Colors.white,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
       icon: const Icon(Icons.check_circle, color: Colors.white),
     );
   }

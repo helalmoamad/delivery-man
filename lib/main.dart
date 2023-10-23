@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
@@ -31,6 +33,15 @@ MaterialColor getMaterialColor(Color color) {
   return MaterialColor(color.value, shades);
 }
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
@@ -38,6 +49,8 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: AppColors.statusBarColor,
   ));
+
+  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 

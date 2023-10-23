@@ -7,4 +7,4 @@ class OfflineFailure extends Failure {}
 class ServerFailure extends Failure {}
 
 // user insert wrong data in auth methods login or signup
-// class WrongDataFailure extends Failure {}
+class WrongDataFailure extends Failure {}

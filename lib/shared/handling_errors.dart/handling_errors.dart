@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 import '../constants/failure_messages.dart';
 import '../errors/failures.dart';
 import '../widgets/circle_indecator_widget.dart';
@@ -9,31 +10,32 @@ class HandlingErrors {
   static void networkErrorrHandling(
       {required Failure failure,
       required Function() hideCircleIndicator,
-      required Function() showNoInternetPage}) {
+      required Function() showNoInternetPage,
+      int seconds = 2}) {
     switch (failure.runtimeType) {
       case ServerFailure:
         hideCircleIndicator();
         showNoInternetPage();
         SnackBarWidgets.showFailureSnackBar(
-            'Server Error', serverFailureMessage);
+            'Server Error'.tr, AppFailureMessages.serverFailureMessage);
         break;
       case OfflineFailure:
         hideCircleIndicator();
         showNoInternetPage();
         SnackBarWidgets.showFailureSnackBar(
-            'No Connection', offlineFailureMessage);
+            'No Connection'.tr, AppFailureMessages.offlineFailureMessage);
         break;
-      // case WrongDataFailure:
-      //   hideCircleIndicator();
-      //   showNoInternetPage();
-      //   SnackBarWidgets.showFailureSnackBar(
-      //       'Wrong Data', wrongDataFailureMessage);
-      //   break;
+      case WrongDataFailure:
+        hideCircleIndicator();
+        showNoInternetPage();
+        SnackBarWidgets.showFailureSnackBar(
+            'Wrong Data'.tr, AppFailureMessages.wrongDataFailureMessage);
+        break;
       default:
         hideCircleIndicator();
         showNoInternetPage();
         SnackBarWidgets.showFailureSnackBar(
-            'Unexpected error', unExpectedFailureMessage);
+            'Unexpected error'.tr, AppFailureMessages.unExpectedFailureMessage);
         break;
     }
   }

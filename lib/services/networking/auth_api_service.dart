@@ -18,7 +18,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
   @override
   Future<UserDataModel> postLoginApi(LoginModel loginModel) async {
     final uri = Uri.parse(
-        '${ApiConstants.baseUrl}/${ApiConstants.version}/auth/phone/login');
+        '${ApiConstants.baseUrl2}/api/${ApiConstants.version2}/users/login');
     final body = loginModel.toJson();
     final response = await clientController.client
         .post(uri, body: json.encode(body), headers: {
@@ -31,11 +31,17 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       debugPrint('2');
       final data = jsonDecode(response.body);
-      debugPrint('logIn Success');
-      final resposeData = UserDataModel.fromJson(data['data']);
-      return resposeData;
+      if (data['isSuccessful'] == true) {
+        debugPrint('logIn Success');
+        final UserDataModel responseData = UserDataModel.fromJson(data['data']);
+        return responseData;
+      } else {
+        debugPrint('3');
+        debugPrint('wrong entry data');
+        throw WrongDataException();
+      }
     } else {
-      debugPrint('3');
+      debugPrint('4');
       debugPrint('logIn Failed');
       throw ServerException();
     }

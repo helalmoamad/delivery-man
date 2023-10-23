@@ -24,8 +24,8 @@ class NoConnectionWidget extends StatelessWidget {
             width: 250,
           ),
           //////////
-          const TextWidget(
-              text: 'No Connection\nTry again',
+          TextWidget(
+              text: '${'No Connection'.tr}\n${'Try Again'.tr}',
               color: AppColors.blackDark,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -37,7 +37,7 @@ class NoConnectionWidget extends StatelessWidget {
             child: AppButton.normalButton(
                 height: 50,
                 width: double.infinity,
-                title: 'Try Again',
+                title: 'Try Again'.tr,
                 backgroundColor: AppColors.primaryDark,
                 shadow: false,
                 titleColor: AppColors.white,

@@ -1,8 +1,8 @@
 import 'package:delivery_man_app/controllers/QR/qr_controller.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
+import 'package:delivery_man_app/shared/widgets/circle_indecator_widget.dart';
 import 'package:delivery_man_app/shared/widgets/custom_app_bar.dart';
-import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -23,12 +23,13 @@ class ScanQRPage extends StatelessWidget {
                 children: [
                   buildQRView(context),
                   /////////////////////////////////
-                  buildResult(),
-                  /////////////////////
-
                   qrController.qrViewController == null
                       ? Container()
-                      : buildControlButtons()
+                      : buildControlButtons(),
+                  /////////////////////////////////
+                  qrController.isCircleShown
+                      ? const CircleIndicatorWidget()
+                      : Container(),
                 ],
               );
             })));
@@ -44,26 +45,6 @@ class ScanQRPage extends StatelessWidget {
           borderRadius: 10,
           cutOutSize: ScreenSizeUtils.getWidthInPercent(context, 80)),
       onQRViewCreated: qrController.onQRViewCreated,
-    );
-  }
-
-  Widget buildResult() {
-    return Positioned(
-      bottom: 30,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-            color: AppColors.grey, borderRadius: BorderRadius.circular(8)),
-        child: TextWidget(
-            text: qrController.barcode != null
-                ? '${'Result'.tr}: ${qrController.barcode!.code}'
-                : 'Scan a code'.tr,
-            color: AppColors.white,
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-            textAlign: TextAlign.start,
-            maxline: 3),
-      ),
     );
   }
 

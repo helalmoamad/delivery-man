@@ -22,9 +22,8 @@ class CustomDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: [
-          const UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.red,
+          UserAccountsDrawerHeader(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
                   "assets/pictures/drawer_pg.png",
@@ -33,20 +32,20 @@ class CustomDrawer extends StatelessWidget {
               ),
             ),
             accountName: TextWidget(
-                text: 'Name Name',
+                text: GlobalFunctions.getName(),
                 color: AppColors.white,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 textAlign: TextAlign.start,
                 maxline: 1),
             accountEmail: TextWidget(
-                text: 'test@gmail.com',
+                text: GlobalFunctions.getEmail(),
                 color: AppColors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.normal,
                 textAlign: TextAlign.start,
                 maxline: 1),
-            currentAccountPicture: CircleAvatar(
+            currentAccountPicture: const CircleAvatar(
               backgroundImage: AssetImage("assets/pictures/logo.png"),
             ),
           ),

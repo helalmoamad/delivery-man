@@ -10,7 +10,7 @@ class GlobalFunctions {
   }
 
   static String getLanLocal() {
-    String lanLocal = GetStorage().read<String>('lang') ?? LangConstants.ene;
+    String lanLocal = GetStorage().read<String>('lang') ?? LangConstants.ara;
     return lanLocal;
   }
 
@@ -32,6 +32,33 @@ class GlobalFunctions {
     bool isLoggedIn = GetStorage().read<bool>('isLoggedIn') ?? false;
     debugPrint('isLoggedIn :  ${isLoggedIn.toString()}');
     return isLoggedIn;
+  }
+
+  static Future<void> setMobilePhone({required String mobilePhone}) async {
+    await GetStorage().write('mobilePhone', mobilePhone);
+  }
+
+  static String getMobilePhone() {
+    String? mobilePhone = GetStorage().read<String>('mobilePhone') ?? 'Empty';
+    return mobilePhone;
+  }
+
+  static Future<void> setName({required String name}) async {
+    await GetStorage().write('name', name);
+  }
+
+  static String getName() {
+    String? name = GetStorage().read<String>('name') ?? 'Empty';
+    return name;
+  }
+
+  static Future<void> setEmail({required String email}) async {
+    await GetStorage().write('email', email);
+  }
+
+  static String getEmail() {
+    String? email = GetStorage().read<String>('email') ?? 'Empty';
+    return email;
   }
 
   static String orderStatusText({required String inputText}) {
