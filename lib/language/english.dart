@@ -82,4 +82,9 @@ const Map<String, String> en = {
   'LOGIN': 'LOGIN',
   'Assign To Vehicle Succeeded': 'Assign To Vehicle Succeeded',
   'Try Again': 'Try Again',
+  'Assign to vehicle': 'Assign to vehicle',
+  'Assign to vehicle to be able to enter the app':
+      'Assign to vehicle to be able to enter the app',
+  'UnAssign': 'UnAssign',
+  'UnAssign To Vehicle Succeeded': 'UnAssign To Vehicle Succeeded',
 };

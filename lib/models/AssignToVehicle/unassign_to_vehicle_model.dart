@@ -1,4 +1,4 @@
-class AssignToVehicleModel {
+class UnAssignToVehicleModel {
   final bool? isSuccessful;
   final bool? hasContent;
   final int? code;
@@ -6,7 +6,7 @@ class AssignToVehicleModel {
   final dynamic detailedError;
   final Data? data;
 
-  AssignToVehicleModel({
+  UnAssignToVehicleModel({
     this.isSuccessful,
     this.hasContent,
     this.code,
@@ -15,8 +15,8 @@ class AssignToVehicleModel {
     this.data,
   });
 
-  factory AssignToVehicleModel.fromJson(Map<String, dynamic> json) =>
-      AssignToVehicleModel(
+  factory UnAssignToVehicleModel.fromJson(Map<String, dynamic> json) =>
+      UnAssignToVehicleModel(
         isSuccessful: json["isSuccessful"],
         hasContent: json["hasContent"],
         code: json["code"],
@@ -33,8 +33,9 @@ class Data {
   final String? name;
   final dynamic photoPath;
   final String? email;
-  final int? assignToUserId;
-  final Data? assignedVehicle;
+  final dynamic assignToUserId;
+  final dynamic assignedVehicle;
+  final dynamic currentJourney;
 
   Data({
     this.id,
@@ -45,6 +46,7 @@ class Data {
     this.email,
     this.assignToUserId,
     this.assignedVehicle,
+    this.currentJourney,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -52,11 +54,10 @@ class Data {
         mobilePhone: json["mobile_phone"],
         username: json["username"],
         name: json["name"],
-        photoPath: json["photo_path"] ?? '',
+        photoPath: json["photo_path"],
         email: json["email"],
         assignToUserId: json["assign_to_user_id"],
-        assignedVehicle: json["assigned_vehicle"] == null
-            ? null
-            : Data.fromJson(json["assigned_vehicle"]),
+        assignedVehicle: json["assigned_vehicle"],
+        currentJourney: json["current_journey"],
       );
 }

@@ -1,9 +1,11 @@
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
-
 import '../constants/color_constants.dart';
 
-AppBar customAppBar({required String title, required Widget button}) {
+AppBar customAppBar({
+  required String title,
+  required Widget button,
+}) {
   return AppBar(
     elevation: 5,
     shadowColor: AppColors.lightGray,
@@ -22,8 +24,8 @@ AppBar customAppBar({required String title, required Widget button}) {
               textAlign: TextAlign.start,
               maxline: 1),
         ),
-        ////////
-        Expanded(flex: 2, child: button)
+        ////////////////////////////////
+        Expanded(flex: 4, child: button)
       ],
     ),
     // actions: actions,

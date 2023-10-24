@@ -12,7 +12,7 @@ class AssignToVehicleRepository {
   AssignToVehicleRepository(
       {required this.assignToVehicleService, required this.networkInfo});
 
-  Future<Either<Failure, AssignToVehicleModel>> postAssignToVehicle(
+  Future<Either<Failure, AssignToVehicleModel>> assignToVehicle(
       {required String token, required int vehicleId}) async {
     if (await networkInfo.isConnected) {
       try {

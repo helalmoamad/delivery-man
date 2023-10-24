@@ -1,8 +1,9 @@
+import 'package:delivery_man_app/controllers/Orders/orders_bindings.dart';
 import 'package:delivery_man_app/controllers/QR/qr_binding.dart';
 import 'package:delivery_man_app/views/DrawerPages/scan_qr_page.dart';
 import 'package:get/get.dart';
 import '../controllers/Auth/auth_binding.dart';
-import '../controllers/Orders/orders_bindings.dart';
+
 import '../views/Auth/login_page.dart';
 import '../views/OrderDetails/orders_details_page.dart';
 import '../views/Orders/orders_page.dart';

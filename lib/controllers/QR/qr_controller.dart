@@ -1,3 +1,4 @@
+import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/assign_to_vehicle_model.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import '../../shared/handling_errors.dart/handling_errors.dart';
 import '../../shared/widgets/snackbar_widgets.dart';
 
 class QRController extends GetxController {
+  final OrdersController ordersController = Get.find<OrdersController>();
   final qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? qrViewController;
   Barcode? barcode;
@@ -83,7 +85,19 @@ class QRController extends GetxController {
       assignToVehicleData = getAssignToVehicleData;
       hideCircleIndicator();
       SnackBarWidgets.showSuccessSnackBar('Assign To Vehicle Succeeded'.tr, '');
+
+      Future.wait([
+        GlobalFunctions.setAssignToUserId(
+            assignToUserId:
+                assignToVehicleData.data!.assignedVehicle!.assignToUserId),
+        GlobalFunctions.setAssignedVehicleId(
+            assignedVehicleId: assignToVehicleData.data!.assignedVehicle!.id!),
+        GlobalFunctions.setAssignedVehicleName(
+            assignedVehicleName:
+                assignToVehicleData.data!.assignedVehicle!.name!),
+      ]);
       Get.close(1);
+      ordersController.update();
     });
   }
 }

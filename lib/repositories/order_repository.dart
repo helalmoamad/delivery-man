@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import '../models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import '../models/Orders/list_order_model.dart';
 import '../services/networking/orders_api_service.dart';
 import '../shared/errors/exceptions.dart';
@@ -36,6 +37,21 @@ class OrdersRepository {
         final orderStatusDataResponse =
             await ordersApiService.getOrderStatusDataApi(token);
         return Right(orderStatusDataResponse);
+      } on ServerException {
+        return left(ServerFailure());
+      }
+    } else {
+      return Left(OfflineFailure());
+    }
+  }
+
+  Future<Either<Failure, UnAssignToVehicleModel>> unAssignToVehicle(
+      {required String token, required int vehicleId}) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final dataResponse = await ordersApiService.postUnAssignToVehicleApi(
+            token: token, vehicleId: vehicleId);
+        return Right(dataResponse);
       } on ServerException {
         return left(ServerFailure());
       }

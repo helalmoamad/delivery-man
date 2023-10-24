@@ -1,8 +1,8 @@
+import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controllers/Orders/orders_controller.dart';
 import '../../shared/widgets/app_dialogs.dart';
 import '../../shared/widgets/custom_app_bar.dart';
 import '../../shared/widgets/custom_text_field.dart';
@@ -32,7 +32,6 @@ class OrdersDetailsPage extends StatelessWidget {
                               ? AppColors.darkGrey
                               : AppColors.secondary,
                           onPress: () async {
-                            print(ordersController.audioPath);
                             if (ordersController.isRecordPlaying) {
                               await ordersController.stopPlayingRecording();
                               ordersController.changeIsPlaying(false);

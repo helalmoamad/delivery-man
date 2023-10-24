@@ -24,6 +24,15 @@ class UserModel {
         data:
             json["data"] == null ? null : UserDataModel.fromJson(json["data"]),
       );
+
+  Map<String, dynamic> toJson() => {
+        "isSuccessful": isSuccessful,
+        "hasContent": hasContent,
+        "code": code,
+        "message": message,
+        "detailed_error": detailedError,
+        "data": data?.toJson(),
+      };
 }
 
 class UserDataModel {
@@ -33,8 +42,9 @@ class UserDataModel {
   final String? name;
   final dynamic photoPath;
   final String? email;
-  final int? assignToUserId;
+  final dynamic assignToUserId;
   final String? accessToken;
+  final dynamic assignedVehicle;
 
   UserDataModel({
     this.id,
@@ -45,6 +55,7 @@ class UserDataModel {
     this.email,
     this.assignToUserId,
     this.accessToken,
+    this.assignedVehicle,
   });
 
   factory UserDataModel.fromJson(Map<String, dynamic> json) => UserDataModel(
@@ -52,9 +63,22 @@ class UserDataModel {
         mobilePhone: json["mobile_phone"],
         username: json["username"],
         name: json["name"],
-        photoPath: json["photo_path"] ?? '',
+        photoPath: json["photo_path"],
         email: json["email"],
         assignToUserId: json["assign_to_user_id"],
         accessToken: json["access_token"],
+        assignedVehicle: json["assigned_vehicle"],
       );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "mobile_phone": mobilePhone,
+        "username": username,
+        "name": name,
+        "photo_path": photoPath,
+        "email": email,
+        "assign_to_user_id": assignToUserId,
+        "access_token": accessToken,
+        "assigned_vehicle": assignedVehicle,
+      };
 }

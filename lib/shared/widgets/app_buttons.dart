@@ -30,22 +30,16 @@ class AppButton {
               : null,
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
           child: TextWidget(
               text: title,
               color: titleColor,
               fontSize: titleSize,
               fontWeight: FontWeight.bold,
-              textAlign: TextAlign.start,
-              maxline: 1),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              maxline: 2),
         ),
-        // Text(
-        //   title,
-        //   style: TextStyle(
-        //     color: titleColor,
-        //     fontWeight: FontWeight.bold,
-        //   ),
-        // ),
       ),
     );
   }

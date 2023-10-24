@@ -61,6 +61,37 @@ class GlobalFunctions {
     return email;
   }
 
+  static Future<void> setAssignToUserId(
+      {required dynamic assignToUserId}) async {
+    await GetStorage().write('assignToUserId', assignToUserId);
+  }
+
+  static int getAssignToUserId() {
+    int? assignToUserId = GetStorage().read<int>('assignToUserId') ?? -1;
+    return assignToUserId;
+  }
+
+  static Future<void> setAssignedVehicleId(
+      {required int assignedVehicleId}) async {
+    await GetStorage().write('assignedVehicleId', assignedVehicleId);
+  }
+
+  static int getAssignedVehicleId() {
+    int? assignedVehicleId = GetStorage().read<int>('assignedVehicleId');
+    return assignedVehicleId!;
+  }
+
+  static Future<void> setAssignedVehicleName(
+      {required String assignedVehicleName}) async {
+    await GetStorage().write('assignedVehicleName', assignedVehicleName);
+  }
+
+  static String getAssignedVehicleName() {
+    String? assignedVehicleName =
+        GetStorage().read<String>('assignedVehicleName');
+    return assignedVehicleName!;
+  }
+
   static String orderStatusText({required String inputText}) {
     String text = '';
 

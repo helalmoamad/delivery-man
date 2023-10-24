@@ -81,4 +81,9 @@ const Map<String, String> ar = {
   'LOGIN': 'تسجيل الدخول',
   'Assign To Vehicle Succeeded': 'تم الربط مع عربة بنجاح',
   'Try Again': 'حاول لاحقاً',
+  'Assign to vehicle': 'الربط مع عربة',
+  'Assign to vehicle to be able to enter the app':
+      'اربط مع عربة لتتمكن من الدخول للتطبيق',
+  'UnAssign': 'إلغاء ربط',
+  'UnAssign To Vehicle Succeeded': 'تم إلغاء الربط مع العربة بنجاح',
 };

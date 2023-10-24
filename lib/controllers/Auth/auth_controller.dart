@@ -40,16 +40,6 @@ class AuthController extends GetxController {
     update();
   }
 
-///////////////////////////////////
-  // void showNoInternetPage() {
-  //   isNoInternetConnection = true;
-  //   update();
-  // }
-
-  // void hideNoInternetPage() {
-  //   isNoInternetConnection = false;
-  //   update();
-  // }
 /////////////////////////////
 
   Future<void> login({required LoginModel loginModel}) async {
@@ -68,6 +58,8 @@ class AuthController extends GetxController {
         GlobalFunctions.setName(name: userData.name!),
         GlobalFunctions.setEmail(email: userData.email!),
         GlobalFunctions.setMobilePhone(mobilePhone: userData.mobilePhone!),
+        GlobalFunctions.setAssignToUserId(
+            assignToUserId: userData.assignToUserId),
         GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
       ]);
       hideCircleIndicator();

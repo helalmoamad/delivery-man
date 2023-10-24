@@ -10,7 +10,7 @@ class AssignToVehicleProvider {
 
   Future<Either<Failure, AssignToVehicleModel>> call(
       {required String token, required int vehicleId}) async {
-    return await assignToVehicleRepository.postAssignToVehicle(
+    return await assignToVehicleRepository.assignToVehicle(
         token: token, vehicleId: vehicleId);
   }
 }

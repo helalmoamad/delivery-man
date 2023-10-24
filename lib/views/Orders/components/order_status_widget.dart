@@ -1,6 +1,6 @@
+import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
-import '../../../controllers/Orders/orders_controller.dart';
 import '../../../shared/constants/color_constants.dart';
 import '../../../shared/widgets/text_widget.dart';
 

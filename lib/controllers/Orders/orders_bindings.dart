@@ -1,3 +1,4 @@
+import 'package:delivery_man_app/providers/Orders_providers.dart/unassign_to_vehicle_provider.dart';
 import 'package:get/get.dart';
 import '../../providers/Orders_providers.dart/get_order_list_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_status_data.dart';
@@ -21,6 +22,10 @@ class OrdersBinding implements Bindings {
 
     Get.lazyPut<GetOrderStatusDataProvider>(
       () => GetOrderStatusDataProvider(Get.find()),
+    );
+
+    Get.lazyPut<UnAssignToVehicleProvider>(
+      () => UnAssignToVehicleProvider(Get.find()),
     );
   }
 }

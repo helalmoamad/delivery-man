@@ -1,4 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
+import 'package:delivery_man_app/providers/Orders_providers.dart/unassign_to_vehicle_provider.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,6 +9,7 @@ import '../../models/Orders/list_order_model.dart';
 import '../../providers/Orders_providers.dart/get_order_list_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_status_data.dart';
 import '../../shared/handling_errors.dart/handling_errors.dart';
+import '../../shared/widgets/snackbar_widgets.dart';
 
 class OrdersController extends GetxController {
   bool isGetOrdersNoInternetConnection = false;
@@ -15,8 +18,13 @@ class OrdersController extends GetxController {
   bool isGetOrderStatusCircleShown = false;
   bool isGetOrderStatusNoInternetConnection = false;
 
+  bool isAnAssignedCircleShown = false;
+
   late ListOrderModel ordersData;
   late List<dynamic> orderStatusData;
+
+  late UnAssignToVehicleProvider unAssignToVehicleProvider = Get.find();
+  late UnAssignToVehicleModel unAssignToVehicleData;
 
   int orderIndex = 0;
 
@@ -29,7 +37,7 @@ class OrdersController extends GetxController {
   GetOrderStatusDataProvider getOrderStatusDataProvider =
       Get.find<GetOrderStatusDataProvider>();
 
-  final ScrollController scrollController = ScrollController();
+  late ScrollController scrollController;
   int paginationOffset = 2;
   bool noMoreItems = false;
 
@@ -85,6 +93,17 @@ class OrdersController extends GetxController {
     update();
   }
 
+  // ///////////////////////////
+  void showUnAssignedCircleIndicator() {
+    isAnAssignedCircleShown = true;
+    update();
+  }
+
+  void hideUnAssignedCircleIndicator() {
+    isAnAssignedCircleShown = false;
+    update();
+  }
+
   void changeDeliveringButton(bool isStartDelivery) {
     isStartDeliveryButton = isStartDelivery;
     update();
@@ -104,6 +123,7 @@ class OrdersController extends GetxController {
   void onInit() async {
     super.onInit();
     debugPrint('Order Controller Init');
+    scrollController = ScrollController();
     String token = GlobalFunctions.getFcmToken();
     await getOrderStatusData(token: token);
 
@@ -259,6 +279,28 @@ class OrdersController extends GetxController {
       hideGetOrderStatusCircleIndicator();
       hideGetOrderStatusNoInternetPage();
       await getListOrderData(token: token, status: orderStatus, offset: 1);
+    });
+  }
+
+  Future<void> unAssignToVehicle(
+      {required String token, required int vehicleId}) async {
+    showUnAssignedCircleIndicator();
+    final failureOrAssignToVehicle = await unAssignToVehicleProvider.call(
+        token: token, vehicleId: vehicleId);
+
+    failureOrAssignToVehicle.fold((failure) {
+      HandlingErrors.networkErrorrHandling(
+          failure: failure,
+          hideCircleIndicator: hideUnAssignedCircleIndicator,
+          showNoInternetPage: () {});
+    }, (getUnAssignToVehicleData) async {
+      unAssignToVehicleData = getUnAssignToVehicleData;
+      hideUnAssignedCircleIndicator();
+      SnackBarWidgets.showSuccessSnackBar(
+          'UnAssign To Vehicle Succeeded'.tr, '');
+      await GlobalFunctions.setAssignToUserId(
+          assignToUserId: unAssignToVehicleData.data!.assignToUserId);
+      update();
     });
   }
 }

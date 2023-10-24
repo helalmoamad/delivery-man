@@ -1,8 +1,8 @@
+import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/views/OrderDetails/components/product_widget.dart';
 import 'package:delivery_man_app/views/OrderDetails/components/title_section_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../controllers/Orders/orders_controller.dart';
 import '../../../models/Orders/list_order_model.dart';
 import '../../../shared/constants/color_constants.dart';
 import 'order_details_widget.dart';
