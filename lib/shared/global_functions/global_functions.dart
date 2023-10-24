@@ -72,7 +72,7 @@ class GlobalFunctions {
   }
 
   static Future<void> setAssignedVehicleId(
-      {required int assignedVehicleId}) async {
+      {required dynamic assignedVehicleId}) async {
     await GetStorage().write('assignedVehicleId', assignedVehicleId);
   }
 
@@ -82,7 +82,7 @@ class GlobalFunctions {
   }
 
   static Future<void> setAssignedVehicleName(
-      {required String assignedVehicleName}) async {
+      {required dynamic assignedVehicleName}) async {
     await GetStorage().write('assignedVehicleName', assignedVehicleName);
   }
 

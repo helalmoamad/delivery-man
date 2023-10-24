@@ -59,7 +59,17 @@ class AuthController extends GetxController {
         GlobalFunctions.setEmail(email: userData.email!),
         GlobalFunctions.setMobilePhone(mobilePhone: userData.mobilePhone!),
         GlobalFunctions.setAssignToUserId(
-            assignToUserId: userData.assignToUserId),
+            assignToUserId: userData.assignedVehicle == null
+                ? null
+                : userData.assignedVehicle!.assignToUserId),
+        GlobalFunctions.setAssignedVehicleId(
+            assignedVehicleId: userData.assignedVehicle == null
+                ? null
+                : userData.assignedVehicle!.id!),
+        GlobalFunctions.setAssignedVehicleName(
+            assignedVehicleName: userData.assignedVehicle == null
+                ? null
+                : userData.assignedVehicle!.name!),
         GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
       ]);
       hideCircleIndicator();
