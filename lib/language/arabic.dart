@@ -86,4 +86,8 @@ const Map<String, String> ar = {
       'اربط مع عربة لتتمكن من الدخول للتطبيق',
   'UnAssign': 'إلغاء ربط',
   'UnAssign To Vehicle Succeeded': 'تم إلغاء الربط مع العربة بنجاح',
+  'You cant assign to this vehicle now.':
+      'لا تستطيع الربط مع هذه العربة حالياً',
+  'MyOrders': 'طلباتي',
+  'Assign Order Succeeded': 'تم إسناد الطلب بنجاح',
 };

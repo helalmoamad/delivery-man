@@ -31,6 +31,12 @@ class HandlingErrors {
         SnackBarWidgets.showFailureSnackBar(
             'Wrong Data'.tr, AppFailureMessages.wrongDataFailureMessage);
         break;
+      case CantAssignToVehicleFailure:
+        hideCircleIndicator();
+        showNoInternetPage();
+        SnackBarWidgets.showFailureSnackBar(
+            AppFailureMessages.cantAssignToVehicleMessage, '');
+        break;
       default:
         hideCircleIndicator();
         showNoInternetPage();

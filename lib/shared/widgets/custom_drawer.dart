@@ -1,3 +1,5 @@
+import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
@@ -12,6 +14,7 @@ import 'app_dialogs.dart';
 
 class CustomDrawer extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
+  final OrdersController ordersController = Get.find<OrdersController>();
   CustomDrawer({
     super.key,
   });
@@ -50,17 +53,19 @@ class CustomDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(
-              Icons.home,
+              Icons.archive_rounded,
               color: AppColors.primaryDark,
             ),
-            title: const TextWidget(
-                text: 'Home',
+            title: TextWidget(
+                text: 'MyOrders'.tr,
                 color: AppColors.blackDark,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 textAlign: TextAlign.start,
                 maxline: 1),
-            onTap: () {},
+            onTap: () {
+              Get.toNamed(Routes.myOrderssPage);
+            },
           ),
           ListTile(
             leading: const Icon(

@@ -8,3 +8,5 @@ class ServerFailure extends Failure {}
 
 // user insert wrong data in auth methods login or signup
 class WrongDataFailure extends Failure {}
+
+class CantAssignToVehicleFailure extends Failure {}

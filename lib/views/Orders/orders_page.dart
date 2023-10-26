@@ -25,40 +25,25 @@ class OrdersPage extends StatelessWidget {
           appBar: customAppBar(
               title: 'Orders'.tr,
               button: GetBuilder<OrdersController>(builder: (_) {
-                return
-                    // InkWell(
-                    //   onTap: () {
-                    //     print(GlobalFunctions.getAssignToUserId());
-                    //   },
-                    //   child: Container(
-                    //     width: 30,
-                    //     height: 40,
-                    //     color: GlobalFunctions.getAssignToUserId() == -1
-                    //         ? Colors.red
-                    //         : Colors.amber,
-                    //   ),
-                    // );
-                    AppButton.normalButton(
-                        title: GlobalFunctions.getAssignToUserId() == -1
-                            ? 'Assign to vehicle'.tr
-                            : '${'UnAssign'.tr} ${GlobalFunctions.getAssignToUserId() != -1 ? GlobalFunctions.getAssignedVehicleName() : ''}',
-                        height: 40,
-                        titleSize: 13,
-                        backgroundColor:
-                            GlobalFunctions.getAssignToUserId() == -1
-                                ? AppColors.secondary
-                                : AppColors.darkGrey,
-                        onPress: () async {
-                          if (GlobalFunctions.getAssignToUserId() == -1) {
-                            Get.toNamed(Routes.scanQRPage);
-                          } else {
-                            // print(GlobalFunctions.getAssignToUserId());
-                            await ordersController.unAssignToVehicle(
-                                token: GlobalFunctions.getFcmToken(),
-                                vehicleId:
-                                    GlobalFunctions.getAssignedVehicleId());
-                          }
-                        });
+                return AppButton.normalButton(
+                    title: GlobalFunctions.getAssignToUserId() == -1
+                        ? 'Assign to vehicle'.tr
+                        : '${'UnAssign'.tr} ${GlobalFunctions.getAssignToUserId() != -1 ? GlobalFunctions.getAssignedVehicleName() : ''}',
+                    height: 40,
+                    titleSize: 13,
+                    backgroundColor: GlobalFunctions.getAssignToUserId() == -1
+                        ? AppColors.secondary
+                        : AppColors.darkGrey,
+                    onPress: () async {
+                      if (GlobalFunctions.getAssignToUserId() == -1) {
+                        Get.toNamed(Routes.scanQRPage);
+                      } else {
+                        // print(GlobalFunctions.getAssignToUserId());
+                        await ordersController.unAssignToVehicle(
+                            token: GlobalFunctions.getFcmToken(),
+                            vehicleId: GlobalFunctions.getAssignedVehicleId());
+                      }
+                    });
               })),
           drawer: CustomDrawer(),
           body: GetBuilder<OrdersController>(builder: (_) {
@@ -68,7 +53,8 @@ class OrdersPage extends StatelessWidget {
                   ordersController.isGetOrderStatusNoInternetConnection,
               onTapTry: () async {
                 String token = GlobalFunctions.getFcmToken();
-                await ordersController.getOrderStatusData(token: token);
+                await ordersController.getOrderStatusData(
+                    token: token, isForAllOrders: true);
               },
               page: Stack(
                 children: [
@@ -77,7 +63,8 @@ class OrdersPage extends StatelessWidget {
                     onRefresh: () async {
                       debugPrint('refresh');
                       String token = GlobalFunctions.getFcmToken();
-                      await ordersController.getOrderStatusData(token: token);
+                      await ordersController.getOrderStatusData(
+                          token: token, isForAllOrders: true);
                     },
                     child: Column(
                       children: [

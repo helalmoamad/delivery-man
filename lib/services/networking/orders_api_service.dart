@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
+import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import 'package:flutter/material.dart';
 import '../../controllers/Client/client_controller.dart';
 import '../../models/Orders/list_order_model.dart';
@@ -16,6 +17,9 @@ abstract class OrdersApiService {
 
   Future<UnAssignToVehicleModel> postUnAssignToVehicleApi(
       {required String token, required int vehicleId});
+
+  Future<AssignOrderToMeDataModel> postAssignOrderToMeApi(
+      {required String token, required int orderId});
 }
 
 class OrdersApiServiceImpWithHttp implements OrdersApiService {
@@ -56,7 +60,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   Future<List<dynamic>> getOrderStatusDataApi(String token) async {
     clientController.reOpenClient();
     final uri = Uri.parse(
-        '${ApiConstants.baseUrl}/${ApiConstants.newVersion}/delivery_man/order_status');
+        '${ApiConstants.baseUrl2}/api/${ApiConstants.version2}/orders/order_statuses');
     final response = await clientController.client.get(uri, headers: {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -68,7 +72,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       debugPrint('2');
       final data = jsonDecode(response.body);
-      print(data);
+      debugPrint(data.toString());
       debugPrint('get Order Status data success');
 
       return data;
@@ -108,6 +112,39 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     } else {
       debugPrint('3');
       debugPrint('UnAssignToVehicleModel Failed');
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<AssignOrderToMeDataModel> postAssignOrderToMeApi(
+      {required String token, required int orderId}) async {
+    final uri = Uri.parse(
+        '${ApiConstants.baseUrl2}/api/${ApiConstants.version2}/orders/assign_to_me');
+    final body = {
+      'order_id': orderId,
+    };
+
+    final response = await clientController.client
+        .post(uri, body: json.encode(body), headers: {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+      'Connection': 'keep-alive',
+    });
+    debugPrint('1');
+    debugPrint(response.statusCode.toString());
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      debugPrint('2');
+      final data = jsonDecode(response.body);
+
+      debugPrint('AssignOrderToMe Success');
+      final AssignOrderToMeDataModel responseData =
+          AssignOrderToMeDataModel.fromJson(data);
+      return responseData;
+    } else {
+      debugPrint('3');
+      debugPrint('AssignOrderToMe Failed');
       throw ServerException();
     }
   }

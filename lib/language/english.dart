@@ -87,4 +87,8 @@ const Map<String, String> en = {
       'Assign to vehicle to be able to enter the app',
   'UnAssign': 'UnAssign',
   'UnAssign To Vehicle Succeeded': 'UnAssign To Vehicle Succeeded',
+  'You cant assign to this vehicle now.':
+      'You cant assign to this vehicle now.',
+  'MyOrders': 'MyOrders',
+  'Assign Order Succeeded': 'Assign Order Succeeded',
 };

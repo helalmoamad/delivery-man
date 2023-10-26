@@ -12,7 +12,6 @@ import '../../shared/widgets/snackbar_widgets.dart';
 
 class AuthController extends GetxController {
   bool isCircleShown = false;
-  // bool isNoInternetConnection = false;
   bool isLogin = false;
   bool isObscure = true;
 

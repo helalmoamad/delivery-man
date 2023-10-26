@@ -19,8 +19,6 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    // token = GetStorage().read('token') ?? '';
-    // lanLocal = GetStorage().read('lang') ?? ene;
     Timer(const Duration(seconds: 5), () {
       goToHomeScreen();
     });

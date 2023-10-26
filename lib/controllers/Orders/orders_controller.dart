@@ -1,5 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
+import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
+import 'package:delivery_man_app/providers/Orders_providers.dart/assign_order_tome_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/unassign_to_vehicle_provider.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
@@ -20,11 +22,16 @@ class OrdersController extends GetxController {
 
   bool isAnAssignedCircleShown = false;
 
+  bool isAssigneOrderCircleShown = false;
+
   late ListOrderModel ordersData;
   late List<dynamic> orderStatusData;
 
   late UnAssignToVehicleProvider unAssignToVehicleProvider = Get.find();
   late UnAssignToVehicleModel unAssignToVehicleData;
+
+  late AssignOrderToMeProvider assignOrderToMeProvider = Get.find();
+  late AssignOrderToMeDataModel assignOrderToMeData;
 
   int orderIndex = 0;
 
@@ -93,6 +100,8 @@ class OrdersController extends GetxController {
     update();
   }
 
+///////////////////////////////////
+
   // ///////////////////////////
   void showUnAssignedCircleIndicator() {
     isAnAssignedCircleShown = true;
@@ -101,6 +110,17 @@ class OrdersController extends GetxController {
 
   void hideUnAssignedCircleIndicator() {
     isAnAssignedCircleShown = false;
+    update();
+  }
+
+  // ///////////////////////////
+  void showAssignOrderCircleIndicator() {
+    isAssigneOrderCircleShown = true;
+    update();
+  }
+
+  void hideAssignOrderCircleIndicator() {
+    isAssigneOrderCircleShown = false;
     update();
   }
 
@@ -125,7 +145,7 @@ class OrdersController extends GetxController {
     debugPrint('Order Controller Init');
     scrollController = ScrollController();
     String token = GlobalFunctions.getFcmToken();
-    await getOrderStatusData(token: token);
+    await getOrderStatusData(token: token, isForAllOrders: true);
 
     scrollController.addListener(() async {
       if (scrollController.position.maxScrollExtent ==
@@ -261,9 +281,8 @@ class OrdersController extends GetxController {
   }
 
   ///////////////////////////////////
-  Future<void> getOrderStatusData({
-    required String token,
-  }) async {
+  Future<void> getOrderStatusData(
+      {required String token, required bool isForAllOrders}) async {
     showGetOrderStatusCircleIndicator();
     final failureOrGetOrderStatusData =
         await getOrderStatusDataProvider.call(token: token);
@@ -278,7 +297,9 @@ class OrdersController extends GetxController {
       selectedOrderStatus = 0;
       hideGetOrderStatusCircleIndicator();
       hideGetOrderStatusNoInternetPage();
-      await getListOrderData(token: token, status: orderStatus, offset: 1);
+      isForAllOrders
+          ? await getListOrderData(token: token, status: orderStatus, offset: 1)
+          : null;
     });
   }
 
@@ -300,6 +321,27 @@ class OrdersController extends GetxController {
           'UnAssign To Vehicle Succeeded'.tr, '');
       await GlobalFunctions.setAssignToUserId(
           assignToUserId: unAssignToVehicleData.data!.assignToUserId);
+      update();
+    });
+  }
+
+  Future<void> assignOrderToMe(
+      {required String token, required int orderId}) async {
+    showAssignOrderCircleIndicator();
+    final failureOrAssignToVehicle =
+        await assignOrderToMeProvider.call(token: token, orderId: orderId);
+
+    failureOrAssignToVehicle.fold((failure) {
+      HandlingErrors.networkErrorrHandling(
+          failure: failure,
+          hideCircleIndicator: hideAssignOrderCircleIndicator,
+          showNoInternetPage: () {});
+    }, (data) async {
+      assignOrderToMeData = data;
+      hideAssignOrderCircleIndicator();
+      SnackBarWidgets.showSuccessSnackBar('Assign Order Succeeded'.tr, '');
+      // await GlobalFunctions.setAssignToUserId(
+      //     assignToUserId: unAssignToVehicleData.data!.assignToUserId);
       update();
     });
   }

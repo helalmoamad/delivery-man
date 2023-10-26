@@ -19,6 +19,8 @@ class AssignToVehicleRepository {
         final dataResponse = await assignToVehicleService
             .postAssignToVehicleApi(token: token, vehicleId: vehicleId);
         return Right(dataResponse);
+      } on CantAssignToVehicleException {
+        return left(CantAssignToVehicleFailure());
       } on ServerException {
         return left(ServerFailure());
       }

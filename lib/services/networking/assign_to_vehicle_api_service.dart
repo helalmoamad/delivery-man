@@ -23,7 +23,6 @@ class AssignToVehicleServiceImpWithHttp implements AssignToVehicleService {
     final body = {
       'vehicle_id': vehicleId,
     };
-
     final response = await clientController.client
         .post(uri, body: json.encode(body), headers: {
       'Content-type': 'application/json',
@@ -33,14 +32,17 @@ class AssignToVehicleServiceImpWithHttp implements AssignToVehicleService {
     });
     debugPrint('1');
     debugPrint(response.statusCode.toString());
+    final data = jsonDecode(response.body);
     if (response.statusCode >= 200 && response.statusCode < 300) {
       debugPrint('2');
-      final data = jsonDecode(response.body);
-
       debugPrint('AssignToVehicle Success');
       final AssignToVehicleModel responseData =
           AssignToVehicleModel.fromJson(data);
       return responseData;
+    } else if (response.statusCode == 422 &&
+        data['message'] == 'The selected vehicle id is invalid.') {
+      debugPrint('The selected vehicle id is invalid.');
+      throw CantAssignToVehicleException();
     } else {
       debugPrint('3');
       debugPrint('AssignToVehicle Failed');
