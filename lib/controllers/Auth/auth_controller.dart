@@ -54,10 +54,11 @@ class AuthController extends GetxController {
       isLogin = true;
       Future.wait([
         GlobalFunctions.setFcmToken(token: userData.accessToken!),
+        GlobalFunctions.setUserId(id: userData.id!),
         GlobalFunctions.setName(name: userData.name!),
         GlobalFunctions.setEmail(email: userData.email!),
         GlobalFunctions.setMobilePhone(mobilePhone: userData.mobilePhone!),
-        GlobalFunctions.setAssignToUserId(
+        GlobalFunctions.setAssignVehicleToUserId(
             assignToUserId: userData.assignedVehicle == null
                 ? null
                 : userData.assignedVehicle!.assignToUserId),
@@ -82,6 +83,7 @@ class AuthController extends GetxController {
     isLogin = false;
     Future.wait([
       storageBox.remove('token'),
+      storageBox.remove('userId'),
       storageBox.remove('mobilePhone'),
       storageBox.remove('name'),
       storageBox.remove('email'),

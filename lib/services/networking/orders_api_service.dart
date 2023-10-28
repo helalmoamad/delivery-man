@@ -10,6 +10,8 @@ import 'api_constants.dart';
 abstract class OrdersApiService {
   Future<ListOrderModel> getListOrderDataApi(
       {required String token, required String status, required int offset});
+  Future<ListOrderModel> getMyOrdersDataApi(
+      {required String token, required String status, required int offset});
 
   Future<List<dynamic>> getOrderStatusDataApi(
     String token,
@@ -34,7 +36,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       required int offset}) async {
     clientController.reOpenClient();
     final uri = Uri.parse(
-        '${ApiConstants.baseUrl}/${ApiConstants.newVersion}/delivery_man/orders?order_status=$status&limit=5&offset=$offset');
+        '${ApiConstants.baseUrl}/api/${ApiConstants.version}/orders/index?order_status=$status&limit=5&page=$offset');
     final response = await clientController.client.get(uri, headers: {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -57,10 +59,40 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   }
 
   @override
+  Future<ListOrderModel> getMyOrdersDataApi(
+      {required String token,
+      required String status,
+      required int offset}) async {
+    clientController.reOpenClient();
+    final uri = Uri.parse(
+        '${ApiConstants.baseUrl}/api/${ApiConstants.version}/orders/my_orders?order_status=$status&limit=5&page=$offset');
+    final response = await clientController.client.get(uri, headers: {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+      'Connection': 'keep-alive',
+    });
+    debugPrint('1');
+    debugPrint(response.statusCode.toString());
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      debugPrint('2');
+      final data = jsonDecode(response.body);
+      debugPrint('get My Orders data success');
+      final resposeData = ListOrderModel.fromJson(data);
+
+      return resposeData;
+    } else {
+      debugPrint('3');
+      debugPrint('get My Orders data Failed');
+      throw ServerException();
+    }
+  }
+
+  @override
   Future<List<dynamic>> getOrderStatusDataApi(String token) async {
     clientController.reOpenClient();
     final uri = Uri.parse(
-        '${ApiConstants.baseUrl2}/api/${ApiConstants.version2}/orders/order_statuses');
+        '${ApiConstants.baseUrl}/api/${ApiConstants.version}/orders/order_statuses');
     final response = await clientController.client.get(uri, headers: {
       'Content-type': 'application/json',
       'Accept': 'application/json',
@@ -87,7 +119,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   Future<UnAssignToVehicleModel> postUnAssignToVehicleApi(
       {required String token, required int vehicleId}) async {
     final uri = Uri.parse(
-        '${ApiConstants.baseUrl2}/api/${ApiConstants.version2}/vehicle/unassign_user');
+        '${ApiConstants.baseUrl}/api/${ApiConstants.version}/vehicle/unassign_user');
     final body = {
       'vehicle_id': vehicleId,
     };
@@ -120,7 +152,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   Future<AssignOrderToMeDataModel> postAssignOrderToMeApi(
       {required String token, required int orderId}) async {
     final uri = Uri.parse(
-        '${ApiConstants.baseUrl2}/api/${ApiConstants.version2}/orders/assign_to_me');
+        '${ApiConstants.baseUrl}/api/${ApiConstants.version}/orders/assign_to_me');
     final body = {
       'order_id': orderId,
     };

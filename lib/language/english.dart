@@ -91,4 +91,6 @@ const Map<String, String> en = {
       'You cant assign to this vehicle now.',
   'MyOrders': 'MyOrders',
   'Assign Order Succeeded': 'Assign Order Succeeded',
+  'Assign To Me': 'Assign To Me',
+  'Convert To Shipped': 'Convert To Shipped',
 };

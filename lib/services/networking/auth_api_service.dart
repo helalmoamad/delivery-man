@@ -18,7 +18,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
   @override
   Future<UserDataModel> postLoginApi(LoginModel loginModel) async {
     final uri = Uri.parse(
-        '${ApiConstants.baseUrl2}/api/${ApiConstants.version2}/users/login');
+        '${ApiConstants.baseUrl}/api/${ApiConstants.version}/users/login');
     final body = loginModel.toJson();
     final response = await clientController.client
         .post(uri, body: json.encode(body), headers: {

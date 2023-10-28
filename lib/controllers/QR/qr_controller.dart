@@ -87,7 +87,7 @@ class QRController extends GetxController {
       SnackBarWidgets.showSuccessSnackBar('Assign To Vehicle Succeeded'.tr, '');
 
       Future.wait([
-        GlobalFunctions.setAssignToUserId(
+        GlobalFunctions.setAssignVehicleToUserId(
             assignToUserId:
                 assignToVehicleData.data!.assignedVehicle!.assignToUserId),
         GlobalFunctions.setAssignedVehicleId(

@@ -19,7 +19,7 @@ class AssignToVehicleServiceImpWithHttp implements AssignToVehicleService {
   Future<AssignToVehicleModel> postAssignToVehicleApi(
       {required String token, required int vehicleId}) async {
     final uri = Uri.parse(
-        '${ApiConstants.baseUrl2}/api/${ApiConstants.version2}/vehicle/assign_to_user');
+        '${ApiConstants.baseUrl}/api/${ApiConstants.version}/vehicle/assign_to_user');
     final body = {
       'vehicle_id': vehicleId,
     };

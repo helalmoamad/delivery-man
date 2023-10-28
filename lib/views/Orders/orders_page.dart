@@ -26,16 +26,17 @@ class OrdersPage extends StatelessWidget {
               title: 'Orders'.tr,
               button: GetBuilder<OrdersController>(builder: (_) {
                 return AppButton.normalButton(
-                    title: GlobalFunctions.getAssignToUserId() == -1
+                    title: GlobalFunctions.getAssignVehicleToUserId() == -1
                         ? 'Assign to vehicle'.tr
-                        : '${'UnAssign'.tr} ${GlobalFunctions.getAssignToUserId() != -1 ? GlobalFunctions.getAssignedVehicleName() : ''}',
+                        : '${'UnAssign'.tr} ${GlobalFunctions.getAssignVehicleToUserId() != -1 ? GlobalFunctions.getAssignedVehicleName() : ''}',
                     height: 40,
                     titleSize: 13,
-                    backgroundColor: GlobalFunctions.getAssignToUserId() == -1
-                        ? AppColors.secondary
-                        : AppColors.darkGrey,
+                    backgroundColor:
+                        GlobalFunctions.getAssignVehicleToUserId() == -1
+                            ? AppColors.secondary
+                            : AppColors.darkGrey,
                     onPress: () async {
-                      if (GlobalFunctions.getAssignToUserId() == -1) {
+                      if (GlobalFunctions.getAssignVehicleToUserId() == -1) {
                         Get.toNamed(Routes.scanQRPage);
                       } else {
                         // print(GlobalFunctions.getAssignToUserId());
@@ -90,13 +91,13 @@ class OrdersPage extends StatelessWidget {
                     ),
                   ),
                   ///////////////////////////
-                  GlobalFunctions.getAssignToUserId() == -1
+                  GlobalFunctions.getAssignVehicleToUserId() == -1
                       ? Container(
                           color: Colors.black.withOpacity(0.8),
                         )
                       : Container(),
                   ////////////////////
-                  GlobalFunctions.getAssignToUserId() == -1
+                  GlobalFunctions.getAssignVehicleToUserId() == -1
                       ? Align(
                           alignment: Alignment.center,
                           child: Padding(

@@ -30,6 +30,23 @@ class OrdersRepository {
     }
   }
 
+  Future<Either<Failure, ListOrderModel>> getMyOrdersData(
+      {required String token,
+      required String status,
+      required int offset}) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final orderDataResponse = await ordersApiService.getMyOrdersDataApi(
+            token: token, status: status, offset: offset);
+        return Right(orderDataResponse);
+      } on ServerException {
+        return left(ServerFailure());
+      }
+    } else {
+      return Left(OfflineFailure());
+    }
+  }
+
   Future<Either<Failure, List<dynamic>>> getOrderStatusData({
     required String token,
   }) async {

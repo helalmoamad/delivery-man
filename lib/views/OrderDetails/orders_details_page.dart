@@ -1,5 +1,6 @@
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
+import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,53 +19,61 @@ class OrdersDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-            appBar: customAppBar(
-                title: 'Order Details'.tr,
-                button: GetBuilder<OrdersController>(builder: (_) {
-                  return ordersController.isPlayRecordButton
-                      ? AppButton.normalButton(
-                          title: ordersController.isRecordPlaying
-                              ? 'Stop Record'.tr
-                              : 'Play Record'.tr,
-                          height: 35,
-                          titleSize: 13,
-                          backgroundColor: ordersController.isRecordPlaying
-                              ? AppColors.darkGrey
-                              : AppColors.secondary,
-                          onPress: () async {
-                            if (ordersController.isRecordPlaying) {
-                              await ordersController.stopPlayingRecording();
-                              ordersController.changeIsPlaying(false);
-                            } else {
-                              await ordersController.playRecording();
-                              ordersController.changeIsPlaying(true);
-                            }
-                          })
-                      : AppButton.normalButton(
-                          title: ordersController.isStartDeliveryButton
-                              ? 'Start Delivering'.tr
-                              : 'Delivered'.tr,
-                          height: 35,
-                          titleSize: 13,
-                          backgroundColor:
-                              ordersController.isStartDeliveryButton
-                                  ? AppColors.secondary
-                                  : AppColors.darkGrey,
-                          onPress: () async {
-                            // await ordersController.playRecording();
-                            if (ordersController.isStartDeliveryButton) {
-                              await ordersController.startRecording();
-                              ordersController.changeDeliveringButton(false);
-                            } else {
-                              AppDialogs.showAppDialogWidget(
-                                  context: context,
-                                  title: 'Enter The Cash Amount'.tr,
-                                  actions: [buildDialogAction()]);
-                            }
-                          });
-                })),
+            appBar:
+                customAppBar(title: 'Order Details'.tr, button: Container()),
             body: GetBuilder<OrdersController>(builder: (_) {
-              return OrderDetails();
+              return Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  OrderDetails(),
+                  //////////////////////
+                  Container(
+                    width: double.infinity,
+                    height: 90,
+                    decoration: BoxDecoration(
+                      color: AppColors.darkWhite,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black
+                              .withOpacity(0.2), // Shadow color with opacity
+                          spreadRadius: 3, // Spread radius
+                          blurRadius: 12, // Blur radius
+                          offset: const Offset(
+                              0, -1), // Offset to create a top shadow
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 5),
+                        child: Center(
+                          child: GlobalFunctions.chooseStatusButtons(
+                              inputText: 'ready_to_shipping'),
+                        )
+                        // AppButton.normalButton(
+                        //     title: 'Start Delivering'.tr,
+                        //     height: 40,
+                        //     titleSize: 13,
+                        //     backgroundColor:
+                        //         // ordersController.isStartDeliveryButton
+                        //         // ?
+                        //         AppColors.secondary,
+                        //     // : AppColors.darkGrey,
+                        //     onPress: () async {
+                        //       if (ordersController.isStartDeliveryButton) {
+                        //         await ordersController.startRecording();
+                        //         ordersController.changeDeliveringButton(false);
+                        //       } else {
+                        //         AppDialogs.showAppDialogWidget(
+                        //             context: context,
+                        //             title: 'Enter The Cash Amount'.tr,
+                        //             actions: [buildDialogAction()]);
+                        //       }
+                        //     }),
+                        ),
+                  ),
+                ],
+              );
             })));
   }
 
@@ -103,7 +112,7 @@ class OrdersDetailsPage extends StatelessWidget {
                 if (formKey.currentState!.validate()) {
                   Get.back();
                   await ordersController.stopRecording();
-                  ordersController.changePlayRecordButton(true);
+                  // ordersController.changePlayRecordButton(true);
                 }
               },
             ),

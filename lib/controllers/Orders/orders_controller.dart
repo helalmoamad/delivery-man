@@ -27,10 +27,12 @@ class OrdersController extends GetxController {
   late ListOrderModel ordersData;
   late List<dynamic> orderStatusData;
 
-  late UnAssignToVehicleProvider unAssignToVehicleProvider = Get.find();
+  late UnAssignToVehicleProvider unAssignToVehicleProvider =
+      Get.find<UnAssignToVehicleProvider>();
   late UnAssignToVehicleModel unAssignToVehicleData;
 
-  late AssignOrderToMeProvider assignOrderToMeProvider = Get.find();
+  late AssignOrderToMeProvider assignOrderToMeProvider =
+      Get.find<AssignOrderToMeProvider>();
   late AssignOrderToMeDataModel assignOrderToMeData;
 
   int orderIndex = 0;
@@ -50,11 +52,12 @@ class OrdersController extends GetxController {
 
   late Record record;
   late AudioPlayer audioPlayer;
-  bool isStartDeliveryButton = true;
-  bool isPlayRecordButton = false;
+
   bool isRecording = false;
   bool isRecordPlaying = false;
   String? audioPath = '';
+
+  bool isStartDeliveryButton = true;
 
   // ///////////////////////////
   void showGetOrdersCircleIndicator() {
@@ -126,11 +129,6 @@ class OrdersController extends GetxController {
 
   void changeDeliveringButton(bool isStartDelivery) {
     isStartDeliveryButton = isStartDelivery;
-    update();
-  }
-
-  void changePlayRecordButton(bool isPlayRecord) {
-    isPlayRecordButton = isPlayRecord;
     update();
   }
 
@@ -265,15 +263,13 @@ class OrdersController extends GetxController {
             hideCircleIndicator: () {},
             showNoInternetPage: () {});
       }, (getOrdersData) {
-        if (getOrdersData.data!.orders!.isEmpty) {
+        if (getOrdersData.data!.data!.isEmpty) {
           noMoreItems = true;
           debugPrint('No More Items');
         } else {
           paginationOffset++;
           ordersData.data!.total = getOrdersData.data!.total;
-          ordersData.data!.limit = getOrdersData.data!.limit;
-          ordersData.data!.offset = getOrdersData.data!.offset;
-          ordersData.data!.orders!.addAll(getOrdersData.data!.orders!);
+          ordersData.data!.data!.addAll(getOrdersData.data!.data!);
         }
         update();
       });
@@ -319,7 +315,7 @@ class OrdersController extends GetxController {
       hideUnAssignedCircleIndicator();
       SnackBarWidgets.showSuccessSnackBar(
           'UnAssign To Vehicle Succeeded'.tr, '');
-      await GlobalFunctions.setAssignToUserId(
+      await GlobalFunctions.setAssignVehicleToUserId(
           assignToUserId: unAssignToVehicleData.data!.assignToUserId);
       update();
     });
@@ -340,8 +336,6 @@ class OrdersController extends GetxController {
       assignOrderToMeData = data;
       hideAssignOrderCircleIndicator();
       SnackBarWidgets.showSuccessSnackBar('Assign Order Succeeded'.tr, '');
-      // await GlobalFunctions.setAssignToUserId(
-      //     assignToUserId: unAssignToVehicleData.data!.assignToUserId);
       update();
     });
   }

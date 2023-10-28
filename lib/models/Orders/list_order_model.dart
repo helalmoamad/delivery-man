@@ -1,14 +1,26 @@
 class ListOrderModel {
-  final String? message;
+  final bool? isSuccessful;
+  final bool? hasContent;
+  final int? code;
+  final dynamic message;
+  final dynamic detailedError;
   final ListOrderDataModel? data;
 
   ListOrderModel({
+    this.isSuccessful,
+    this.hasContent,
+    this.code,
     this.message,
+    this.detailedError,
     this.data,
   });
 
   factory ListOrderModel.fromJson(Map<String, dynamic> json) => ListOrderModel(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
         message: json["message"],
+        detailedError: json["detailed_error"],
         data: json["data"] == null
             ? null
             : ListOrderDataModel.fromJson(json["data"]),
@@ -16,344 +28,329 @@ class ListOrderModel {
 }
 
 class ListOrderDataModel {
+  final int? currentPage;
+  final List<Order>? data;
   int? total;
-  dynamic limit;
-  int? offset;
-  final List<Order>? orders;
 
   ListOrderDataModel({
+    this.currentPage,
+    this.data,
     this.total,
-    this.limit,
-    this.offset,
-    this.orders,
   });
 
   factory ListOrderDataModel.fromJson(Map<String, dynamic> json) =>
       ListOrderDataModel(
-        total: json["total"],
-        limit: json["limit"],
-        offset: json["offset"],
-        orders: json["orders"] == null
+        currentPage: json["current_page"],
+        data: json["data"] == null
             ? []
-            : List<Order>.from(json["orders"]!.map((x) => Order.fromJson(x))),
+            : List<Order>.from(json["data"]!.map((x) => Order.fromJson(x))),
+        total: json["total"],
       );
 }
 
 class Order {
-  final dynamic id;
-  final dynamic customerId;
-  final dynamic paymentStatus;
-  final dynamic orderStatus;
-  final dynamic paymentMethod;
-  final dynamic transactionRef;
-  final dynamic orderAmount;
-  final dynamic orderAmountFormatted;
-  final dynamic shippingAddress;
-  final IngAddressData? shippingAddressData;
-  final dynamic billingAddress;
-  final IngAddressData? billingAddressData;
-  final dynamic discountAmount;
-  final dynamic discountAmountFormatted;
-  final dynamic discountType;
-  final dynamic couponCode;
-  final dynamic shippingMethodId;
-  final dynamic shippingCost;
-  final dynamic shippingCostFormatted;
-  final dynamic orderGroupId;
-  final dynamic verificationCode;
-  final dynamic orderNote;
-  final dynamic sellerId;
-  final DateTime? createdAt;
-  final bool? orderCanReturn;
-  final bool? orderHasReturnRequest;
-  final dynamic returnRequestId;
-  final bool? showReturnRequest;
-  final bool? editReturnRequest;
-  final bool? orderCanExchange;
+  final int? id;
+  final dynamic journeyId;
+  final dynamic assignToUserId;
+  final int? customerId;
+  final String? paymentStatus;
+  final int? orderStatusId;
+  final String? paymentMethod;
+  final String? transactionRef;
+  final int? orderAmount;
+  final String? orderAmountFormatted;
+  final dynamic shippingAddressId;
+  final String? orderGroupId;
+  final String? verificationCode;
+  final String? sellerId;
   final List<Detail>? details;
+  final int? shippingAddress;
+  final ShippingAddressData? shippingAddressData;
+  final dynamic billingAddress;
+  final dynamic billingAddressData;
+  final String? orderStatus;
 
-  Order(
-      {this.id,
-      this.customerId,
-      this.paymentStatus,
-      this.orderStatus,
-      this.paymentMethod,
-      this.transactionRef,
-      this.orderAmount,
-      this.orderAmountFormatted,
-      this.shippingAddress,
-      this.shippingAddressData,
-      this.billingAddress,
-      this.billingAddressData,
-      this.discountAmount,
-      this.discountAmountFormatted,
-      this.discountType,
-      this.couponCode,
-      this.shippingMethodId,
-      this.shippingCost,
-      this.shippingCostFormatted,
-      this.orderGroupId,
-      this.verificationCode,
-      this.orderNote,
-      this.sellerId,
-      this.createdAt,
-      this.orderCanReturn,
-      this.orderHasReturnRequest,
-      this.returnRequestId,
-      this.showReturnRequest,
-      this.editReturnRequest,
-      this.orderCanExchange,
-      this.details});
+  Order({
+    this.id,
+    this.journeyId,
+    this.assignToUserId,
+    this.customerId,
+    this.paymentStatus,
+    this.orderStatusId,
+    this.paymentMethod,
+    this.transactionRef,
+    this.orderAmount,
+    this.orderAmountFormatted,
+    this.shippingAddressId,
+    this.orderGroupId,
+    this.verificationCode,
+    this.sellerId,
+    this.details,
+    this.shippingAddress,
+    this.shippingAddressData,
+    this.billingAddress,
+    this.billingAddressData,
+    this.orderStatus,
+  });
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
         id: json["id"],
+        journeyId: json["journey_id"],
+        assignToUserId: json["assign_to_user_id"],
         customerId: json["customer_id"],
         paymentStatus: json["payment_status"],
-        orderStatus: json["order_status"],
+        orderStatusId: json["order_status_id"],
         paymentMethod: json["payment_method"],
         transactionRef: json["transaction_ref"],
         orderAmount: json["order_amount"],
         orderAmountFormatted: json["order_amount_formatted"],
-        shippingAddress: json["shipping_address"],
-        shippingAddressData: json["shipping_address_data"] == null
-            ? null
-            : IngAddressData.fromJson(json["shipping_address_data"]),
-        billingAddress: json["billing_address"],
-        billingAddressData: json["billing_address_data"] == null
-            ? null
-            : IngAddressData.fromJson(json["billing_address_data"]),
-        discountAmount: json["discount_amount"],
-        discountAmountFormatted: json["discount_amount_formatted"],
-        discountType: json["discount_type"],
-        couponCode: json["coupon_code"],
-        shippingMethodId: json["shipping_method_id"],
-        shippingCost: json["shipping_cost"],
-        shippingCostFormatted: json["shipping_cost_formatted"],
+        shippingAddressId: json["shipping_address_id"],
         orderGroupId: json["order_group_id"],
         verificationCode: json["verification_code"],
-        orderNote: json["order_note"],
         sellerId: json["seller_id"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        orderCanReturn: json["order_can_return"],
-        orderHasReturnRequest: json["order_has_return_request"],
-        returnRequestId: json["return_request_id"],
-        showReturnRequest: json["show_return_request"],
-        editReturnRequest: json["edit_return_request"],
-        orderCanExchange: json["order_can_exchange"],
         details: json["details"] == null
             ? []
             : List<Detail>.from(
                 json["details"]!.map((x) => Detail.fromJson(x))),
-      );
-}
-
-class IngAddressData {
-  final dynamic id;
-  final dynamic customerId;
-  final dynamic contactPersonName;
-  final dynamic addressType;
-  final dynamic address;
-  final dynamic city;
-  final dynamic zip;
-  final dynamic phone;
-  final dynamic createdAt;
-  final dynamic updatedAt;
-  final dynamic state;
-  final dynamic country;
-  final dynamic latitude;
-  final dynamic longitude;
-  final dynamic isBilling;
-  final dynamic isDefault;
-  final dynamic email;
-  final dynamic cost;
-  final dynamic duration;
-
-  IngAddressData({
-    this.id,
-    this.customerId,
-    this.contactPersonName,
-    this.addressType,
-    this.address,
-    this.city,
-    this.zip,
-    this.phone,
-    this.createdAt,
-    this.updatedAt,
-    this.state,
-    this.country,
-    this.latitude,
-    this.longitude,
-    this.isBilling,
-    this.isDefault,
-    this.email,
-    this.cost,
-    this.duration,
-  });
-
-  factory IngAddressData.fromJson(Map<String, dynamic> json) => IngAddressData(
-        id: json["id"],
-        customerId: json["customer_id"],
-        contactPersonName: json["contact_person_name"],
-        addressType: json["address_type"],
-        address: json["address"],
-        city: json["city"],
-        zip: json["zip"],
-        phone: json["phone"],
-        createdAt: json["created_at"] == null
+        shippingAddress: json["shipping_address"],
+        shippingAddressData: json["shipping_address_data"] == null
             ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
-        state: json["state"],
-        country: json["country"],
-        latitude: json["latitude"],
-        longitude: json["longitude"],
-        isBilling: json["is_billing"],
-        isDefault: json["is_default"],
-        email: json["email"],
-        cost: json["cost"],
-        duration: json["duration"],
+            : ShippingAddressData.fromJson(json["shipping_address_data"]),
+        billingAddress: json["billing_address"],
+        billingAddressData: json["billing_address_data"],
+        orderStatus: json["order_status"],
       );
 }
 
 class Detail {
   final int? id;
-  final dynamic orderId;
-  final dynamic productId;
+  final int? qty;
+  final int? tax;
+  final String? price;
+  final int? odooId;
+  final String? variant;
+  final String? discount;
+  final int? orderId;
+  final int? productId;
+  final String? discountType;
+  final int? odooOrderId;
+  final String? paymentStatus;
+  final int? refundRequest;
+  final String? deliveryStatus;
+  final int? isOdooProduct;
   final ProductDetails? productDetails;
-  final dynamic qty;
-  final dynamic price;
-  final dynamic tax;
-  final dynamic discount;
-  final dynamic priceAfterDiscount;
-  final dynamic deliveryStatus;
-  final dynamic paymentStatus;
+  final int? isStockDecreased;
   final dynamic shippingMethodId;
-  final dynamic variant;
-  final dynamic discountType;
-  final dynamic isStockDecreased;
-  final dynamic refundRequest;
+  final String? priceAfterDiscount;
   final dynamic refundRequestStatus;
-  final dynamic isOdooProduct;
-  final dynamic odooId;
-  final dynamic odooOrderId;
 
   Detail({
     this.id,
+    this.qty,
+    this.tax,
+    this.price,
+    this.odooId,
+    this.variant,
+    this.discount,
     this.orderId,
     this.productId,
-    this.productDetails,
-    this.qty,
-    this.price,
-    this.tax,
-    this.discount,
-    this.priceAfterDiscount,
-    this.deliveryStatus,
-    this.paymentStatus,
-    this.shippingMethodId,
-    this.variant,
     this.discountType,
-    this.isStockDecreased,
-    this.refundRequest,
-    this.refundRequestStatus,
-    this.isOdooProduct,
-    this.odooId,
     this.odooOrderId,
+    this.paymentStatus,
+    this.refundRequest,
+    this.deliveryStatus,
+    this.isOdooProduct,
+    this.productDetails,
+    this.isStockDecreased,
+    this.shippingMethodId,
+    this.priceAfterDiscount,
+    this.refundRequestStatus,
   });
 
   factory Detail.fromJson(Map<String, dynamic> json) => Detail(
         id: json["id"],
+        qty: json["qty"],
+        tax: json["tax"],
+        price: json["price"],
+        odooId: json["odoo_id"],
+        variant: json["variant"],
+        discount: json["discount"],
         orderId: json["order_id"],
         productId: json["product_id"],
+        discountType: json["discount_type"],
+        odooOrderId: json["odoo_order_id"],
+        paymentStatus: json["payment_status"],
+        refundRequest: json["refund_request"],
+        deliveryStatus: json["delivery_status"],
+        isOdooProduct: json["is_odoo_product"],
         productDetails: json["product_details"] == null
             ? null
             : ProductDetails.fromJson(json["product_details"]),
-        qty: json["qty"],
-        price: json["price"],
-        tax: json["tax"],
-        discount: json["discount"],
-        priceAfterDiscount: json["price_after_discount"],
-        deliveryStatus: json["delivery_status"],
-        paymentStatus: json["payment_status"],
-        shippingMethodId: json["shipping_method_id"],
-        variant: json["variant"],
-        discountType: json["discount_type"],
         isStockDecreased: json["is_stock_decreased"],
-        refundRequest: json["refund_request"],
+        shippingMethodId: json["shipping_method_id"],
+        priceAfterDiscount: json["price_after_discount"],
         refundRequestStatus: json["refund_request_status"],
-        isOdooProduct: json["is_odoo_product"],
-        odooId: json["odoo_id"],
-        odooOrderId: json["odoo_order_id"],
       );
 }
 
 class ProductDetails {
   final int? id;
-  final dynamic name;
-  final dynamic slug;
-  final dynamic shareLink;
-  final dynamic details;
-  final dynamic thumbnail;
+  final String? name;
+  final String? slug;
+  final double? price;
   final List<String>? images;
-  final dynamic price;
-  final dynamic priceFormatted;
-  final dynamic offerPrice;
-  final dynamic offerPriceFormatted;
-  final bool? isFavourite;
-  final bool? inStock;
   final Rating? rating;
+  final String? details;
+  final bool? inStock;
+  final String? thumbnail;
+  final String? shareLink;
+  final int? offerPrice;
+  final bool? isFavourite;
+  final String? priceFormatted;
+  final String? offerPriceFormatted;
 
   ProductDetails({
     this.id,
     this.name,
     this.slug,
-    this.shareLink,
-    this.details,
-    this.thumbnail,
-    this.images,
     this.price,
-    this.priceFormatted,
-    this.offerPrice,
-    this.offerPriceFormatted,
-    this.isFavourite,
-    this.inStock,
+    this.images,
     this.rating,
+    this.details,
+    this.inStock,
+    this.thumbnail,
+    this.shareLink,
+    this.offerPrice,
+    this.isFavourite,
+    this.priceFormatted,
+    this.offerPriceFormatted,
   });
 
   factory ProductDetails.fromJson(Map<String, dynamic> json) => ProductDetails(
         id: json["id"],
         name: json["name"],
         slug: json["slug"],
-        shareLink: json["share_link"],
-        details: json["details"],
-        thumbnail: json["thumbnail"],
+        price: json["price"]?.toDouble(),
         images: json["images"] == null
             ? []
             : List<String>.from(json["images"]!.map((x) => x)),
-        price: json["price"],
-        priceFormatted: json["price_formatted"],
-        offerPrice: json["offer_price"],
-        offerPriceFormatted: json["offer_price_formatted"],
-        isFavourite: json["is_favourite"],
-        inStock: json["in_stock"],
         rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
+        details: json["details"],
+        inStock: json["in_stock"],
+        thumbnail: json["thumbnail"],
+        shareLink: json["share_link"],
+        offerPrice: json["offer_price"],
+        isFavourite: json["is_favourite"],
+        priceFormatted: json["price_formatted"],
+        offerPriceFormatted: json["offer_price_formatted"],
       );
 }
 
 class Rating {
-  final dynamic overallRating;
-  final dynamic totalRating;
+  final int? totalRating;
+  final int? overallRating;
 
   Rating({
-    this.overallRating,
     this.totalRating,
+    this.overallRating,
   });
 
   factory Rating.fromJson(Map<String, dynamic> json) => Rating(
-        overallRating: json["overall_rating"],
         totalRating: json["total_rating"],
+        overallRating: json["overall_rating"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "total_rating": totalRating,
+        "overall_rating": overallRating,
+      };
+}
+
+class ShippingAddressData {
+  final int? id;
+  final dynamic zip;
+  final String? city;
+  final String? cost;
+  final String? email;
+  final String? phone;
+  final dynamic state;
+  final String? address;
+  final String? country;
+  final dynamic duration;
+  final dynamic latitude;
+  final dynamic longitude;
+  final DateTime? createdAt;
+  final int? isBilling;
+  final int? isDefault;
+  final DateTime? updatedAt;
+  final int? customerId;
+  final String? addressType;
+  final String? contactPersonName;
+
+  ShippingAddressData({
+    this.id,
+    this.zip,
+    this.city,
+    this.cost,
+    this.email,
+    this.phone,
+    this.state,
+    this.address,
+    this.country,
+    this.duration,
+    this.latitude,
+    this.longitude,
+    this.createdAt,
+    this.isBilling,
+    this.isDefault,
+    this.updatedAt,
+    this.customerId,
+    this.addressType,
+    this.contactPersonName,
+  });
+
+  factory ShippingAddressData.fromJson(Map<String, dynamic> json) =>
+      ShippingAddressData(
+        id: json["id"],
+        zip: json["zip"],
+        city: json["city"],
+        cost: json["cost"],
+        email: json["email"],
+        phone: json["phone"],
+        state: json["state"],
+        address: json["address"],
+        country: json["country"],
+        duration: json["duration"],
+        latitude: json["latitude"],
+        longitude: json["longitude"],
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+        isBilling: json["is_billing"],
+        isDefault: json["is_default"],
+        updatedAt: json["updated_at"] == null
+            ? null
+            : DateTime.parse(json["updated_at"]),
+        customerId: json["customer_id"],
+        addressType: json["address_type"],
+        contactPersonName: json["contact_person_name"],
+      );
+}
+
+class Link {
+  final String? url;
+  final String? label;
+  final bool? active;
+
+  Link({
+    this.url,
+    this.label,
+    this.active,
+  });
+
+  factory Link.fromJson(Map<String, dynamic> json) => Link(
+        url: json["url"],
+        label: json["label"],
+        active: json["active"],
       );
 }

@@ -1,14 +1,14 @@
-import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/controllers/MyOrders/myorders_controller.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/constants/color_constants.dart';
 import '../../../shared/widgets/text_widget.dart';
 
-class OrderStatusWidget extends StatelessWidget {
-  final OrdersController ordersController;
-  const OrderStatusWidget({
+class MyOrderStatusWidget extends StatelessWidget {
+  final MyOrdersController myOrdersController;
+  const MyOrderStatusWidget({
     super.key,
-    required this.ordersController,
+    required this.myOrdersController,
   });
 
   @override
@@ -18,34 +18,36 @@ class OrderStatusWidget extends StatelessWidget {
       child: SizedBox(
         height: 30,
         child: ListView.separated(
-          itemCount: ordersController.orderStatusData.length,
+          itemCount: myOrdersController.orderStatusData.length,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             return InkWell(
               onTap: () {
-                ordersController.chooseOrderStatus(
-                    status: ordersController.orderStatusData[index].toString(),
+                myOrdersController.chooseOrderStatus(
+                    status:
+                        myOrdersController.orderStatusData[index].toString(),
                     index: index);
 
-                debugPrint(ordersController.orderStatus);
+                debugPrint(myOrdersController.orderStatus);
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextWidget(
                       text: GlobalFunctions.orderStatusText(
-                          inputText: ordersController.orderStatusData[index]
+                          inputText: myOrdersController.orderStatusData[index]
                               .toString()),
                       color: AppColors.blackDark,
                       fontSize: 15,
-                      fontWeight: index == ordersController.selectedOrderStatus
-                          ? FontWeight.bold
-                          : FontWeight.normal,
+                      fontWeight:
+                          index == myOrdersController.selectedOrderStatus
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                       textAlign: TextAlign.start,
                       maxline: 1),
 
                   ///////////
-                  index == ordersController.selectedOrderStatus
+                  index == myOrdersController.selectedOrderStatus
                       ? Container(
                           width: 80,
                           height: 2,

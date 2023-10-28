@@ -1,3 +1,6 @@
+import 'package:delivery_man_app/views/OrderDetails/status_buttons/out_for_delivery_buttons.dart';
+import 'package:delivery_man_app/views/OrderDetails/status_buttons/ready_toshipping_buttons.dart';
+import 'package:delivery_man_app/views/OrderDetails/status_buttons/shipped_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -34,6 +37,15 @@ class GlobalFunctions {
     return isLoggedIn;
   }
 
+  static Future<void> setUserId({required int id}) async {
+    await GetStorage().write('userId', id);
+  }
+
+  static int getUserId() {
+    int? mobilePhone = GetStorage().read<int>('userId');
+    return mobilePhone!;
+  }
+
   static Future<void> setMobilePhone({required String mobilePhone}) async {
     await GetStorage().write('mobilePhone', mobilePhone);
   }
@@ -61,12 +73,12 @@ class GlobalFunctions {
     return email;
   }
 
-  static Future<void> setAssignToUserId(
+  static Future<void> setAssignVehicleToUserId(
       {required dynamic assignToUserId}) async {
     await GetStorage().write('assignToUserId', assignToUserId);
   }
 
-  static int getAssignToUserId() {
+  static int getAssignVehicleToUserId() {
     int? assignToUserId = GetStorage().read<int>('assignToUserId') ?? -1;
     return assignToUserId;
   }
@@ -170,5 +182,29 @@ class GlobalFunctions {
     }
 
     return text;
+  }
+
+  static Widget chooseStatusButtons({required String inputText}) {
+    switch (inputText) {
+      case 'ready_to_shipping':
+        {
+          return ReadyToShippingButtons();
+        }
+
+      case 'shipped':
+        {
+          return ShippedButtons();
+        }
+
+      case 'out_for_delivery':
+        {
+          return OutForDeliveryButtons();
+        }
+
+      default:
+        {
+          return Container();
+        }
+    }
   }
 }

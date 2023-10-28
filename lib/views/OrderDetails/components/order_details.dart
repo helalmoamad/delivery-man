@@ -17,10 +17,10 @@ class OrderDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int orderIndex = ordersController.orderIndex;
-    final order = ordersController.ordersData.data!.orders![orderIndex];
+    final order = ordersController.ordersData.data!.data![orderIndex];
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.only(right: 5, left: 5, top: 0, bottom: 10),
+        padding: const EdgeInsets.only(right: 5, left: 5, top: 0, bottom: 91),
         child: Column(
           children: [
             Column(
@@ -102,26 +102,27 @@ class OrderDetails extends StatelessWidget {
         if (index == 0) {
           return OrderDetailsWidget(
               title: 'Discount Amount'.tr,
-              value: order.discountAmountFormatted.toString());
+              value: order.details![0].discount.toString());
         }
         if (index == 1) {
           return OrderDetailsWidget(
-              title: 'Discount Type'.tr, value: order.discountType.toString());
+              title: 'Discount Type'.tr,
+              value: order.details![0].discountType.toString());
         }
         if (index == 2) {
           return OrderDetailsWidget(
               title: 'Shipping Cost'.tr,
-              value: order.shippingCostFormatted.toString());
+              value: order.shippingAddressData!.cost.toString());
         }
         if (index == 3) {
           return OrderDetailsWidget(
               title: 'Seller Id'.tr, value: order.sellerId.toString());
         }
-        if (index == 4) {
-          return OrderDetailsWidget(
-              title: 'Order Can Return'.tr,
-              value: order.orderCanReturn! ? 'Yes'.tr : 'No'.tr);
-        }
+        // if (index == 4) {
+        //   return OrderDetailsWidget(
+        //       title: 'Order Can Return'.tr,
+        //       value: order.orderCanReturn! ? 'Yes'.tr : 'No'.tr);
+        // }
 
         return null;
       },

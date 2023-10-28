@@ -90,4 +90,6 @@ const Map<String, String> ar = {
       'لا تستطيع الربط مع هذه العربة حالياً',
   'MyOrders': 'طلباتي',
   'Assign Order Succeeded': 'تم إسناد الطلب بنجاح',
+  'Assign To Me': 'إسناد الطلب لي',
+  'Convert To Shipped': 'تحويل إلى تم الشحن',
 };
