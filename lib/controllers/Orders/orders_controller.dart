@@ -1,7 +1,10 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
+import 'package:delivery_man_app/models/Orders/change_status_model.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/assign_order_tome_provider.dart';
+import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_status.dart';
+import 'package:delivery_man_app/providers/Orders_providers.dart/get_my_orders_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/unassign_to_vehicle_provider.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +25,9 @@ class OrdersController extends GetxController {
 
   bool isAnAssignedCircleShown = false;
 
-  bool isAssigneOrderCircleShown = false;
+  bool isAssignOrderCircleShown = false;
+
+  bool isChangeOrderStatusCircleShown = false;
 
   late ListOrderModel ordersData;
   late List<dynamic> orderStatusData;
@@ -35,6 +40,10 @@ class OrdersController extends GetxController {
       Get.find<AssignOrderToMeProvider>();
   late AssignOrderToMeDataModel assignOrderToMeData;
 
+  late ChangeOrderStatusProvider changeOrderStatusProvider =
+      Get.find<ChangeOrderStatusProvider>();
+  late ChangeStatusModle changeStatusData;
+
   int orderIndex = 0;
 
   late String orderStatus;
@@ -46,9 +55,9 @@ class OrdersController extends GetxController {
   GetOrderStatusDataProvider getOrderStatusDataProvider =
       Get.find<GetOrderStatusDataProvider>();
 
-  late ScrollController scrollController;
-  int paginationOffset = 2;
-  bool noMoreItems = false;
+  late ScrollController orderScrollController;
+  int orderPaginationOffset = 2;
+  bool orderNoMoreItems = false;
 
   late Record record;
   late AudioPlayer audioPlayer;
@@ -58,6 +67,25 @@ class OrdersController extends GetxController {
   String? audioPath = '';
 
   bool isStartDeliveryButton = true;
+
+  bool isGetMyOrdersNoInternetConnection = false;
+  bool isGetMyOrdersCircleShown = false;
+
+  bool isGetMyOrderStatusCircleShown = false;
+  bool isGetMyOrderStatusNoInternetConnection = false;
+
+  late ListOrderModel myOrdersData;
+  late GetMyOrdersProvider getMyOrdersProvider =
+      Get.find<GetMyOrdersProvider>();
+
+  late String myOrderStatus;
+  int selectedMyOrderStatus = 0;
+
+  int myOrderIndex = 0;
+
+  late ScrollController myOrderScrollController;
+  int myOrderPaginationOffset = 2;
+  bool myOrderNoMoreItems = false;
 
   // ///////////////////////////
   void showGetOrdersCircleIndicator() {
@@ -118,12 +146,23 @@ class OrdersController extends GetxController {
 
   // ///////////////////////////
   void showAssignOrderCircleIndicator() {
-    isAssigneOrderCircleShown = true;
+    isAssignOrderCircleShown = true;
     update();
   }
 
   void hideAssignOrderCircleIndicator() {
-    isAssigneOrderCircleShown = false;
+    isAssignOrderCircleShown = false;
+    update();
+  }
+
+  // ///////////////////////////
+  void showChangeOrderStatusCircleIndicator() {
+    isChangeOrderStatusCircleShown = true;
+    update();
+  }
+
+  void hideChangeOrderStatusCircleIndicator() {
+    isChangeOrderStatusCircleShown = false;
     update();
   }
 
@@ -137,19 +176,86 @@ class OrdersController extends GetxController {
     update();
   }
 
+  /////// MyOrders
+  Future<void> chooseMyOrderStatus(
+      {required String status, required int index}) async {
+    String token = GlobalFunctions.getFcmToken();
+    myOrderStatus = status;
+    if (index != selectedMyOrderStatus) {
+      selectedMyOrderStatus = index;
+      await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
+    }
+
+    update();
+  }
+
+  // ///////////////////////////
+  void showGetMyOrdersCircleIndicator() {
+    isGetMyOrdersCircleShown = true;
+    update();
+  }
+
+  void hideGetMyOrdersCircleIndicator() {
+    isGetMyOrdersCircleShown = false;
+    update();
+  }
+
+  void showGetMyOrdersNoInternetPage() {
+    isGetMyOrdersNoInternetConnection = true;
+    update();
+  }
+
+  void hideGetMyOrdersNoInternetPage() {
+    isGetMyOrdersNoInternetConnection = false;
+    update();
+  }
+
+  // ///////////////////////////
+  void showGetMyOrderStatusCircleIndicator() {
+    isGetMyOrderStatusCircleShown = true;
+    update();
+  }
+
+  void hideGetMyOrderStatusCircleIndicator() {
+    isGetMyOrderStatusCircleShown = false;
+    update();
+  }
+
+  ///////////////////////////////////
+  void showGetMyOrderStatusNoInternetPage() {
+    isGetMyOrderStatusNoInternetConnection = true;
+    update();
+  }
+
+  void hideGetMyOrderStatusNoInternetPage() {
+    isGetMyOrderStatusNoInternetConnection = false;
+    update();
+  }
+  //////////////////////////////////////////////////
+
   @override
   void onInit() async {
     super.onInit();
     debugPrint('Order Controller Init');
-    scrollController = ScrollController();
+    orderScrollController = ScrollController();
+    myOrderScrollController = ScrollController();
     String token = GlobalFunctions.getFcmToken();
     await getOrderStatusData(token: token, isForAllOrders: true);
 
-    scrollController.addListener(() async {
-      if (scrollController.position.maxScrollExtent ==
-          scrollController.offset) {
+    orderScrollController.addListener(() async {
+      if (orderScrollController.position.maxScrollExtent ==
+          orderScrollController.offset) {
         debugPrint('scrollController');
         await getListOrderWithPaginationData(token: token, status: orderStatus);
+      }
+    });
+
+    myOrderScrollController.addListener(() async {
+      if (myOrderScrollController.position.maxScrollExtent ==
+          myOrderScrollController.offset) {
+        debugPrint('scrollController');
+        await getMyOrdersWithPaginationData(
+            token: token, status: myOrderStatus);
       }
     });
 
@@ -160,7 +266,8 @@ class OrdersController extends GetxController {
   @override
   void onClose() async {
     super.onClose();
-    scrollController.dispose();
+    orderScrollController.dispose();
+    myOrderScrollController.dispose();
     record.dispose();
     audioPlayer.dispose();
 
@@ -231,8 +338,8 @@ class OrdersController extends GetxController {
     required int offset,
   }) async {
     showGetOrdersCircleIndicator();
-    paginationOffset = 2;
-    noMoreItems = false;
+    orderPaginationOffset = 2;
+    orderNoMoreItems = false;
     final failureOrGetOrdersData = await getListOrderDataProvider.call(
         token: token, status: status, offset: offset);
     failureOrGetOrdersData.fold((failure) {
@@ -252,11 +359,11 @@ class OrdersController extends GetxController {
     required String token,
     required String status,
   }) async {
-    if (noMoreItems) {
+    if (orderNoMoreItems) {
       debugPrint('No More Items');
     } else {
       final failureOrGetOrdersData = await getListOrderDataProvider.call(
-          token: token, status: status, offset: paginationOffset);
+          token: token, status: status, offset: orderPaginationOffset);
       failureOrGetOrdersData.fold((failure) {
         HandlingErrors.networkErrorrHandling(
             failure: failure,
@@ -264,10 +371,10 @@ class OrdersController extends GetxController {
             showNoInternetPage: () {});
       }, (getOrdersData) {
         if (getOrdersData.data!.data!.isEmpty) {
-          noMoreItems = true;
+          orderNoMoreItems = true;
           debugPrint('No More Items');
         } else {
-          paginationOffset++;
+          orderPaginationOffset++;
           ordersData.data!.total = getOrdersData.data!.total;
           ordersData.data!.data!.addAll(getOrdersData.data!.data!);
         }
@@ -277,25 +384,46 @@ class OrdersController extends GetxController {
   }
 
   ///////////////////////////////////
-  Future<void> getOrderStatusData(
-      {required String token, required bool isForAllOrders}) async {
-    showGetOrderStatusCircleIndicator();
+  Future<void> getOrderStatusData({
+    required String token,
+    required bool isForAllOrders,
+  }) async {
+    isForAllOrders
+        ? showGetOrderStatusCircleIndicator()
+        : showGetMyOrderStatusCircleIndicator();
+
     final failureOrGetOrderStatusData =
         await getOrderStatusDataProvider.call(token: token);
     failureOrGetOrderStatusData.fold((failure) {
       HandlingErrors.networkErrorrHandling(
           failure: failure,
-          hideCircleIndicator: hideGetOrderStatusCircleIndicator,
-          showNoInternetPage: showGetOrderStatusNoInternetPage);
+          hideCircleIndicator: isForAllOrders
+              ? hideGetOrderStatusCircleIndicator
+              : hideGetMyOrderStatusCircleIndicator,
+          showNoInternetPage: isForAllOrders
+              ? showGetOrderStatusNoInternetPage
+              : showGetMyOrderStatusNoInternetPage);
     }, (getOrderStatusData) async {
       orderStatusData = getOrderStatusData;
-      orderStatus = orderStatusData[0].toString();
-      selectedOrderStatus = 0;
-      hideGetOrderStatusCircleIndicator();
-      hideGetOrderStatusNoInternetPage();
+      if (isForAllOrders) {
+        orderStatus = orderStatusData[0].toString();
+        selectedOrderStatus = 0;
+      }
+      ////
+      myOrderStatus = orderStatusData[2].toString();
+      selectedMyOrderStatus = 0;
+
+      ///
+      isForAllOrders
+          ? hideGetOrderStatusCircleIndicator()
+          : hideGetMyOrderStatusCircleIndicator();
+      isForAllOrders
+          ? hideGetOrderStatusNoInternetPage()
+          : hideGetMyOrderStatusNoInternetPage();
       isForAllOrders
           ? await getListOrderData(token: token, status: orderStatus, offset: 1)
-          : null;
+          : await getMyOrdersData(
+              token: token, status: myOrderStatus, offset: 1);
     });
   }
 
@@ -338,5 +466,87 @@ class OrdersController extends GetxController {
       SnackBarWidgets.showSuccessSnackBar('Assign Order Succeeded'.tr, '');
       update();
     });
+  }
+
+  Future<void> changeOrderStatus(
+      {required String token,
+      required String status,
+      required int orderId,
+      required int amount,
+      required String? file}) async {
+    showChangeOrderStatusCircleIndicator();
+    final failureOrData = await changeOrderStatusProvider.call(
+        token: token,
+        orderId: orderId,
+        file: file,
+        status: status,
+        amount: amount);
+
+    failureOrData.fold((failure) {
+      HandlingErrors.networkErrorrHandling(
+          failure: failure,
+          hideCircleIndicator: hideChangeOrderStatusCircleIndicator,
+          showNoInternetPage: () {});
+    }, (data) async {
+      // changeStatusData = data;
+      hideChangeOrderStatusCircleIndicator();
+      SnackBarWidgets.showSuccessSnackBar(
+          'Changing Order Status Succeeded'.tr, '');
+      Get.close(1);
+      await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
+    });
+  }
+
+  //// MyOrders /////////////////////
+  ///////////////////////////////////
+  Future<void> getMyOrdersData({
+    required String token,
+    required String status,
+    required int offset,
+  }) async {
+    showGetMyOrdersCircleIndicator();
+    myOrderPaginationOffset = 2;
+    myOrderNoMoreItems = false;
+    final failureOrGetOrdersData = await getMyOrdersProvider.call(
+        token: token, status: status, offset: offset);
+    failureOrGetOrdersData.fold((failure) {
+      HandlingErrors.networkErrorrHandling(
+          failure: failure,
+          hideCircleIndicator: hideGetMyOrdersCircleIndicator,
+          showNoInternetPage: showGetMyOrdersNoInternetPage);
+    }, (getOrdersData) {
+      myOrdersData = getOrdersData;
+      hideGetMyOrdersCircleIndicator();
+      hideGetMyOrdersNoInternetPage();
+    });
+  }
+
+// ///////////////////////////////////
+  Future<void> getMyOrdersWithPaginationData({
+    required String token,
+    required String status,
+  }) async {
+    if (myOrderNoMoreItems) {
+      debugPrint('No More Items');
+    } else {
+      final failureOrGetOrdersData = await getMyOrdersProvider.call(
+          token: token, status: status, offset: myOrderPaginationOffset);
+      failureOrGetOrdersData.fold((failure) {
+        HandlingErrors.networkErrorrHandling(
+            failure: failure,
+            hideCircleIndicator: () {},
+            showNoInternetPage: () {});
+      }, (getOrdersData) {
+        if (getOrdersData.data!.data!.isEmpty) {
+          myOrderNoMoreItems = true;
+          debugPrint('No More Items');
+        } else {
+          myOrderPaginationOffset++;
+          myOrdersData.data!.total = getOrdersData.data!.total;
+          myOrdersData.data!.data!.addAll(getOrdersData.data!.data!);
+        }
+        update();
+      });
+    }
   }
 }

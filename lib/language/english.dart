@@ -93,4 +93,9 @@ const Map<String, String> en = {
   'Assign Order Succeeded': 'Assign Order Succeeded',
   'Assign To Me': 'Assign To Me',
   'Convert To Shipped': 'Convert To Shipped',
+  'Convert To Out For Delivery': 'Convert To Out For Delivery',
+  'Changing Order Status Succeeded': 'Changing Order Status Succeeded',
+  'The order status will be changed to "shipped"':
+      'The order status will be changed to "shipped"',
+  'The order  will be assigned to you': 'The order  will be assigned to you',
 };

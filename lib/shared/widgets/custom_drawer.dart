@@ -63,8 +63,11 @@ class CustomDrawer extends StatelessWidget {
                 fontWeight: FontWeight.w600,
                 textAlign: TextAlign.start,
                 maxline: 1),
-            onTap: () {
-              Get.toNamed(Routes.myOrderssPage);
+            onTap: () async {
+              String token = GlobalFunctions.getFcmToken();
+              Get.toNamed(Routes.myOrdersPage);
+              await ordersController.getOrderStatusData(
+                  token: token, isForAllOrders: false);
             },
           ),
           ListTile(

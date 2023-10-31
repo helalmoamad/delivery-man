@@ -1,7 +1,11 @@
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/models/Orders/list_order_model.dart';
+import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
+import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
+import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,8 +15,15 @@ class ReadyToShippingButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int orderIndex = ordersController.orderIndex;
-    final order = ordersController.ordersData.data!.data![orderIndex];
+    int orderIndex;
+    final Order order;
+    if (Get.previousRoute == Routes.myOrdersPage) {
+      orderIndex = ordersController.myOrderIndex;
+      order = ordersController.myOrdersData.data!.data![orderIndex];
+    } else {
+      orderIndex = ordersController.orderIndex;
+      order = ordersController.ordersData.data!.data![orderIndex];
+    }
     return AppButton.normalButton(
         title: GlobalFunctions.getUserId() != order.assignToUserId
             ? 'Assign To Me'.tr
@@ -24,7 +35,80 @@ class ReadyToShippingButtons extends StatelessWidget {
             : AppColors.darkGrey,
         onPress: () async {
           if (GlobalFunctions.getUserId() != order.assignToUserId) {
-          } else {}
+            await ordersController.assignOrderToMe(
+                token: GlobalFunctions.getFcmToken(), orderId: order.id!);
+            // AppDialogs.showAppDialogWidget(
+            //   context: context,
+            //   title: 'The order  will be assigned to you'.tr,
+            //   actions: [
+            //     AppButton.normalButton(
+            //       title: 'Confirm'.tr,
+            //       shadow: false,
+            //       width: ScreenSizeUtils.getWidthInPercent(context, 25),
+            //       height: 30,
+            //       titleColor: AppColors.white,
+            //       backgroundColor: AppColors.primaryDark,
+            //       onPress: () async {
+            //         await ordersController.assignOrderToMe(
+            //             token: GlobalFunctions.getFcmToken(),
+            //             orderId: order.id!);
+            //       },
+            //     ),
+            //     ///////////////
+            //     AppButton.normalButton(
+            //         title: 'Back'.tr,
+            //         shadow: false,
+            //         width: ScreenSizeUtils.getWidthInPercent(context, 25),
+            //         backgroundColor: AppColors.white,
+            //         titleColor: AppColors.primaryDark,
+            //         height: 30,
+            //         onPress: () {
+            //           Get.back();
+            //         })
+            //   ],
+            // );
+          } else {
+            await ordersController.changeOrderStatus(
+                token: GlobalFunctions.getFcmToken(),
+                status: 'shipped',
+                orderId: order.id!,
+                amount: 0,
+                file: null);
+            // AppDialogs.showAppDialogWidget(
+            //   context: context,
+            //   title: 'The order status will be changed to "shipped"'.tr,
+            //   actions: [
+            //     AppButton.normalButton(
+            //       title: 'Confirm'.tr,
+            //       shadow: false,
+            //       width: ScreenSizeUtils.getWidthInPercent(context, 25),
+            //       height: 30,
+            //       titleColor: AppColors.white,
+            //       backgroundColor: AppColors.primaryDark,
+            //       onPress: () async {
+            //         Get.back();
+            //         await ordersController.changeOrderStatus(
+            //             token: GlobalFunctions.getFcmToken(),
+            //             status: 'shipped',
+            //             orderId: order.id!,
+            //             amount: null,
+            //             file: null);
+            //       },
+            //     ),
+            //     ///////////////
+            //     AppButton.normalButton(
+            //         title: 'Back'.tr,
+            //         shadow: false,
+            //         width: ScreenSizeUtils.getWidthInPercent(context, 25),
+            //         backgroundColor: AppColors.white,
+            //         titleColor: AppColors.primaryDark,
+            //         height: 30,
+            //         onPress: () {
+            //           Get.back();
+            //         })
+            //   ],
+            // );
+          }
         });
   }
 }

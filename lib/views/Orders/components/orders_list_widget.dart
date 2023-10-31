@@ -19,8 +19,9 @@ class OrderList extends StatelessWidget {
     return orders.isEmpty
         ? const Center(child: Text('Data Is Empty'))
         : ListView.builder(
-            controller: ordersController.scrollController,
+            controller: ordersController.orderScrollController,
             itemCount: orders.length + 1,
+            physics: const AlwaysScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               if (index < orders.length) {
                 return buildOrderWidget(index, orders);
@@ -29,7 +30,7 @@ class OrderList extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Center(
-                      child: ordersController.noMoreItems
+                      child: ordersController.orderNoMoreItems
                           ? Text('No More Items'.tr)
                           : const CircularProgressIndicator(),
                     ),
@@ -187,9 +188,7 @@ class OrderList extends StatelessWidget {
               InkWell(
                 onTap: () {
                   ordersController.orderIndex = index;
-                  Get.toNamed(
-                    Routes.ordersDetailsPage,
-                  );
+                  Get.toNamed(Routes.ordersDetailsPage);
                 },
                 child: Align(
                   alignment: GlobalFunctions.getLanLocal() == LangConstants.ara

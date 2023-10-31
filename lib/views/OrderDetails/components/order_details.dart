@@ -1,4 +1,5 @@
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/views/OrderDetails/components/product_widget.dart';
 import 'package:delivery_man_app/views/OrderDetails/components/title_section_widget.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +17,15 @@ class OrderDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int orderIndex = ordersController.orderIndex;
-    final order = ordersController.ordersData.data!.data![orderIndex];
+    int orderIndex;
+    final Order order;
+    if (Get.previousRoute == Routes.myOrdersPage) {
+      orderIndex = ordersController.myOrderIndex;
+      order = ordersController.myOrdersData.data!.data![orderIndex];
+    } else {
+      orderIndex = ordersController.orderIndex;
+      order = ordersController.ordersData.data!.data![orderIndex];
+    }
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(right: 5, left: 5, top: 0, bottom: 91),
@@ -118,11 +126,6 @@ class OrderDetails extends StatelessWidget {
           return OrderDetailsWidget(
               title: 'Seller Id'.tr, value: order.sellerId.toString());
         }
-        // if (index == 4) {
-        //   return OrderDetailsWidget(
-        //       title: 'Order Can Return'.tr,
-        //       value: order.orderCanReturn! ? 'Yes'.tr : 'No'.tr);
-        // }
 
         return null;
       },
@@ -162,8 +165,7 @@ class OrderDetails extends StatelessWidget {
         }
         if (index == 5) {
           return OrderDetailsWidget(
-              title: 'Phone'.tr,
-              value: '+971 ${order.shippingAddressData!.phone}');
+              title: 'Phone'.tr, value: '${order.shippingAddressData!.phone}');
         }
         if (index == 6) {
           return OrderDetailsWidget(

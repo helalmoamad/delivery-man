@@ -1,4 +1,4 @@
-import 'package:delivery_man_app/controllers/MyOrders/myorders_controller.dart';
+import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/handling_errors.dart/handling_errors.dart';
@@ -10,48 +10,49 @@ import '../../shared/widgets/custom_app_bar.dart';
 
 class MyOrdersPage extends StatelessWidget {
   MyOrdersPage({super.key});
-  final MyOrdersController myOrdersController = Get.find<MyOrdersController>();
+  final OrdersController ordersController = Get.find<OrdersController>();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
           appBar: customAppBar(title: 'MyOrders'.tr, button: Container()),
-          body: GetBuilder<MyOrdersController>(builder: (_) {
+          body: GetBuilder<OrdersController>(builder: (_) {
             return HandlingErrors.pageErrorHandling(
-              isCircleShown: myOrdersController.isGetOrderStatusCircleShown,
+              isCircleShown: ordersController.isGetMyOrderStatusCircleShown,
               isNoInternetConnection:
-                  myOrdersController.isGetOrderStatusNoInternetConnection,
+                  ordersController.isGetMyOrderStatusNoInternetConnection,
               onTapTry: () async {
                 String token = GlobalFunctions.getFcmToken();
-                await myOrdersController.getOrderStatusData(token: token);
+                await ordersController.getOrderStatusData(
+                    token: token, isForAllOrders: false);
               },
               page: RefreshIndicator(
                 color: AppColors.primaryDark,
                 onRefresh: () async {
                   debugPrint('refresh');
                   String token = GlobalFunctions.getFcmToken();
-                  await myOrdersController.getOrderStatusData(token: token);
+                  await ordersController.getOrderStatusData(
+                      token: token, isForAllOrders: false);
                 },
                 child: Column(
                   children: [
-                    MyOrderStatusWidget(myOrdersController: myOrdersController),
+                    MyOrderStatusWidget(ordersController: ordersController),
                     ////////////////////////////////////
                     Expanded(
                       child: HandlingErrors.pageErrorHandling(
                         isCircleShown:
-                            myOrdersController.isGetMyOrdersCircleShown,
-                        isNoInternetConnection: myOrdersController
-                            .isGetMyOrdersNoInternetConnection,
+                            ordersController.isGetMyOrdersCircleShown,
+                        isNoInternetConnection:
+                            ordersController.isGetMyOrdersNoInternetConnection,
                         onTapTry: () async {
                           String token = GlobalFunctions.getFcmToken();
-                          await myOrdersController.getMyOrdersData(
+                          await ordersController.getMyOrdersData(
                               token: token,
-                              status: myOrdersController.orderStatus,
+                              status: ordersController.myOrderStatus,
                               offset: 1);
                         },
-                        page:
-                            MyOrderList(myOrdersController: myOrdersController),
+                        page: MyOrderList(ordersController: ordersController),
                       ),
                     )
                   ],

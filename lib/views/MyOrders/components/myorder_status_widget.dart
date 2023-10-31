@@ -1,14 +1,14 @@
-import 'package:delivery_man_app/controllers/MyOrders/myorders_controller.dart';
+import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/constants/color_constants.dart';
 import '../../../shared/widgets/text_widget.dart';
 
 class MyOrderStatusWidget extends StatelessWidget {
-  final MyOrdersController myOrdersController;
+  final OrdersController ordersController;
   const MyOrderStatusWidget({
     super.key,
-    required this.myOrdersController,
+    required this.ordersController,
   });
 
   @override
@@ -18,36 +18,36 @@ class MyOrderStatusWidget extends StatelessWidget {
       child: SizedBox(
         height: 30,
         child: ListView.separated(
-          itemCount: myOrdersController.orderStatusData.length,
+          itemCount: ordersController.orderStatusData.length - 2,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             return InkWell(
               onTap: () {
-                myOrdersController.chooseOrderStatus(
+                ordersController.chooseMyOrderStatus(
                     status:
-                        myOrdersController.orderStatusData[index].toString(),
+                        ordersController.orderStatusData[index + 2].toString(),
                     index: index);
 
-                debugPrint(myOrdersController.orderStatus);
+                debugPrint(ordersController.myOrderStatus);
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextWidget(
                       text: GlobalFunctions.orderStatusText(
-                          inputText: myOrdersController.orderStatusData[index]
+                          inputText: ordersController.orderStatusData[index + 2]
                               .toString()),
                       color: AppColors.blackDark,
                       fontSize: 15,
                       fontWeight:
-                          index == myOrdersController.selectedOrderStatus
+                          index == ordersController.selectedMyOrderStatus
                               ? FontWeight.bold
                               : FontWeight.normal,
                       textAlign: TextAlign.start,
                       maxline: 1),
 
                   ///////////
-                  index == myOrdersController.selectedOrderStatus
+                  index == ordersController.selectedMyOrderStatus
                       ? Container(
                           width: 80,
                           height: 2,

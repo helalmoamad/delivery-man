@@ -92,4 +92,28 @@ class OrdersRepository {
       return Left(OfflineFailure());
     }
   }
+
+  Future<Either<Failure, Unit>> changeStatus(
+      {required String token,
+      required String status,
+      required int orderId,
+      required int amount,
+      required String? file}) async {
+    if (await networkInfo.isConnected) {
+      try {
+        // final dataResponse =
+        await ordersApiService.postChangeStatusApi(
+            token: token,
+            orderId: orderId,
+            file: file,
+            status: status,
+            amount: amount);
+        return const Right(unit);
+      } on ServerException {
+        return left(ServerFailure());
+      }
+    } else {
+      return Left(OfflineFailure());
+    }
+  }
 }

@@ -14,11 +14,11 @@ class OrderStatusWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
       child: SizedBox(
         height: 30,
         child: ListView.separated(
-          itemCount: ordersController.orderStatusData.length,
+          itemCount: 3,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             return InkWell(
@@ -42,7 +42,7 @@ class OrderStatusWidget extends StatelessWidget {
                           ? FontWeight.bold
                           : FontWeight.normal,
                       textAlign: TextAlign.start,
-                      maxline: 1),
+                      maxline: 2),
 
                   ///////////
                   index == ordersController.selectedOrderStatus

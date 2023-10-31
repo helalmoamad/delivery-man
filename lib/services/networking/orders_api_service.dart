@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import '../../controllers/Client/client_controller.dart';
 import '../../models/Orders/list_order_model.dart';
 import '../../shared/errors/exceptions.dart';
 import 'api_constants.dart';
+import 'package:http/http.dart' as http;
 
 abstract class OrdersApiService {
   Future<ListOrderModel> getListOrderDataApi(
@@ -22,6 +24,13 @@ abstract class OrdersApiService {
 
   Future<AssignOrderToMeDataModel> postAssignOrderToMeApi(
       {required String token, required int orderId});
+
+  Future<Unit> postChangeStatusApi(
+      {required String token,
+      required String status,
+      required int orderId,
+      required int amount,
+      required String? file});
 }
 
 class OrdersApiServiceImpWithHttp implements OrdersApiService {
@@ -174,6 +183,50 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       final AssignOrderToMeDataModel responseData =
           AssignOrderToMeDataModel.fromJson(data);
       return responseData;
+    } else {
+      debugPrint('3');
+      debugPrint('AssignOrderToMe Failed');
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<Unit> postChangeStatusApi(
+      {required String token,
+      required String status,
+      required int orderId,
+      required int amount,
+      required String? file}) async {
+    final uri = Uri.parse(
+        '${ApiConstants.baseUrl}/api/${ApiConstants.version}/orders/change_status');
+
+    var request = http.MultipartRequest('POST', uri);
+
+    file == null
+        ? null
+        : request.files.add(await http.MultipartFile.fromPath('file', file));
+
+    request.headers.addAll({
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+
+    request.fields['status'] = status.toString();
+    request.fields['order_id'] = orderId.toString();
+    request.fields['received_amount'] = amount.toString();
+
+    debugPrint('1');
+
+    var response = await request.send();
+    debugPrint(response.statusCode.toString());
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      debugPrint('2');
+      // final res = await response.stream.transform(utf8.decoder).first;
+      // final data = jsonDecode(res);
+      debugPrint('AssignOrderToMe Success');
+      // final ChangeStatusModle responseData = ChangeStatusModle.fromJson(data);
+      return Future.value(unit);
     } else {
       debugPrint('3');
       debugPrint('AssignOrderToMe Failed');

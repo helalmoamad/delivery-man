@@ -92,4 +92,9 @@ const Map<String, String> ar = {
   'Assign Order Succeeded': 'تم إسناد الطلب بنجاح',
   'Assign To Me': 'إسناد الطلب لي',
   'Convert To Shipped': 'تحويل إلى تم الشحن',
+  'Convert To Out For Delivery': 'تحويل إلى خارج للتوصيل',
+  'Changing Order Status Succeeded': 'تم تغيير حالة الطلب بنجاح',
+  'The order status will be changed to "shipped"':
+      'سيتم تحويل حالة الطلب لـ "تم الشحن"',
+  'The order  will be assigned to you': 'سيتم إسنادالطلب لك'
 };

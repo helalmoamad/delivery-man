@@ -1,4 +1,4 @@
-import 'package:delivery_man_app/controllers/MyOrders/myorders_controller.dart';
+import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/models/Orders/list_order_model.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
@@ -9,18 +9,19 @@ import 'package:get/get.dart';
 import '../../../shared/constants/color_constants.dart';
 
 class MyOrderList extends StatelessWidget {
-  final MyOrdersController myOrdersController;
+  final OrdersController ordersController;
 
-  const MyOrderList({super.key, required this.myOrdersController});
+  const MyOrderList({super.key, required this.ordersController});
 
   @override
   Widget build(BuildContext context) {
-    final orders = myOrdersController.myOrdersData.data!.data!;
+    final orders = ordersController.myOrdersData.data!.data!;
     return orders.isEmpty
         ? const Center(child: Text('Data Is Empty'))
         : ListView.builder(
-            controller: myOrdersController.scrollController,
+            controller: ordersController.myOrderScrollController,
             itemCount: orders.length + 1,
+            physics: const AlwaysScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               if (index < orders.length) {
                 return buildOrderWidget(index, orders);
@@ -29,7 +30,7 @@ class MyOrderList extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Center(
-                      child: myOrdersController.noMoreItems
+                      child: ordersController.myOrderNoMoreItems
                           ? Text('No More Items'.tr)
                           : const CircularProgressIndicator(),
                     ),
@@ -186,7 +187,7 @@ class MyOrderList extends StatelessWidget {
               ////
               InkWell(
                 onTap: () {
-                  myOrdersController.orderIndex = index;
+                  ordersController.myOrderIndex = index;
                   Get.toNamed(
                     Routes.ordersDetailsPage,
                   );
