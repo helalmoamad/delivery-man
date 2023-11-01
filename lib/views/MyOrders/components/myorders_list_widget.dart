@@ -188,6 +188,7 @@ class MyOrderList extends StatelessWidget {
               InkWell(
                 onTap: () {
                   ordersController.myOrderIndex = index;
+                  ordersController.previousRoute = Get.currentRoute;
                   Get.toNamed(
                     Routes.ordersDetailsPage,
                   );

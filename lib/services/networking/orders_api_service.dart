@@ -29,7 +29,7 @@ abstract class OrdersApiService {
       {required String token,
       required String status,
       required int orderId,
-      required int amount,
+      required int? amount,
       required String? file});
 }
 
@@ -195,7 +195,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       {required String token,
       required String status,
       required int orderId,
-      required int amount,
+      required int? amount,
       required String? file}) async {
     final uri = Uri.parse(
         '${ApiConstants.baseUrl}/api/${ApiConstants.version}/orders/change_status');
@@ -214,7 +214,9 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
 
     request.fields['status'] = status.toString();
     request.fields['order_id'] = orderId.toString();
-    request.fields['received_amount'] = amount.toString();
+    amount == null
+        ? null
+        : request.fields['received_amount'] = amount.toString();
 
     debugPrint('1');
 

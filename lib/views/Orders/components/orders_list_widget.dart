@@ -188,6 +188,7 @@ class OrderList extends StatelessWidget {
               InkWell(
                 onTap: () {
                   ordersController.orderIndex = index;
+                  ordersController.previousRoute = Get.currentRoute;
                   Get.toNamed(Routes.ordersDetailsPage);
                 },
                 child: Align(

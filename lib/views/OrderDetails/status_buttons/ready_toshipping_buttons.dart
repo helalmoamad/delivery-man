@@ -17,7 +17,7 @@ class ReadyToShippingButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     int orderIndex;
     final Order order;
-    if (Get.previousRoute == Routes.myOrdersPage) {
+    if (ordersController.previousRoute == Routes.myOrdersPage) {
       orderIndex = ordersController.myOrderIndex;
       order = ordersController.myOrdersData.data!.data![orderIndex];
     } else {
@@ -35,79 +35,72 @@ class ReadyToShippingButtons extends StatelessWidget {
             : AppColors.darkGrey,
         onPress: () async {
           if (GlobalFunctions.getUserId() != order.assignToUserId) {
-            await ordersController.assignOrderToMe(
-                token: GlobalFunctions.getFcmToken(), orderId: order.id!);
-            // AppDialogs.showAppDialogWidget(
-            //   context: context,
-            //   title: 'The order  will be assigned to you'.tr,
-            //   actions: [
-            //     AppButton.normalButton(
-            //       title: 'Confirm'.tr,
-            //       shadow: false,
-            //       width: ScreenSizeUtils.getWidthInPercent(context, 25),
-            //       height: 30,
-            //       titleColor: AppColors.white,
-            //       backgroundColor: AppColors.primaryDark,
-            //       onPress: () async {
-            //         await ordersController.assignOrderToMe(
-            //             token: GlobalFunctions.getFcmToken(),
-            //             orderId: order.id!);
-            //       },
-            //     ),
-            //     ///////////////
-            //     AppButton.normalButton(
-            //         title: 'Back'.tr,
-            //         shadow: false,
-            //         width: ScreenSizeUtils.getWidthInPercent(context, 25),
-            //         backgroundColor: AppColors.white,
-            //         titleColor: AppColors.primaryDark,
-            //         height: 30,
-            //         onPress: () {
-            //           Get.back();
-            //         })
-            //   ],
-            // );
+            AppDialogs.showAppDialogWidget(
+              context: context,
+              title: 'The order  will be assigned to you'.tr,
+              actions: [
+                AppButton.normalButton(
+                  title: 'Confirm'.tr,
+                  shadow: false,
+                  width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                  height: 30,
+                  titleColor: AppColors.white,
+                  backgroundColor: AppColors.primaryDark,
+                  onPress: () async {
+                    Get.back();
+                    await ordersController.assignOrderToMe(
+                        token: GlobalFunctions.getFcmToken(),
+                        orderId: order.id!);
+                  },
+                ),
+                ///////////////
+                AppButton.normalButton(
+                    title: 'Back'.tr,
+                    shadow: false,
+                    width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                    backgroundColor: AppColors.white,
+                    titleColor: AppColors.primaryDark,
+                    height: 30,
+                    onPress: () {
+                      Get.back();
+                    })
+              ],
+            );
           } else {
-            await ordersController.changeOrderStatus(
-                token: GlobalFunctions.getFcmToken(),
-                status: 'shipped',
-                orderId: order.id!,
-                amount: 0,
-                file: null);
-            // AppDialogs.showAppDialogWidget(
-            //   context: context,
-            //   title: 'The order status will be changed to "shipped"'.tr,
-            //   actions: [
-            //     AppButton.normalButton(
-            //       title: 'Confirm'.tr,
-            //       shadow: false,
-            //       width: ScreenSizeUtils.getWidthInPercent(context, 25),
-            //       height: 30,
-            //       titleColor: AppColors.white,
-            //       backgroundColor: AppColors.primaryDark,
-            //       onPress: () async {
-            //         Get.back();
-            //         await ordersController.changeOrderStatus(
-            //             token: GlobalFunctions.getFcmToken(),
-            //             status: 'shipped',
-            //             orderId: order.id!,
-            //             amount: null,
-            //             file: null);
-            //       },
-            //     ),
-            //     ///////////////
-            //     AppButton.normalButton(
-            //         title: 'Back'.tr,
-            //         shadow: false,
-            //         width: ScreenSizeUtils.getWidthInPercent(context, 25),
-            //         backgroundColor: AppColors.white,
-            //         titleColor: AppColors.primaryDark,
-            //         height: 30,
-            //         onPress: () {
-            //           Get.back();
-            //         })
-            //   ],
-            // );
+            AppDialogs.showAppDialogWidget(
+              context: context,
+              title: 'The order status will be changed to "shipped"'.tr,
+              actions: [
+                AppButton.normalButton(
+                  title: 'Confirm'.tr,
+                  shadow: false,
+                  width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                  height: 30,
+                  titleColor: AppColors.white,
+                  backgroundColor: AppColors.primaryDark,
+                  onPress: () async {
+                    Get.back();
+                    await ordersController.changeOrderStatus(
+                        token: GlobalFunctions.getFcmToken(),
+                        status: 'shipped',
+                        orderId: order.id!,
+                        amount: null,
+                        file: null);
+                  },
+                ),
+                ///////////////
+                AppButton.normalButton(
+                    title: 'Back'.tr,
+                    shadow: false,
+                    width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                    backgroundColor: AppColors.white,
+                    titleColor: AppColors.primaryDark,
+                    height: 30,
+                    onPress: () {
+                      Get.back();
+                    })
+              ],
+            );
           }
         });
   }

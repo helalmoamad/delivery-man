@@ -96,5 +96,20 @@ const Map<String, String> ar = {
   'Changing Order Status Succeeded': 'تم تغيير حالة الطلب بنجاح',
   'The order status will be changed to "shipped"':
       'سيتم تحويل حالة الطلب لـ "تم الشحن"',
-  'The order  will be assigned to you': 'سيتم إسنادالطلب لك'
+  'The order  will be assigned to you': 'سيتم إسنادالطلب لك',
+  'The order status will be changed to "Out For Delivery"':
+      'سيتم تحويل حالة الطلب لـ "خارج للتوصيل"',
+  'Audio recording will start': 'سيتم بدء تسجيل الصوت',
+  'You need voice recording permission': 'تحتاج إلى تفعيل سماحية تسجيل الصوت',
+  'Are you sure to stop recording and leave this page ?':
+      'هل أنت متأكد من إيقاف التسجيل و مغادرة هذه الصفحة ؟',
+  'Recording . . .': 'يتم التسجيل . . .',
+  'Convert To Delivered': 'تحويل إلى تم التوصيل',
+  'Convert To Returned': 'تحويل إلى تم إرجاعه',
+  'Convert To Partial Returned': 'تحويل إلى تم إرجاعه جزئياً',
+  'Convert To Failed': 'تحويل إلى فشلت العملية',
+  'The order status will be changed to "Returned"':
+      'سيتم تحويل حالةالطلب لـ "تم إرجاعه"',
+  'The order status will be changed to "Failed"':
+      'سيتم تحويل حالة الطلب لـ "فشل"',
 };

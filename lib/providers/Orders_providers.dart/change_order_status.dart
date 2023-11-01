@@ -11,7 +11,7 @@ class ChangeOrderStatusProvider {
       {required String token,
       required String status,
       required int orderId,
-      required int amount,
+      required int? amount,
       required String? file}) async {
     return await ordersRepository.changeStatus(
         token: token,

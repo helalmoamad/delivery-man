@@ -1,5 +1,9 @@
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/models/Orders/list_order_model.dart';
+import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
+import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
+import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
 import 'package:delivery_man_app/shared/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +18,8 @@ class OutForDeliveryButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int orderIndex = ordersController.myOrderIndex;
+    Order order = ordersController.myOrdersData.data!.data![orderIndex];
     return GetBuilder<OrdersController>(builder: (_) {
       return ordersController.isStartDeliveryButton
           ? AppButton.normalButton(
@@ -22,91 +28,192 @@ class OutForDeliveryButtons extends StatelessWidget {
               titleSize: 15,
               backgroundColor: AppColors.secondary,
               onPress: () async {
-                ordersController.changeDeliveringButton(false);
+                AppDialogs.showAppDialogWidget(
+                  context: context,
+                  title: 'Audio recording will start'.tr,
+                  actions: [
+                    AppButton.normalButton(
+                      title: 'Confirm'.tr,
+                      shadow: false,
+                      width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                      height: 30,
+                      titleColor: AppColors.white,
+                      backgroundColor: AppColors.primaryDark,
+                      onPress: () async {
+                        Get.back();
+                        await ordersController.startRecording();
+                        ordersController.changeDeliveringButton(false);
+                      },
+                    ),
+                    ///////////////
+                    AppButton.normalButton(
+                        title: 'Back'.tr,
+                        shadow: false,
+                        width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                        backgroundColor: AppColors.white,
+                        titleColor: AppColors.primaryDark,
+                        height: 30,
+                        onPress: () {
+                          Get.back();
+                        })
+                  ],
+                );
               })
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: AppButton.normalButton(
-                          title: 'Convert To Delivered'.tr,
-                          height: 30,
-                          titleSize: 13,
-                          backgroundColor:
-                              const Color.fromARGB(255, 38, 121, 41),
-                          onPress: () async {}),
-                    ),
-                    /////////////////
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    /////////////////
-                    Expanded(
-                      child: AppButton.normalButton(
-                          title: 'Convert To Returned'.tr,
-                          height: 30,
-                          titleSize: 13,
-                          backgroundColor: AppColors.darkGrey,
-                          onPress: () async {}),
-                    )
-                  ],
-                ),
-                ///////////////////
-                Row(
-                  children: [
-                    Expanded(
-                      child: AppButton.normalButton(
-                          title: 'Convert To Partial Returned'.tr,
-                          height: 30,
-                          titleSize: 13,
-                          backgroundColor: AppColors.secondary,
-                          onPress: () async {}),
-                    ),
-                    /////////////////
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    /////////////////
-                    Expanded(
-                      child: AppButton.normalButton(
-                          title: 'Convert To Failed'.tr,
-                          height: 30,
-                          titleSize: 13,
-                          backgroundColor:
-                              const Color.fromARGB(255, 136, 25, 17),
-                          onPress: () async {}),
-                    )
-                  ],
-                ),
-
-                // AppButton.normalButton(
-                //     title: 'Start Delivering'.tr,
-                //     height: 40,
-                //     titleSize: 13,
-                //     backgroundColor:
-                //         // ordersController.isStartDeliveryButton
-                //         // ?
-                //         AppColors.secondary,
-                //     // : AppColors.darkGrey,
-                //     onPress: () async {
-                //       if (ordersController.isStartDeliveryButton) {
-                //         await ordersController.startRecording();
-                //         ordersController.changeDeliveringButton(false);
-                //       } else {
-                //         AppDialogs.showAppDialogWidget(
-                //             context: context,
-                //             title: 'Enter The Cash Amount'.tr,
-                //             actions: [buildDialogAction()]);
-                //       }
-                //     }),
-              ],
-            );
+          : buildConvertButtons(context, order);
     });
   }
 
-  Padding buildDialogAction() {
+  Widget buildConvertButtons(BuildContext context, Order order) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: AppButton.normalButton(
+                  title: 'Convert To Delivered'.tr,
+                  height: 40,
+                  titleSize: 13,
+                  backgroundColor: const Color.fromARGB(255, 38, 121, 41),
+                  onPress: () {
+                    AppDialogs.showAppDialogWidget(
+                        context: context,
+                        title: 'Enter The Cash Amount'.tr,
+                        actions: [buildDialogAction(order, 'delivered')]);
+                  }),
+            ),
+            /////////////////
+            const SizedBox(
+              width: 5,
+            ),
+            /////////////////
+            Expanded(
+              child: AppButton.normalButton(
+                  title: 'Convert To Returned'.tr,
+                  height: 40,
+                  titleSize: 13,
+                  backgroundColor: AppColors.darkGrey,
+                  onPress: () {
+                    AppDialogs.showAppDialogWidget(
+                      context: context,
+                      title:
+                          'The order status will be changed to "Returned"'.tr,
+                      actions: [
+                        AppButton.normalButton(
+                          title: 'Confirm'.tr,
+                          shadow: false,
+                          width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                          height: 30,
+                          titleColor: AppColors.white,
+                          backgroundColor: AppColors.primaryDark,
+                          onPress: () async {
+                            Get.back();
+                            await ordersController
+                                .stopRecording()
+                                .then((value) async {
+                              await ordersController.changeOrderStatus(
+                                  token: GlobalFunctions.getFcmToken(),
+                                  status: 'returned',
+                                  orderId: order.id!,
+                                  amount: null,
+                                  file: ordersController.audioPath);
+                            });
+                          },
+                        ),
+                        ///////////////
+                        AppButton.normalButton(
+                            title: 'Back'.tr,
+                            shadow: false,
+                            width:
+                                ScreenSizeUtils.getWidthInPercent(context, 25),
+                            backgroundColor: AppColors.white,
+                            titleColor: AppColors.primaryDark,
+                            height: 30,
+                            onPress: () {
+                              Get.back();
+                            })
+                      ],
+                    );
+                  }),
+            )
+          ],
+        ),
+        ///////////////////
+        Row(
+          children: [
+            Expanded(
+              child: AppButton.normalButton(
+                  title: 'Convert To Partial Returned'.tr,
+                  height: 40,
+                  titleSize: 13,
+                  backgroundColor: AppColors.secondary,
+                  onPress: () {
+                    AppDialogs.showAppDialogWidget(
+                        context: context,
+                        title: 'Enter The Cash Amount'.tr,
+                        actions: [buildDialogAction(order, 'partial_return')]);
+                  }),
+            ),
+            /////////////////
+            const SizedBox(
+              width: 5,
+            ),
+            /////////////////
+            Expanded(
+              child: AppButton.normalButton(
+                  title: 'Convert To Failed'.tr,
+                  height: 40,
+                  titleSize: 13,
+                  backgroundColor: const Color.fromARGB(255, 136, 25, 17),
+                  onPress: () {
+                    AppDialogs.showAppDialogWidget(
+                      context: context,
+                      title: 'The order status will be changed to "Failed"'.tr,
+                      actions: [
+                        AppButton.normalButton(
+                          title: 'Confirm'.tr,
+                          shadow: false,
+                          width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                          height: 30,
+                          titleColor: AppColors.white,
+                          backgroundColor: AppColors.primaryDark,
+                          onPress: () async {
+                            Get.back();
+                            await ordersController
+                                .stopRecording()
+                                .then((value) async {
+                              await ordersController.changeOrderStatus(
+                                  token: GlobalFunctions.getFcmToken(),
+                                  status: 'failed',
+                                  orderId: order.id!,
+                                  amount: null,
+                                  file: ordersController.audioPath);
+                            });
+                          },
+                        ),
+                        ///////////////
+                        AppButton.normalButton(
+                            title: 'Back'.tr,
+                            shadow: false,
+                            width:
+                                ScreenSizeUtils.getWidthInPercent(context, 25),
+                            backgroundColor: AppColors.white,
+                            titleColor: AppColors.primaryDark,
+                            height: 30,
+                            onPress: () {
+                              Get.back();
+                            })
+                      ],
+                    );
+                  }),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
+  Padding buildDialogAction(Order order, String orderStatus) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Form(
@@ -114,7 +221,7 @@ class OutForDeliveryButtons extends StatelessWidget {
         child: Column(
           children: [
             CustomTextField(
-              textInputType: TextInputType.text,
+              textInputType: TextInputType.number,
               controller: cashKey,
               hintText: '',
               labelText: 'Cash Amount'.tr,
@@ -140,8 +247,14 @@ class OutForDeliveryButtons extends StatelessWidget {
               onPress: () async {
                 if (formKey.currentState!.validate()) {
                   Get.back();
-                  await ordersController.stopRecording();
-                  // ordersController.changePlayRecordButton(true);
+                  await ordersController.stopRecording().then((value) async {
+                    await ordersController.changeOrderStatus(
+                        token: GlobalFunctions.getFcmToken(),
+                        status: orderStatus,
+                        orderId: order.id!,
+                        amount: int.parse(cashKey.text),
+                        file: ordersController.audioPath);
+                  });
                 }
               },
             ),

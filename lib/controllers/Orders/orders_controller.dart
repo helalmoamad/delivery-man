@@ -29,6 +29,8 @@ class OrdersController extends GetxController {
 
   bool isChangeOrderStatusCircleShown = false;
 
+  String previousRoute = '';
+
   late ListOrderModel ordersData;
   late List<dynamic> orderStatusData;
 
@@ -292,6 +294,9 @@ class OrdersController extends GetxController {
         await record.start();
         isRecording = true;
         update();
+      } else {
+        SnackBarWidgets.showFailureSnackBar(
+            '', 'You need voice recording permission'.tr);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -464,7 +469,8 @@ class OrdersController extends GetxController {
       assignOrderToMeData = data;
       hideAssignOrderCircleIndicator();
       SnackBarWidgets.showSuccessSnackBar('Assign Order Succeeded'.tr, '');
-      update();
+      Get.close(1);
+      await getListOrderData(token: token, status: orderStatus, offset: 1);
     });
   }
 
@@ -472,7 +478,7 @@ class OrdersController extends GetxController {
       {required String token,
       required String status,
       required int orderId,
-      required int amount,
+      required int? amount,
       required String? file}) async {
     showChangeOrderStatusCircleIndicator();
     final failureOrData = await changeOrderStatusProvider.call(
@@ -493,6 +499,14 @@ class OrdersController extends GetxController {
       SnackBarWidgets.showSuccessSnackBar(
           'Changing Order Status Succeeded'.tr, '');
       Get.close(1);
+
+      if (status == 'delivered' ||
+          status == 'partial_return' ||
+          status == 'returned' ||
+          status == 'failed') {
+        changeDeliveringButton(true);
+        audioPath = '';
+      }
       await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
     });
   }

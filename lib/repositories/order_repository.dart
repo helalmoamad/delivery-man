@@ -97,11 +97,10 @@ class OrdersRepository {
       {required String token,
       required String status,
       required int orderId,
-      required int amount,
+      required int? amount,
       required String? file}) async {
     if (await networkInfo.isConnected) {
       try {
-        // final dataResponse =
         await ordersApiService.postChangeStatusApi(
             token: token,
             orderId: orderId,

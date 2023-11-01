@@ -98,4 +98,19 @@ const Map<String, String> en = {
   'The order status will be changed to "shipped"':
       'The order status will be changed to "shipped"',
   'The order  will be assigned to you': 'The order  will be assigned to you',
+  'The order status will be changed to "Out For Delivery"':
+      'The order status will be changed to "Out For Delivery"',
+  'Audio recording will start': 'Audio recording will start',
+  'You need voice recording permission': 'You need voice recording permission',
+  'Are you sure to stop recording and leave this page ?':
+      'Are you sure to stop recording and leave this page ?',
+  'Recording . . .': 'Recording . . .',
+  'Convert To Delivered': 'Convert To Delivered',
+  'Convert To Returned': 'Convert To Returned',
+  'Convert To Partial Returned': 'Convert To Partial Returned',
+  'Convert To Failed': 'Convert To Failed',
+  'The order status will be changed to "Returned"':
+      'The order status will be changed to "Returned"',
+  'The order status will be changed to "Failed"':
+      'The order status will be changed to "Failed"',
 };

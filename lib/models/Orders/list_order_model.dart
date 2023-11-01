@@ -197,14 +197,14 @@ class ProductDetails {
   final int? id;
   final String? name;
   final String? slug;
-  final double? price;
+  final dynamic price;
   final List<String>? images;
   final Rating? rating;
   final String? details;
   final bool? inStock;
   final String? thumbnail;
   final String? shareLink;
-  final int? offerPrice;
+  final dynamic offerPrice;
   final bool? isFavourite;
   final String? priceFormatted;
   final String? offerPriceFormatted;

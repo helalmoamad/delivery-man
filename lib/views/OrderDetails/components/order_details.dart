@@ -18,17 +18,28 @@ class OrderDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int orderIndex;
+    String status;
     final Order order;
-    if (Get.previousRoute == Routes.myOrdersPage) {
+    if (ordersController.previousRoute == Routes.myOrdersPage) {
       orderIndex = ordersController.myOrderIndex;
       order = ordersController.myOrdersData.data!.data![orderIndex];
+      status = ordersController.myOrderStatus;
     } else {
       orderIndex = ordersController.orderIndex;
       order = ordersController.ordersData.data!.data![orderIndex];
+      status = ordersController.orderStatus;
     }
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.only(right: 5, left: 5, top: 0, bottom: 91),
+        padding: EdgeInsets.only(
+            right: 5,
+            left: 5,
+            top: 0,
+            bottom: (status == 'ready_to_shipping' ||
+                    status == 'shipped' ||
+                    status == 'out_for_delivery')
+                ? 101
+                : 10),
         child: Column(
           children: [
             Column(
