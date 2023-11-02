@@ -30,6 +30,7 @@ abstract class OrdersApiService {
       required String status,
       required int orderId,
       required int? amount,
+      required List<ProductModel>? returnedProducts,
       required String? file});
 }
 
@@ -191,26 +192,33 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   }
 
   @override
-  Future<Unit> postChangeStatusApi(
-      {required String token,
-      required String status,
-      required int orderId,
-      required int? amount,
-      required String? file}) async {
+  Future<Unit> postChangeStatusApi({
+    required String token,
+    required String status,
+    required int orderId,
+    required int? amount,
+    required List<ProductModel>? returnedProducts,
+    required String? file,
+  }) async {
     final uri = Uri.parse(
         '${ApiConstants.baseUrl}/api/${ApiConstants.version}/orders/change_status');
 
     var request = http.MultipartRequest('POST', uri);
-
-    file == null
-        ? null
-        : request.files.add(await http.MultipartFile.fromPath('file', file));
 
     request.headers.addAll({
       'Content-type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
     });
+
+    file == null
+        ? null
+        : request.files.add(await http.MultipartFile.fromPath('file', file));
+
+    returnedProducts == null
+        ? null
+        : request.fields['returned_products'] = json.encode(
+            List<dynamic>.from(returnedProducts.map((x) => x.toJson())));
 
     request.fields['status'] = status.toString();
     request.fields['order_id'] = orderId.toString();
@@ -222,16 +230,18 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
 
     var response = await request.send();
     debugPrint(response.statusCode.toString());
+    final res = await response.stream.transform(utf8.decoder).first;
     if (response.statusCode >= 200 && response.statusCode < 300) {
       debugPrint('2');
-      // final res = await response.stream.transform(utf8.decoder).first;
+      //
       // final data = jsonDecode(res);
-      debugPrint('AssignOrderToMe Success');
+      debugPrint('ChangeStatus Success');
       // final ChangeStatusModle responseData = ChangeStatusModle.fromJson(data);
       return Future.value(unit);
     } else {
       debugPrint('3');
-      debugPrint('AssignOrderToMe Failed');
+      debugPrint(res.toString());
+      debugPrint('ChangeStatus Failed');
       throw ServerException();
     }
   }

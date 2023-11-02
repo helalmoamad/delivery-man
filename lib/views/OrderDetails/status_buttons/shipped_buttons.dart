@@ -15,7 +15,7 @@ class ShippedButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int orderIndex = ordersController.myOrderIndex;
-    Order order = ordersController.myOrdersData.data!.data![orderIndex];
+    OrderModel order = ordersController.myOrdersData.data!.data![orderIndex];
     return AppButton.normalButton(
         title: 'Convert To Out For Delivery'.tr,
         height: 40,
@@ -36,11 +36,10 @@ class ShippedButtons extends StatelessWidget {
                 onPress: () async {
                   Get.back();
                   await ordersController.changeOrderStatus(
-                      token: GlobalFunctions.getFcmToken(),
-                      status: 'out_for_delivery',
-                      orderId: order.id!,
-                      amount: 0,
-                      file: null);
+                    token: GlobalFunctions.getFcmToken(),
+                    status: 'out_for_delivery',
+                    orderId: order.id!,
+                  );
                 },
               ),
               ///////////////

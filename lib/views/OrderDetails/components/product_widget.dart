@@ -49,7 +49,7 @@ class ProductsWidget extends StatelessWidget {
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       TextWidget(
                           text: title,
@@ -57,7 +57,7 @@ class ProductsWidget extends StatelessWidget {
                           fontSize: 13,
                           minFontSize: 10,
                           fontWeight: FontWeight.normal,
-                          textAlign: TextAlign.start,
+                          textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           maxline: 3),
                       ////////////////////

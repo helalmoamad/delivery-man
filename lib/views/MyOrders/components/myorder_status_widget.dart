@@ -16,7 +16,7 @@ class MyOrderStatusWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: SizedBox(
-        height: 30,
+        height: 35,
         child: ListView.separated(
           itemCount: ordersController.orderStatusData.length - 2,
           scrollDirection: Axis.horizontal,
@@ -30,37 +30,41 @@ class MyOrderStatusWidget extends StatelessWidget {
 
                 debugPrint(ordersController.myOrderStatus);
               },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextWidget(
-                      text: GlobalFunctions.orderStatusText(
-                          inputText: ordersController.orderStatusData[index + 2]
-                              .toString()),
-                      color: AppColors.blackDark,
-                      fontSize: 15,
-                      fontWeight:
-                          index == ordersController.selectedMyOrderStatus
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                      textAlign: TextAlign.start,
-                      maxline: 1),
+              child: SizedBox(
+                height: 35,
+                width: 130,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextWidget(
+                        text: GlobalFunctions.orderStatusText(
+                            inputText: ordersController
+                                .orderStatusData[index + 2]
+                                .toString()),
+                        color: AppColors.blackDark,
+                        fontSize: 15,
+                        fontWeight:
+                            index == ordersController.selectedMyOrderStatus
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                        textAlign: TextAlign.center,
+                        maxline: 1),
 
-                  ///////////
-                  index == ordersController.selectedMyOrderStatus
-                      ? Container(
-                          width: 80,
-                          height: 2,
-                          color: AppColors.primaryDark,
-                        )
-                      : Container()
-                ],
+                    ///////////
+                    index == ordersController.selectedMyOrderStatus
+                        ? Container(
+                            height: 2,
+                            color: AppColors.primaryDark,
+                          )
+                        : Container()
+                  ],
+                ),
               ),
             );
           },
           separatorBuilder: (context, index) {
             return const SizedBox(
-              width: 20,
+              width: 0,
             );
           },
         ),

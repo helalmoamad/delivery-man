@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:delivery_man_app/models/Orders/list_order_model.dart';
 import 'package:delivery_man_app/repositories/order_repository.dart';
 import '../../shared/errors/failures.dart';
 
@@ -12,12 +13,14 @@ class ChangeOrderStatusProvider {
       required String status,
       required int orderId,
       required int? amount,
+      required List<ProductModel>? returnedProducts,
       required String? file}) async {
     return await ordersRepository.changeStatus(
         token: token,
         orderId: orderId,
         file: file,
         status: status,
+        returnedProducts: returnedProducts,
         amount: amount);
   }
 }

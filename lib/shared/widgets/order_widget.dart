@@ -1,11 +1,12 @@
 import 'package:delivery_man_app/models/Orders/list_order_model.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
+import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class OrderWidget extends StatelessWidget {
-  final List<Order> orders;
+  final List<OrderModel> orders;
   final int index;
   final void Function() onTapViewDetails;
   const OrderWidget(
@@ -63,8 +64,10 @@ class OrderWidget extends StatelessWidget {
                 height: 8,
               ),
               /////////////////////////
-              buildOrderFirstDetailsWidget('${'Order Status'.tr} :',
-                  orders[index].orderStatus.toString()),
+              buildOrderFirstDetailsWidget(
+                  '${'Order Status'.tr} :',
+                  GlobalFunctions.orderStatusText(
+                      inputText: orders[index].orderStatus.toString())),
               ///////////////////////
               const SizedBox(
                 height: 8,

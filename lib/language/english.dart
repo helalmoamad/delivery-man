@@ -113,4 +113,13 @@ const Map<String, String> en = {
       'The order status will be changed to "Returned"',
   'The order status will be changed to "Failed"':
       'The order status will be changed to "Failed"',
+  'Are you sure you want to unassign to the vehicle ?':
+      'Are you sure you want to unassign to the vehicle ?',
+  'Add to returned': 'Add to returned',
+  'Remove from returned': 'Remove from returned',
+  'Add the returned products': 'Add the returned products',
+  'You have to add the returned products first':
+      'You have to add the returned products first',
+  'Returned Products': 'Returned Products',
+  'Order Products': 'Order Products',
 };

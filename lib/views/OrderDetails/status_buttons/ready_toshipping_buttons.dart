@@ -16,7 +16,7 @@ class ReadyToShippingButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int orderIndex;
-    final Order order;
+    final OrderModel order;
     if (ordersController.previousRoute == Routes.myOrdersPage) {
       orderIndex = ordersController.myOrderIndex;
       order = ordersController.myOrdersData.data!.data![orderIndex];
@@ -81,11 +81,10 @@ class ReadyToShippingButtons extends StatelessWidget {
                   onPress: () async {
                     Get.back();
                     await ordersController.changeOrderStatus(
-                        token: GlobalFunctions.getFcmToken(),
-                        status: 'shipped',
-                        orderId: order.id!,
-                        amount: null,
-                        file: null);
+                      token: GlobalFunctions.getFcmToken(),
+                      status: 'shipped',
+                      orderId: order.id!,
+                    );
                   },
                 ),
                 ///////////////

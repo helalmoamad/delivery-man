@@ -3,6 +3,7 @@ import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
+import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
 import 'package:delivery_man_app/shared/widgets/circle_indecator_widget.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
@@ -39,10 +40,42 @@ class OrdersPage extends StatelessWidget {
                       if (GlobalFunctions.getAssignVehicleToUserId() == -1) {
                         Get.toNamed(Routes.scanQRPage);
                       } else {
-                        // print(GlobalFunctions.getAssignToUserId());
-                        await ordersController.unAssignToVehicle(
-                            token: GlobalFunctions.getFcmToken(),
-                            vehicleId: GlobalFunctions.getAssignedVehicleId());
+                        AppDialogs.showAppDialogWidget(
+                          context: context,
+                          title:
+                              'Are you sure you want to unassign to the vehicle ?'
+                                  .tr,
+                          actions: [
+                            AppButton.normalButton(
+                              title: 'Confirm'.tr,
+                              shadow: false,
+                              width: ScreenSizeUtils.getWidthInPercent(
+                                  context, 25),
+                              height: 30,
+                              titleColor: AppColors.white,
+                              backgroundColor: AppColors.primaryDark,
+                              onPress: () async {
+                                Get.back();
+                                await ordersController.unAssignToVehicle(
+                                    token: GlobalFunctions.getFcmToken(),
+                                    vehicleId:
+                                        GlobalFunctions.getAssignedVehicleId());
+                              },
+                            ),
+                            ///////////////
+                            AppButton.normalButton(
+                                title: 'Back'.tr,
+                                shadow: false,
+                                width: ScreenSizeUtils.getWidthInPercent(
+                                    context, 25),
+                                backgroundColor: AppColors.white,
+                                titleColor: AppColors.primaryDark,
+                                height: 30,
+                                onPress: () {
+                                  Get.back();
+                                })
+                          ],
+                        );
                       }
                     });
               })),

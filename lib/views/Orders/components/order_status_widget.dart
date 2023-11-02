@@ -16,51 +16,57 @@ class OrderStatusWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
       child: SizedBox(
-        height: 30,
-        child: ListView.separated(
-          itemCount: 3,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            return InkWell(
-              onTap: () {
-                ordersController.chooseOrderStatus(
-                    status: ordersController.orderStatusData[index].toString(),
-                    index: index);
-
-                debugPrint(ordersController.orderStatus);
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextWidget(
-                      text: GlobalFunctions.orderStatusText(
-                          inputText: ordersController.orderStatusData[index]
-                              .toString()),
-                      color: AppColors.blackDark,
-                      fontSize: 15,
-                      fontWeight: index == ordersController.selectedOrderStatus
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                      textAlign: TextAlign.start,
-                      maxline: 2),
-
-                  ///////////
-                  index == ordersController.selectedOrderStatus
-                      ? Container(
-                          width: 80,
-                          height: 2,
-                          color: AppColors.primaryDark,
-                        )
-                      : Container()
-                ],
+          height: 35,
+          width: double.infinity,
+          child: Row(
+            children: [
+              buildStatusContent(0),
+              const SizedBox(
+                width: 5,
               ),
-            );
-          },
-          separatorBuilder: (context, index) {
-            return const SizedBox(
-              width: 20,
-            );
-          },
+              buildStatusContent(1),
+              const SizedBox(
+                width: 5,
+              ),
+              buildStatusContent(2),
+            ],
+          )),
+    );
+  }
+
+  Widget buildStatusContent(int index) {
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          ordersController.chooseOrderStatus(
+              status: ordersController.orderStatusData[index].toString(),
+              index: index);
+
+          debugPrint(ordersController.orderStatus);
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: TextWidget(
+                  text: GlobalFunctions.orderStatusText(
+                      inputText:
+                          ordersController.orderStatusData[index].toString()),
+                  color: AppColors.blackDark,
+                  fontSize: 15,
+                  fontWeight: index == ordersController.selectedOrderStatus
+                      ? FontWeight.bold
+                      : FontWeight.normal,
+                  textAlign: TextAlign.center,
+                  maxline: 2),
+            ),
+            index == ordersController.selectedOrderStatus
+                ? Container(
+                    height: 2,
+                    color: AppColors.primaryDark,
+                  )
+                : Container()
+          ],
         ),
       ),
     );

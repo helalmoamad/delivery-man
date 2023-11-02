@@ -45,6 +45,7 @@ class OrdersDetailsPage extends StatelessWidget {
                   Get.back();
                   ordersController.changeDeliveringButton(true);
                   await ordersController.stopRecording();
+                  ordersController.returnedProductsList.clear();
                   ordersController.audioPath = '';
                   Get.close(1);
                 },

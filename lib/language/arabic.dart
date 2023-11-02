@@ -112,4 +112,13 @@ const Map<String, String> ar = {
       'سيتم تحويل حالةالطلب لـ "تم إرجاعه"',
   'The order status will be changed to "Failed"':
       'سيتم تحويل حالة الطلب لـ "فشل"',
+  'Are you sure you want to unassign to the vehicle ?':
+      'هل أنت متأكد من إلغاء الربط مع العربة ؟',
+  'Add to returned': 'إضافة للمنتجات المعاده',
+  'Remove from returned': 'إزالة من المنتجات المعاده',
+  'Add the returned products': 'قم بإضافة المنتجات المعاده',
+  'You have to add the returned products first':
+      'يجب عليك إضافة المنتجات المعادة أولاً',
+  'Returned Products': 'المنتجات المعاده',
+  'Order Products': 'منتجات الطلب',
 };

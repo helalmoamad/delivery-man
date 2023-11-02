@@ -89,6 +89,39 @@ class OrdersController extends GetxController {
   int myOrderPaginationOffset = 2;
   bool myOrderNoMoreItems = false;
 
+  List<ProductModel> returnedProductsList = [];
+
+  void addReturnedProducts(ProductModel orderProduct) {
+    if (returnedProductsList.isEmpty) {
+      debugPrint('isEmpty');
+      returnedProductsList.add(orderProduct);
+    } else {
+      bool isValueInList =
+          returnedProductsList.any((element) => element.id == orderProduct.id);
+
+      if (isValueInList == false) {
+        returnedProductsList.add(orderProduct);
+        debugPrint('Value not In List');
+      } else {
+        debugPrint('Value In List');
+        returnedProductsList
+            .removeWhere((element) => element.id == orderProduct.id);
+      }
+    }
+    update();
+  }
+
+  bool isProductInReturnedProducts(ProductModel orderProduct) {
+    if (returnedProductsList.isEmpty) {
+      return false;
+    } else {
+      bool isValueInList =
+          returnedProductsList.any((element) => element.id == orderProduct.id);
+
+      return isValueInList;
+    }
+  }
+
   // ///////////////////////////
   void showGetOrdersCircleIndicator() {
     isGetOrdersCircleShown = true;
@@ -478,14 +511,16 @@ class OrdersController extends GetxController {
       {required String token,
       required String status,
       required int orderId,
-      required int? amount,
-      required String? file}) async {
+      int? amount,
+      List<ProductModel>? returnedProducts,
+      String? file}) async {
     showChangeOrderStatusCircleIndicator();
     final failureOrData = await changeOrderStatusProvider.call(
         token: token,
         orderId: orderId,
         file: file,
         status: status,
+        returnedProducts: returnedProducts,
         amount: amount);
 
     failureOrData.fold((failure) {

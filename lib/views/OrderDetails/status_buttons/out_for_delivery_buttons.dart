@@ -5,6 +5,7 @@ import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
 import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
 import 'package:delivery_man_app/shared/widgets/custom_text_field.dart';
+import 'package:delivery_man_app/shared/widgets/snackbar_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,7 +20,7 @@ class OutForDeliveryButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int orderIndex = ordersController.myOrderIndex;
-    Order order = ordersController.myOrdersData.data!.data![orderIndex];
+    OrderModel order = ordersController.myOrdersData.data!.data![orderIndex];
     return GetBuilder<OrdersController>(builder: (_) {
       return ordersController.isStartDeliveryButton
           ? AppButton.normalButton(
@@ -63,7 +64,7 @@ class OutForDeliveryButtons extends StatelessWidget {
     });
   }
 
-  Widget buildConvertButtons(BuildContext context, Order order) {
+  Widget buildConvertButtons(BuildContext context, OrderModel order) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -115,7 +116,6 @@ class OutForDeliveryButtons extends StatelessWidget {
                                   token: GlobalFunctions.getFcmToken(),
                                   status: 'returned',
                                   orderId: order.id!,
-                                  amount: null,
                                   file: ordersController.audioPath);
                             });
                           },
@@ -148,10 +148,19 @@ class OutForDeliveryButtons extends StatelessWidget {
                   titleSize: 13,
                   backgroundColor: AppColors.secondary,
                   onPress: () {
-                    AppDialogs.showAppDialogWidget(
-                        context: context,
-                        title: 'Enter The Cash Amount'.tr,
-                        actions: [buildDialogAction(order, 'partial_return')]);
+                    if (ordersController.returnedProductsList.isEmpty) {
+                      SnackBarWidgets.showFailureSnackBar(
+                          'Add the returned products'.tr,
+                          'You have to add the returned products first'.tr,
+                          seconds: 4);
+                    } else {
+                      AppDialogs.showAppDialogWidget(
+                          context: context,
+                          title: 'Enter The Cash Amount'.tr,
+                          actions: [
+                            buildDialogAction(order, 'partial_return')
+                          ]);
+                    }
                   }),
             ),
             /////////////////
@@ -186,7 +195,6 @@ class OutForDeliveryButtons extends StatelessWidget {
                                   token: GlobalFunctions.getFcmToken(),
                                   status: 'failed',
                                   orderId: order.id!,
-                                  amount: null,
                                   file: ordersController.audioPath);
                             });
                           },
@@ -213,7 +221,7 @@ class OutForDeliveryButtons extends StatelessWidget {
     );
   }
 
-  Padding buildDialogAction(Order order, String orderStatus) {
+  Padding buildDialogAction(OrderModel order, String orderStatus) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Form(
@@ -252,6 +260,9 @@ class OutForDeliveryButtons extends StatelessWidget {
                         token: GlobalFunctions.getFcmToken(),
                         status: orderStatus,
                         orderId: order.id!,
+                        returnedProducts: orderStatus == 'partial_return'
+                            ? ordersController.returnedProductsList
+                            : null,
                         amount: int.parse(cashKey.text),
                         file: ordersController.audioPath);
                   });
