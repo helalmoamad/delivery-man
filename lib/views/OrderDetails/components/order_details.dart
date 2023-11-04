@@ -1,6 +1,7 @@
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
+import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:delivery_man_app/views/OrderDetails/components/product_widget.dart';
 import 'package:delivery_man_app/views/OrderDetails/components/title_section_widget.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +72,17 @@ class OrderDetails extends StatelessWidget {
             TitleSectionWidget(
               title: 'Order Products'.tr,
               index: '',
+              widget: (status == 'out_for_delivery' &&
+                      !ordersController.isStartDeliveryButton)
+                  ? TextWidget(
+                      text:
+                          '${'Returned Products'.tr} : ${ordersController.returnedProductsList.length}',
+                      color: AppColors.primaryDark,
+                      fontSize: 13,
+                      fontWeight: FontWeight.normal,
+                      textAlign: TextAlign.center,
+                      maxline: 2)
+                  : Container(),
             ),
             // ////////////////////////////////
             Padding(

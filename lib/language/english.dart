@@ -122,4 +122,7 @@ const Map<String, String> en = {
       'You have to add the returned products first',
   'Returned Products': 'Returned Products',
   'Order Products': 'Order Products',
+  'Paid': 'Paid',
+  'Partial Paid': 'Partial Paid',
+  'UnPaid': 'UnPaid',
 };

@@ -207,4 +207,35 @@ class GlobalFunctions {
         }
     }
   }
+
+  static String paidStatusText({required String inputText}) {
+    String text = '';
+
+    switch (inputText) {
+      case 'paid':
+        {
+          text = 'Paid'.tr;
+          break;
+        }
+
+      case 'partial_paid':
+        {
+          text = 'Partial Paid'.tr;
+          break;
+        }
+
+      case 'unpaid':
+        {
+          text = 'UnPaid'.tr;
+          break;
+        }
+
+      default:
+        {
+          text = 'New Paid Status';
+          break;
+        }
+    }
+    return text;
+  }
 }

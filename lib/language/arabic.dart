@@ -121,4 +121,7 @@ const Map<String, String> ar = {
       'يجب عليك إضافة المنتجات المعادة أولاً',
   'Returned Products': 'المنتجات المعاده',
   'Order Products': 'منتجات الطلب',
+  'Paid': 'تم الدفع',
+  'Partial Paid': 'دفع جزئي',
+  'UnPaid': 'لم يتم الدفع',
 };

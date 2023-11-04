@@ -46,18 +46,23 @@ class OrderWidget extends StatelessWidget {
                 height: 15,
               ),
               ////
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: TextWidget(
-                    text:
-                        '${'Payment Status'.tr} ${orders[index].paymentStatus.toString()}',
-                    color: orders[index].paymentStatus.toString() == 'paid'
-                        ? Colors.green
-                        : Colors.red,
-                    fontSize: 11,
-                    fontWeight: FontWeight.normal,
-                    textAlign: TextAlign.start,
-                    maxline: 1),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: TextWidget(
+                      text:
+                          '${'Payment Status'.tr} : ${GlobalFunctions.paidStatusText(inputText: orders[index].paymentStatus.toString())}',
+                      color:
+                          (orders[index].paymentStatus.toString() == 'paid') ||
+                                  (orders[index].paymentStatus.toString() ==
+                                      'partial_paid')
+                              ? Colors.green
+                              : Colors.red,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      textAlign: TextAlign.center,
+                      maxline: 1),
+                ),
               ),
               ////////////////
               const SizedBox(
