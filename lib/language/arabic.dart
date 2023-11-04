@@ -1,5 +1,5 @@
 const Map<String, String> ar = {
-  'All Orders': 'كل الطلبات',
+  'All Orders': 'الطلبات الحرة',
   'No More Items': 'لا يوجد عناصر أخرى',
   'Order Summary': 'ملخّص الطلب',
   'Payment Status': 'حالة الدفع',
