@@ -125,4 +125,6 @@ const Map<String, String> en = {
   'Paid': 'Paid',
   'Partial Paid': 'Partial Paid',
   'UnPaid': 'UnPaid',
+  'No Orders': 'No Orders',
+  'in this section': 'in this section',
 };

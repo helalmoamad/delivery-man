@@ -5,10 +5,10 @@ import '../constants/color_constants.dart';
 import '../helpers/screen_size_utils.dart';
 import 'app_buttons.dart';
 
-class NoConnectionWidget extends StatelessWidget {
+class EmptyDataWidget extends StatelessWidget {
   final Function() onTap;
 
-  const NoConnectionWidget({Key? key, required this.onTap}) : super(key: key);
+  const EmptyDataWidget({Key? key, required this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +21,13 @@ class NoConnectionWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/pictures/no_connection.png',
+              'assets/pictures/no orders.png',
               fit: BoxFit.cover,
               width: 200,
             ),
             //////////
             TextWidget(
-                text: '${'No Connection'.tr}\n${'Try Again'.tr}',
+                text: '${'No Orders'.tr}\n${'in this section'.tr}',
                 color: AppColors.blackDark,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

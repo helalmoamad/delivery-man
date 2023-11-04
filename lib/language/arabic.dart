@@ -80,7 +80,7 @@ const Map<String, String> ar = {
   'Password should not be empty': 'كلمة المرور لا يجب أن تكون فارغة',
   'LOGIN': 'تسجيل الدخول',
   'Assign To Vehicle Succeeded': 'تم الربط مع عربة بنجاح',
-  'Try Again': 'حاول لاحقاً',
+  'Try Again': 'حاول مجدداً',
   'Assign to vehicle': 'الربط مع عربة',
   'Assign to vehicle to be able to enter the app':
       'اربط مع عربة لتتمكن من الدخول للتطبيق',
@@ -124,4 +124,6 @@ const Map<String, String> ar = {
   'Paid': 'تم الدفع',
   'Partial Paid': 'دفع جزئي',
   'UnPaid': 'لم يتم الدفع',
+  'No Orders': 'لا يوجد طلبات',
+  'in this section': 'في هذا القسم',
 };

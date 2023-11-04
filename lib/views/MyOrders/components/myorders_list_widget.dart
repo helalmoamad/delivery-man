@@ -1,5 +1,7 @@
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
+import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
+import 'package:delivery_man_app/shared/widgets/empty_data_widget.dart';
 import 'package:delivery_man_app/shared/widgets/order_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,7 +15,15 @@ class MyOrderList extends StatelessWidget {
   Widget build(BuildContext context) {
     final orders = ordersController.myOrdersData.data!.data!;
     return orders.isEmpty
-        ? const Center(child: Text('Data Is Empty'))
+        ? EmptyDataWidget(
+            onTap: () async {
+              String token = GlobalFunctions.getFcmToken();
+              await ordersController.getMyOrdersData(
+                  token: token,
+                  status: ordersController.myOrderStatus,
+                  offset: 1);
+            },
+          )
         : ListView.separated(
             controller: ordersController.myOrderScrollController,
             itemCount: orders.length + 1,
