@@ -1,5 +1,4 @@
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
-import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
@@ -51,25 +50,25 @@ class CustomDrawer extends StatelessWidget {
               backgroundImage: AssetImage("assets/pictures/logo.png"),
             ),
           ),
-          ListTile(
-            leading: const Icon(
-              Icons.archive_rounded,
-              color: AppColors.primaryDark,
-            ),
-            title: TextWidget(
-                text: 'MyOrders'.tr,
-                color: AppColors.blackDark,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                textAlign: TextAlign.start,
-                maxline: 1),
-            onTap: () async {
-              String token = GlobalFunctions.getFcmToken();
-              Get.toNamed(Routes.myOrdersPage);
-              await ordersController.getOrderStatusData(
-                  token: token, isForAllOrders: false);
-            },
-          ),
+          // ListTile(
+          //   leading: const Icon(
+          //     Icons.archive_rounded,
+          //     color: AppColors.primaryDark,
+          //   ),
+          //   title: TextWidget(
+          //       text: 'MyOrders'.tr,
+          //       color: AppColors.blackDark,
+          //       fontSize: 13,
+          //       fontWeight: FontWeight.w600,
+          //       textAlign: TextAlign.start,
+          //       maxline: 1),
+          //   onTap: () async {
+          //     String token = GlobalFunctions.getFcmToken();
+          //     Get.toNamed(Routes.myOrdersPage);
+          //     await ordersController.getOrderStatusData(
+          //         token: token, isForAllOrders: false);
+          //   },
+          // ),
           ListTile(
             leading: const Icon(
               Icons.account_box,

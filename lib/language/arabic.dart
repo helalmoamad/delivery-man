@@ -1,5 +1,5 @@
 const Map<String, String> ar = {
-  'Orders': 'الطلبات',
+  'All Orders': 'كل الطلبات',
   'No More Items': 'لا يوجد عناصر أخرى',
   'Order Summary': 'ملخّص الطلب',
   'Payment Status': 'حالة الدفع',
@@ -17,7 +17,7 @@ const Map<String, String> ar = {
   'Are you sure to logout ?': 'هل أنت متأكد من تسجيل الخروج ؟',
   'Confirm': 'تأكيد',
   'Back': 'رجوع',
-  'Order Details': 'تفاصيل المنتج',
+  'Order Details': 'تفاصيل الطلب',
   'Product': 'المنتج',
   'General Info': 'معلومات عامة',
   'Price': 'السعر',

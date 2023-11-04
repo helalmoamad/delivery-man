@@ -24,6 +24,7 @@ dependencies:
   record: 4.4.4
   audioplayers: 5.2.0
   qr_code_scanner: 1.0.1
+  dot_navigation_bar: 1.0.2
 
 
 

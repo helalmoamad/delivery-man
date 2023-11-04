@@ -13,7 +13,6 @@ import '../views/Welcome/splash_page.dart';
 class Routes {
   static const splashPage = '/splashPage';
   static const loginPage = '/loginPage';
-  static const mainPage = '/mainPage';
   static const orderssPage = '/orderssPage';
   static const ordersDetailsPage = '/ordersDetailsPage';
   static const myOrdersPage = '/myOrderssPage';
@@ -45,19 +44,20 @@ class AppRoutes {
     ),
     ///////
     GetPage(
+      name: Routes.myOrdersPage,
+      page: () => MyOrdersPage(),
+      binding: OrdersBinding(),
+      transition: Transition.fade,
+      transitionDuration: const Duration(milliseconds: 0),
+    ),
+    ///////
+    GetPage(
       name: Routes.ordersDetailsPage,
       page: () => OrdersDetailsPage(),
       transition: Transition.fade,
       transitionDuration: const Duration(milliseconds: 500),
     ),
-    ///////
-    GetPage(
-      name: Routes.myOrdersPage,
-      page: () => MyOrdersPage(),
-      transition: Transition.fade,
-      transitionDuration: const Duration(milliseconds: 500),
-    ),
-    ///////
+
     GetPage(
       name: Routes.scanQRPage,
       page: () => ScanQRPage(),

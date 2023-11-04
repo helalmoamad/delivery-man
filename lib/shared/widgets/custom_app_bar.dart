@@ -25,7 +25,7 @@ AppBar customAppBar({
               maxline: 1),
         ),
         ////////////////////////////////
-        Expanded(flex: 4, child: button)
+        Expanded(flex: 3, child: button)
       ],
     ),
     // actions: actions,

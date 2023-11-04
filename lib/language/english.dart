@@ -1,5 +1,5 @@
 const Map<String, String> en = {
-  'Orders': 'Orders',
+  'All Orders': 'All Orders',
   'No More Items': 'No More Items',
   'Order Summary': 'Order Summary',
   'Payment Status': 'Payment Status',

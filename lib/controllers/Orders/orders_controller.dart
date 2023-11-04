@@ -6,6 +6,7 @@ import 'package:delivery_man_app/providers/Orders_providers.dart/assign_order_to
 import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_status.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/get_my_orders_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/unassign_to_vehicle_provider.dart';
+import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -272,39 +273,40 @@ class OrdersController extends GetxController {
   void onInit() async {
     super.onInit();
     debugPrint('Order Controller Init');
-    orderScrollController = ScrollController();
-    myOrderScrollController = ScrollController();
     String token = GlobalFunctions.getFcmToken();
-    await getOrderStatusData(token: token, isForAllOrders: true);
+    if (Get.currentRoute == Routes.orderssPage) {
+      orderScrollController = ScrollController();
+      await getOrderStatusData(token: token, isForAllOrders: true);
+      orderScrollController.addListener(() async {
+        if (orderScrollController.position.maxScrollExtent ==
+            orderScrollController.offset) {
+          debugPrint('scrollController');
+          await getListOrderWithPaginationData(
+              token: token, status: orderStatus);
+        }
+      });
+    }
 
-    orderScrollController.addListener(() async {
-      if (orderScrollController.position.maxScrollExtent ==
-          orderScrollController.offset) {
-        debugPrint('scrollController');
-        await getListOrderWithPaginationData(token: token, status: orderStatus);
-      }
-    });
+    if (Get.currentRoute == Routes.myOrdersPage) {
+      myOrderScrollController = ScrollController();
+      await getOrderStatusData(token: token, isForAllOrders: false);
+      myOrderScrollController.addListener(() async {
+        if (myOrderScrollController.position.maxScrollExtent ==
+            myOrderScrollController.offset) {
+          debugPrint('scrollController');
+          await getMyOrdersWithPaginationData(
+              token: token, status: myOrderStatus);
+        }
+      });
 
-    myOrderScrollController.addListener(() async {
-      if (myOrderScrollController.position.maxScrollExtent ==
-          myOrderScrollController.offset) {
-        debugPrint('scrollController');
-        await getMyOrdersWithPaginationData(
-            token: token, status: myOrderStatus);
-      }
-    });
-
-    record = Record();
-    audioPlayer = AudioPlayer();
+      record = Record();
+      audioPlayer = AudioPlayer();
+    }
   }
 
   @override
   void onClose() async {
     super.onClose();
-    orderScrollController.dispose();
-    myOrderScrollController.dispose();
-    record.dispose();
-    audioPlayer.dispose();
 
     debugPrint('Order Controller closed');
   }

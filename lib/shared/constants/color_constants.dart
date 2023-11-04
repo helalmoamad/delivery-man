@@ -3,7 +3,7 @@ import 'package:flutter/painting.dart';
 class AppColors {
   static const Color darkGrey = Color.fromRGBO(64, 64, 64, 1);
   static const Color lightGray = Color(0xFFE3E3E3);
-  static const Color grey = Color.fromARGB(255, 131, 131, 131);
+  static const Color grey = Color(0xFF818080);
   static const Color darkWhite = Color.fromRGBO(246, 246, 246, 1);
   static const Color primaryDark = Color(0xFFAC2414);
   static const Color primaryLight = Color.fromARGB(255, 233, 59, 37);
