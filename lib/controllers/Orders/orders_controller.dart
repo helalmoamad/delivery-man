@@ -448,10 +448,11 @@ class OrdersController extends GetxController {
       if (isForAllOrders) {
         orderStatus = orderStatusData[0].toString();
         selectedOrderStatus = 0;
+      } else {
+        ////
+        myOrderStatus = orderStatusData[2].toString();
+        selectedMyOrderStatus = 0;
       }
-      ////
-      myOrderStatus = orderStatusData[2].toString();
-      selectedMyOrderStatus = 0;
 
       ///
       isForAllOrders

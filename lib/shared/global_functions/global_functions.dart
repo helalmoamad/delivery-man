@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:delivery_man_app/models/RequestInfo/request_info_model.dart';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/out_for_delivery_buttons.dart';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/ready_toshipping_buttons.dart';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/shipped_buttons.dart';
@@ -237,5 +240,31 @@ class GlobalFunctions {
         }
     }
     return text;
+  }
+
+  static Future<void> setRequestInfo(
+      {required RequestInfoModel requestInfo}) async {
+    List<RequestInfoModel> data = getRequestsInfo();
+
+    data.add(requestInfo);
+
+    var infoListToJson = data.map((e) => e.toJson()).toList();
+
+    String ecodedData = json.encode(infoListToJson);
+
+    await GetStorage().write('requestsInfo', ecodedData);
+  }
+
+  static List<RequestInfoModel> getRequestsInfo() {
+    final data = GetStorage().read<String>('requestsInfo');
+    if (data != null) {
+      final decodedData = json.decode(data);
+      List<RequestInfoModel> infoListFromJson = List<RequestInfoModel>.from(
+          decodedData.map((e) => RequestInfoModel.fromJson(e)));
+
+      return infoListFromJson;
+    } else {
+      return [];
+    }
   }
 }

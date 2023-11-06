@@ -53,8 +53,13 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       'Authorization': 'Bearer $token',
       'Connection': 'keep-alive',
     });
-    debugPrint('1');
-    debugPrint(response.statusCode.toString());
+    debugPrint('/////1///////');
+    // debugPrint(response.statusCode.toString());
+    // debugPrint('/////2//////');
+    // debugPrint(response.headers.toString());
+    // debugPrint('////////3//////');
+    // debugPrint(response.body.toString());
+
     if (response.statusCode >= 200 && response.statusCode < 300) {
       debugPrint('2');
       final data = jsonDecode(response.body);
@@ -141,6 +146,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       'Authorization': 'Bearer $token',
       'Connection': 'keep-alive',
     });
+
     debugPrint('1');
     debugPrint(response.statusCode.toString());
     if (response.statusCode >= 200 && response.statusCode < 300) {
