@@ -12,8 +12,7 @@ class AuthRepository {
 
   AuthRepository({required this.authApiService, required this.networkInfo});
 
-  Future<Either<Failure, UserDataModel>> postLogin(
-      LoginModel loginModel) async {
+  Future<Either<Failure, UserModel>> postLogin(LoginModel loginModel) async {
     if (await networkInfo.isConnected) {
       try {
         final authResponse = await authApiService.postLoginApi(loginModel);

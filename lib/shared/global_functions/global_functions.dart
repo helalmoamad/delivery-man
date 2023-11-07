@@ -246,13 +246,18 @@ class GlobalFunctions {
       {required RequestInfoModel requestInfo}) async {
     List<RequestInfoModel> data = getRequestsInfo();
 
-    data.add(requestInfo);
+    if (data.length >= 40) {
+      data.removeAt(0);
+      data.add(requestInfo);
+    } else {
+      data.add(requestInfo);
+    }
 
     var infoListToJson = data.map((e) => e.toJson()).toList();
 
-    String ecodedData = json.encode(infoListToJson);
+    String encodedData = json.encode(infoListToJson);
 
-    await GetStorage().write('requestsInfo', ecodedData);
+    await GetStorage().write('requestsInfo', encodedData);
   }
 
   static List<RequestInfoModel> getRequestsInfo() {
@@ -266,5 +271,21 @@ class GlobalFunctions {
     } else {
       return [];
     }
+  }
+
+  static Future<void> deleteRequestInfo({required int index}) async {
+    List<RequestInfoModel> data = getRequestsInfo();
+
+    data.removeAt(index);
+
+    var infoListToJson = data.map((e) => e.toJson()).toList();
+
+    String encodedData = json.encode(infoListToJson);
+
+    await GetStorage().write('requestsInfo', encodedData);
+  }
+
+  static Future<void> deleteAllRequestsInfo() async {
+    await GetStorage().remove('requestsInfo');
   }
 }

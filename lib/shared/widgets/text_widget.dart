@@ -8,7 +8,7 @@ class TextWidget extends StatelessWidget {
   final double minFontSize;
   final FontWeight fontWeight;
   final TextAlign textAlign;
-  final int maxline;
+  final int? maxline;
   final TextDecoration textDecoration;
   final TextOverflow overflow;
   const TextWidget(

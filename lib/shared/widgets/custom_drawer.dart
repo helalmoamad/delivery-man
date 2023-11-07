@@ -1,4 +1,5 @@
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
@@ -51,7 +52,7 @@ class CustomDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(
-              Icons.account_box,
+              Icons.account_circle_outlined,
               color: AppColors.primaryDark,
             ),
             title: TextWidget(
@@ -79,6 +80,22 @@ class CustomDrawer extends StatelessWidget {
               _showLangModal();
               // Get.back();
               // Get.toNamed(Routes.languagePage);
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.info_outline,
+              color: AppColors.primaryDark,
+            ),
+            title: TextWidget(
+                text: 'Info For Developer'.tr,
+                color: AppColors.blackDark,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                textAlign: TextAlign.start,
+                maxline: 1),
+            onTap: () {
+              Get.toNamed(Routes.infoForDeveloper);
             },
           ),
           ListTile(
@@ -123,7 +140,7 @@ class CustomDrawer extends StatelessWidget {
                 ],
               );
             },
-          )
+          ),
         ],
       ),
     );

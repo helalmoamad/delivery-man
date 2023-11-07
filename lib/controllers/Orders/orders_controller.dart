@@ -92,6 +92,18 @@ class OrdersController extends GetxController {
 
   List<ProductModel> returnedProductsList = [];
 
+  int moreDeveloperInfoIndex = 0;
+
+  Future<void> removeRequestFromDeveloperInfo(int index) async {
+    await GlobalFunctions.deleteRequestInfo(index: index);
+    update();
+  }
+
+  Future<void> removeAllRequestsInfo() async {
+    await GlobalFunctions.deleteAllRequestsInfo();
+    update();
+  }
+
   void addReturnedProducts(ProductModel orderProduct) {
     if (returnedProductsList.isEmpty) {
       debugPrint('isEmpty');

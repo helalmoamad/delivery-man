@@ -50,7 +50,7 @@ class AuthController extends GetxController {
           hideCircleIndicator: hideCircleIndicator,
           showNoInternetPage: () {});
     }, (getUserData) async {
-      userData = getUserData;
+      userData = getUserData.data!;
       isLogin = true;
       Future.wait([
         GlobalFunctions.setFcmToken(token: userData.accessToken!),

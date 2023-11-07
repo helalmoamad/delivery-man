@@ -126,4 +126,10 @@ const Map<String, String> ar = {
   'UnPaid': 'لم يتم الدفع',
   'No Orders': 'لا يوجد طلبات',
   'in this section': 'في هذا القسم',
+  'Info For Developer': 'معلومات للمطوّر',
+  'More Info': 'عرض المزيد',
+  'Share': 'مشاركة',
+  'Delete All Data': 'حذف كل البيانات',
+  'Are you sure you want delete to all data ?':
+      'هل أنت متأكد من حذف كل البيانات ؟',
 };

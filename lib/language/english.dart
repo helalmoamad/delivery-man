@@ -127,4 +127,10 @@ const Map<String, String> en = {
   'UnPaid': 'UnPaid',
   'No Orders': 'No Orders',
   'in this section': 'in this section',
+  'Info For Developer': 'Info For Developer',
+  'More Info': 'More Info',
+  'Share': 'Share',
+  'Delete All Data': 'Delete All Data',
+  'Are you sure you want delete to all data ?':
+      'Are you sure you want delete to all data ?',
 };

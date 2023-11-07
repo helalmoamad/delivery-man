@@ -1,5 +1,7 @@
 import 'package:delivery_man_app/controllers/Orders/orders_bindings.dart';
 import 'package:delivery_man_app/controllers/QR/qr_binding.dart';
+import 'package:delivery_man_app/views/DrawerPages/info_for_developer/info_for_developer_page.dart';
+import 'package:delivery_man_app/views/DrawerPages/info_for_developer/more_info_page.dart';
 import 'package:delivery_man_app/views/DrawerPages/scan_qr_page.dart';
 import 'package:delivery_man_app/views/MyOrders/my_orders_page.dart';
 import 'package:get/get.dart';
@@ -17,6 +19,8 @@ class Routes {
   static const ordersDetailsPage = '/ordersDetailsPage';
   static const myOrdersPage = '/myOrderssPage';
   static const scanQRPage = '/scanQRPage';
+  static const infoForDeveloper = '/infoForDeveloper';
+  static const moreInfoPage = '/moreInfoPage';
 }
 
 class AppRoutes {
@@ -63,6 +67,20 @@ class AppRoutes {
       page: () => ScanQRPage(),
       transition: Transition.fade,
       binding: QRBinding(),
+      transitionDuration: const Duration(milliseconds: 500),
+    ),
+
+    GetPage(
+      name: Routes.infoForDeveloper,
+      page: () => InfoForDeveloperPage(),
+      transition: Transition.fade,
+      transitionDuration: const Duration(milliseconds: 500),
+    ),
+
+    GetPage(
+      name: Routes.moreInfoPage,
+      page: () => MoreInfoPage(),
+      transition: Transition.fade,
       transitionDuration: const Duration(milliseconds: 500),
     ),
   ];
