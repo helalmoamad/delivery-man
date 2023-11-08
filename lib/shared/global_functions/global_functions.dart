@@ -247,10 +247,10 @@ class GlobalFunctions {
     List<RequestInfoModel> data = getRequestsInfo();
 
     if (data.length >= 40) {
-      data.removeAt(0);
-      data.add(requestInfo);
+      data.removeAt(data.length - 1);
+      data.insert(0, requestInfo);
     } else {
-      data.add(requestInfo);
+      data.insert(0, requestInfo);
     }
 
     var infoListToJson = data.map((e) => e.toJson()).toList();

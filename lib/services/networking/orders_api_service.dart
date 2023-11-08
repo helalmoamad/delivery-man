@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
+import 'package:delivery_man_app/models/RequestInfo/request_info_model.dart';
 import 'package:delivery_man_app/services/networking/api_requests.dart';
+import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import '../../controllers/Client/client_controller.dart';
 import '../../models/Orders/list_order_model.dart';
@@ -161,6 +163,17 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     var response = await request.send();
     debugPrint(response.statusCode.toString());
     final res = await response.stream.transform(utf8.decoder).first;
+    /////////////////store request info//////////////////////////////////
+    final data = RequestInfoModel(
+        url: uri.toString(),
+        requestType: 'POST',
+        token: token,
+        header: response.headers.toString(),
+        body: request.fields.toString(),
+        response: res.toString());
+
+    await GlobalFunctions.setRequestInfo(requestInfo: data);
+    //////////////////////////////////////////////////////////////////
     if (response.statusCode >= 200 && response.statusCode < 300) {
       debugPrint('2');
       //

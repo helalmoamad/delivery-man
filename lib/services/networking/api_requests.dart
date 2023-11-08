@@ -30,7 +30,7 @@ class ApiRequests {
         token: token,
         header: response.headers.toString(),
         body: '',
-        response: response.body);
+        response: jsonDecode(response.body).toString());
 
     await GlobalFunctions.setRequestInfo(requestInfo: data);
     //////////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ class ApiRequests {
         token: token,
         header: response.headers.toString(),
         body: body.toString(),
-        response: response.body);
+        response: jsonDecode(response.body).toString());
 
     await GlobalFunctions.setRequestInfo(requestInfo: data);
     //////////////////////////////////////////////////////////////////

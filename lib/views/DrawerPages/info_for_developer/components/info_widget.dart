@@ -18,7 +18,7 @@ class InfoWidget extends StatelessWidget {
     final data = GlobalFunctions.getRequestsInfo();
     return SizedBox(
       width: double.infinity,
-      height: 330,
+      height: 360,
       child: Stack(
         children: [
           Align(
@@ -27,7 +27,7 @@ class InfoWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Container(
                 width: double.infinity,
-                height: 320,
+                height: 350,
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
                 decoration: BoxDecoration(
                     color: AppColors.lightGray,
@@ -37,20 +37,31 @@ class InfoWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     /////////////////////
-                    buildInfoWidget(title: 'URL : ', data: data[index].url),
+                    buildInfoWidget(
+                        title: 'URL : ', data: data[index].url, maxLine: 2),
                     /////////////////////
                     buildInfoWidget(
-                        title: 'Request : ', data: data[index].requestType),
+                        title: 'Request : ',
+                        data: data[index].requestType,
+                        maxLine: 1),
                     /////////////////////
                     buildInfoWidget(
-                        title: 'Headers : ', data: data[index].header),
+                        title: 'Token : ', data: data[index].token, maxLine: 4),
+                    /////////////////////
+                    buildInfoWidget(
+                        title: 'Headers : ',
+                        data: data[index].header,
+                        maxLine: 5),
 
                     /////////////////////
-                    buildInfoWidget(title: 'Body : ', data: data[index].body),
+                    buildInfoWidget(
+                        title: 'Body : ', data: data[index].body, maxLine: 3),
 
                     /////////////////////
                     buildInfoWidget(
-                        title: 'Response : ', data: data[index].response),
+                        title: 'Response : ',
+                        data: data[index].response,
+                        maxLine: 4),
 
                     buildButtonsWidget(data[index])
                   ],
@@ -86,7 +97,9 @@ class InfoWidget extends StatelessWidget {
     );
   }
 
-  Widget buildButtonsWidget(RequestInfoModel data) {
+  Widget buildButtonsWidget(
+    RequestInfoModel data,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 3),
       child: Row(
@@ -123,7 +136,7 @@ class InfoWidget extends StatelessWidget {
             child: InkWell(
               onTap: () async {
                 await Share.share(
-                    'Url : ${data.url}\n\n Request : ${data.requestType}\n\n Headers : ${data.header}\n\n Body : ${data.body}\n\n Response : ${data.response}\n\n');
+                    'Url : ${data.url}\n\n Request : ${data.requestType}\n\n Token : ${data.token}\n\n Headers : ${data.header}\n\n Body : ${data.body}\n\n Response : ${data.response}\n\n');
               },
               child: Container(
                 height: 40,
@@ -148,7 +161,11 @@ class InfoWidget extends StatelessWidget {
     );
   }
 
-  Widget buildInfoWidget({required String data, required String title}) {
+  Widget buildInfoWidget({
+    required String data,
+    required String title,
+    required int maxLine,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 3),
       child: Row(
@@ -173,7 +190,7 @@ class InfoWidget extends StatelessWidget {
                 textAlign: TextAlign.start,
                 overflow: TextOverflow.ellipsis,
                 minFontSize: 11,
-                maxline: 5),
+                maxline: maxLine),
           ),
         ],
       ),

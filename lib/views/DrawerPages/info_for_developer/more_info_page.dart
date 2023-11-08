@@ -61,6 +61,11 @@ class MoreInfoPage extends StatelessWidget {
             text: '${data.requestType}\n\n',
           ),
           const TextSpan(
+              text: 'Token : ', style: TextStyle(fontWeight: FontWeight.bold)),
+          TextSpan(
+            text: '${data.token}\n\n',
+          ),
+          const TextSpan(
               text: 'Headers : ',
               style: TextStyle(fontWeight: FontWeight.bold)),
           TextSpan(

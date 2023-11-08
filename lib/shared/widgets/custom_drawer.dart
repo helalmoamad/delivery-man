@@ -46,8 +46,13 @@ class CustomDrawer extends StatelessWidget {
                 fontWeight: FontWeight.normal,
                 textAlign: TextAlign.start,
                 maxline: 1),
-            currentAccountPicture: const CircleAvatar(
-              backgroundImage: AssetImage("assets/pictures/logo.png"),
+            currentAccountPicture: InkWell(
+              onLongPress: () {
+                Get.toNamed(Routes.infoForDeveloper);
+              },
+              child: const CircleAvatar(
+                backgroundImage: AssetImage("assets/pictures/logo.png"),
+              ),
             ),
           ),
           ListTile(
@@ -78,24 +83,6 @@ class CustomDrawer extends StatelessWidget {
                 maxline: 1),
             onTap: () {
               _showLangModal();
-              // Get.back();
-              // Get.toNamed(Routes.languagePage);
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.info_outline,
-              color: AppColors.primaryDark,
-            ),
-            title: TextWidget(
-                text: 'Info For Developer'.tr,
-                color: AppColors.blackDark,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                textAlign: TextAlign.start,
-                maxline: 1),
-            onTap: () {
-              Get.toNamed(Routes.infoForDeveloper);
             },
           ),
           ListTile(
