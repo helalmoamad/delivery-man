@@ -98,19 +98,19 @@ class OrderModel {
 
   factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
         id: json["id"],
-        journeyId: json["journey_id"],
-        assignToUserId: json["assign_to_user_id"],
-        customerId: json["customer_id"],
-        paymentStatus: json["payment_status"],
-        orderStatusId: json["order_status_id"],
-        paymentMethod: json["payment_method"],
-        transactionRef: json["transaction_ref"],
-        orderAmount: json["order_amount"],
-        orderAmountFormatted: json["order_amount_formatted"],
-        shippingAddressId: json["shipping_address_id"],
-        orderGroupId: json["order_group_id"],
-        verificationCode: json["verification_code"],
-        sellerId: json["seller_id"],
+        journeyId: json["journey_id"] ?? '',
+        assignToUserId: json["assign_to_user_id"] ?? '',
+        customerId: json["customer_id"] ?? '',
+        paymentStatus: json["payment_status"] ?? '',
+        orderStatusId: json["order_status_id"] ?? '',
+        paymentMethod: json["payment_method"] ?? '',
+        transactionRef: json["transaction_ref"] ?? '',
+        orderAmount: json["order_amount"] ?? '',
+        orderAmountFormatted: json["order_amount_formatted"] ?? '',
+        shippingAddressId: json["shipping_address_id"] ?? '',
+        orderGroupId: json["order_group_id"] ?? '',
+        verificationCode: json["verification_code"] ?? '',
+        sellerId: json["seller_id"] ?? '',
         products: json["details"] == null
             ? []
             : List<ProductModel>.from(
@@ -119,13 +119,13 @@ class OrderModel {
             ? []
             : List<ProductModel>.from(
                 json["details"]!.map((x) => ProductModel.fromJson(x))),
-        shippingAddress: json["shipping_address"],
+        shippingAddress: json["shipping_address"] ?? '',
         shippingAddressData: json["shipping_address_data"] == null
             ? null
             : ShippingAddressData.fromJson(json["shipping_address_data"]),
-        billingAddress: json["billing_address"],
+        billingAddress: json["billing_address"] ?? '',
         billingAddressData: json["billing_address_data"],
-        orderStatus: json["order_status"],
+        orderStatus: json["order_status"] ?? '',
       );
 }
 
@@ -175,28 +175,28 @@ class ProductModel {
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
-        id: json["id"],
-        qty: json["qty"],
-        tax: json["tax"],
-        price: json["price"],
-        odooId: json["odoo_id"],
-        variant: json["variant"],
-        discount: json["discount"],
-        orderId: json["order_id"],
-        productId: json["product_id"],
-        discountType: json["discount_type"],
-        odooOrderId: json["odoo_order_id"],
-        paymentStatus: json["payment_status"],
-        refundRequest: json["refund_request"],
-        deliveryStatus: json["delivery_status"],
+        id: json["id"] ?? '',
+        qty: json["qty"] ?? '',
+        tax: json["tax"] ?? '',
+        price: json["price"] ?? '',
+        odooId: json["odoo_id"] ?? '',
+        variant: json["variant"] ?? '',
+        discount: json["discount"] ?? '',
+        orderId: json["order_id"] ?? '',
+        productId: json["product_id"] ?? '',
+        discountType: json["discount_type"] ?? '',
+        odooOrderId: json["odoo_order_id"] ?? '',
+        paymentStatus: json["payment_status"] ?? '',
+        refundRequest: json["refund_request"] ?? '',
+        deliveryStatus: json["delivery_status"] ?? '',
         isOdooProduct: json["is_odoo_product"],
         productDetails: json["product_details"] == null
             ? null
             : OrderProductDetails.fromJson(json["product_details"]),
-        isStockDecreased: json["is_stock_decreased"],
-        shippingMethodId: json["shipping_method_id"],
-        priceAfterDiscount: json["price_after_discount"],
-        refundRequestStatus: json["refund_request_status"],
+        isStockDecreased: json["is_stock_decreased"] ?? '',
+        shippingMethodId: json["shipping_method_id"] ?? '',
+        priceAfterDiscount: json["price_after_discount"] ?? '',
+        refundRequestStatus: json["refund_request_status"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -258,22 +258,22 @@ class OrderProductDetails {
 
   factory OrderProductDetails.fromJson(Map<String, dynamic> json) =>
       OrderProductDetails(
-        id: json["id"],
-        name: json["name"],
-        slug: json["slug"],
+        id: json["id"] ?? '',
+        name: json["name"] ?? '',
+        slug: json["slug"] ?? '',
         price: json["price"]?.toDouble(),
         images: json["images"] == null
             ? []
             : List<String>.from(json["images"]!.map((x) => x)),
         rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
-        details: json["details"],
-        inStock: json["in_stock"],
-        thumbnail: json["thumbnail"],
-        shareLink: json["share_link"],
-        offerPrice: json["offer_price"],
-        isFavourite: json["is_favourite"],
-        priceFormatted: json["price_formatted"],
-        offerPriceFormatted: json["offer_price_formatted"],
+        details: json["details"] ?? '',
+        inStock: json["in_stock"] ?? '',
+        thumbnail: json["thumbnail"] ?? '',
+        shareLink: json["share_link"] ?? '',
+        offerPrice: json["offer_price"] ?? '',
+        isFavourite: json["is_favourite"] ?? '',
+        priceFormatted: json["price_formatted"] ?? '',
+        offerPriceFormatted: json["offer_price_formatted"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -305,8 +305,8 @@ class Rating {
   });
 
   factory Rating.fromJson(Map<String, dynamic> json) => Rating(
-        totalRating: json["total_rating"],
-        overallRating: json["overall_rating"],
+        totalRating: json["total_rating"] ?? '',
+        overallRating: json["overall_rating"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -360,29 +360,29 @@ class ShippingAddressData {
 
   factory ShippingAddressData.fromJson(Map<String, dynamic> json) =>
       ShippingAddressData(
-        id: json["id"],
-        zip: json["zip"],
-        city: json["city"],
-        cost: json["cost"],
-        email: json["email"],
-        phone: json["phone"],
-        state: json["state"],
-        address: json["address"],
-        country: json["country"],
-        duration: json["duration"],
-        latitude: json["latitude"],
-        longitude: json["longitude"],
+        id: json["id"] ?? '',
+        zip: json["zip"] ?? '',
+        city: json["city"] ?? '',
+        cost: json["cost"] ?? '',
+        email: json["email"] ?? '',
+        phone: json["phone"] ?? '',
+        state: json["state"] ?? '',
+        address: json["address"] ?? '',
+        country: json["country"] ?? '',
+        duration: json["duration"] ?? '',
+        latitude: json["latitude"] ?? '',
+        longitude: json["longitude"] ?? '',
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
-        isBilling: json["is_billing"],
-        isDefault: json["is_default"],
+        isBilling: json["is_billing"] ?? '',
+        isDefault: json["is_default"] ?? '',
         updatedAt: json["updated_at"] == null
             ? null
             : DateTime.parse(json["updated_at"]),
-        customerId: json["customer_id"],
-        addressType: json["address_type"],
-        contactPersonName: json["contact_person_name"],
+        customerId: json["customer_id"] ?? '',
+        addressType: json["address_type"] ?? '',
+        contactPersonName: json["contact_person_name"] ?? '',
       );
 }
 
@@ -398,8 +398,8 @@ class Link {
   });
 
   factory Link.fromJson(Map<String, dynamic> json) => Link(
-        url: json["url"],
-        label: json["label"],
-        active: json["active"],
+        url: json["url"] ?? '',
+        label: json["label"] ?? '',
+        active: json["active"] ?? '',
       );
 }

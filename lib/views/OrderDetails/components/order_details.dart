@@ -68,7 +68,7 @@ class OrderDetails extends StatelessWidget {
                 color: AppColors.primaryDark,
               ),
             ),
-            // ////////////////////////////////
+            //////////////////////////////////
             TitleSectionWidget(
               title: 'Order Products'.tr,
               index: '',
@@ -213,7 +213,9 @@ class OrderDetails extends StatelessWidget {
         if (index == 0) {
           return OrderDetailsWidget(
               title: 'Shipping Cost'.tr,
-              value: order.shippingAddressData!.cost.toString());
+              value: order.shippingAddressData == null
+                  ? 'No Data Now'.tr
+                  : order.shippingAddressData!.cost.toString());
         }
         if (index == 1) {
           return OrderDetailsWidget(
@@ -222,36 +224,51 @@ class OrderDetails extends StatelessWidget {
         if (index == 2) {
           return OrderDetailsWidget(
               title: 'Contact Person Name'.tr,
-              value: order.shippingAddressData!.contactPersonName.toString());
+              value: order.shippingAddressData == null
+                  ? 'No Data Now'.tr
+                  : order.shippingAddressData!.contactPersonName.toString());
         }
         if (index == 3) {
           return OrderDetailsWidget(
               title: 'Address Type'.tr,
-              value: order.shippingAddressData!.addressType.toString());
+              value: order.shippingAddressData == null
+                  ? 'No Data Now'.tr
+                  : order.shippingAddressData!.addressType.toString());
         }
         if (index == 4) {
           return OrderDetailsWidget(
               title: 'Address'.tr,
-              value: order.shippingAddressData!.address.toString());
+              value: order.shippingAddressData == null
+                  ? 'No Data Now'.tr
+                  : order.shippingAddressData!.address.toString());
         }
         if (index == 5) {
           return OrderDetailsWidget(
               title: 'City'.tr,
-              value: order.shippingAddressData!.city.toString());
+              value: order.shippingAddressData == null
+                  ? 'No Data Now'.tr
+                  : order.shippingAddressData!.city.toString());
         }
         if (index == 6) {
           return OrderDetailsWidget(
               title: 'Country'.tr,
-              value: order.shippingAddressData!.country.toString());
+              value: order.shippingAddressData == null
+                  ? 'No Data Now'.tr
+                  : order.shippingAddressData!.country.toString());
         }
         if (index == 7) {
           return OrderDetailsWidget(
-              title: 'Phone'.tr, value: '${order.shippingAddressData!.phone}');
+              title: 'Phone'.tr,
+              value: order.shippingAddressData == null
+                  ? 'No Data Now'.tr
+                  : '${order.shippingAddressData!.phone}');
         }
         if (index == 8) {
           return OrderDetailsWidget(
               title: 'Email'.tr,
-              value: order.shippingAddressData!.email.toString());
+              value: order.shippingAddressData == null
+                  ? 'No Data Now'.tr
+                  : order.shippingAddressData!.email.toString());
         }
 
         return null;

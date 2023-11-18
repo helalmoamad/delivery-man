@@ -43,11 +43,11 @@ class OrdersDetailsPage extends StatelessWidget {
                 backgroundColor: AppColors.primaryDark,
                 onPress: () async {
                   Get.back();
+                  Get.close(1);
                   ordersController.changeDeliveringButton(true);
                   await ordersController.stopRecording();
                   ordersController.returnedProductsList.clear();
                   ordersController.audioPath = '';
-                  Get.close(1);
                 },
               ),
               ///////////////

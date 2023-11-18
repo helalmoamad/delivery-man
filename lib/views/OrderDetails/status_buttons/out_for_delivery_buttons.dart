@@ -43,7 +43,6 @@ class OutForDeliveryButtons extends StatelessWidget {
                       onPress: () async {
                         Get.back();
                         await ordersController.startRecording();
-                        ordersController.changeDeliveringButton(false);
                       },
                     ),
                     ///////////////

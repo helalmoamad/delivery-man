@@ -340,6 +340,7 @@ class OrdersController extends GetxController {
       if (await record.hasPermission()) {
         await record.start();
         isRecording = true;
+        changeDeliveringButton(false);
         update();
       } else {
         SnackBarWidgets.showFailureSnackBar(

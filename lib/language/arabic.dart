@@ -132,4 +132,5 @@ const Map<String, String> ar = {
   'Delete All Data': 'حذف كل البيانات',
   'Are you sure you want delete to all data ?':
       'هل أنت متأكد من حذف كل البيانات ؟',
+  'No Data Now': 'لا يوجد بيانات حالياً',
 };
