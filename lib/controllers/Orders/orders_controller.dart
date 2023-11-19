@@ -11,6 +11,7 @@ import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:record/record.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../../models/Orders/list_order_model.dart';
 import '../../providers/Orders_providers.dart/get_order_list_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_status_data.dart';
@@ -93,6 +94,51 @@ class OrdersController extends GetxController {
   List<ProductModel> returnedProductsList = [];
 
   int moreDeveloperInfoIndex = 0;
+
+  late ItemScrollController myOrderStatusScrollController;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    debugPrint('Order Controller Init');
+    String token = GlobalFunctions.getFcmToken();
+    if (Get.currentRoute == Routes.orderssPage) {
+      orderScrollController = ScrollController();
+      await getOrderStatusData(token: token, isForAllOrders: true);
+      orderScrollController.addListener(() async {
+        if (orderScrollController.position.maxScrollExtent ==
+            orderScrollController.offset) {
+          debugPrint('scrollController');
+          await getListOrderWithPaginationData(
+              token: token, status: orderStatus);
+        }
+      });
+    }
+
+    if (Get.currentRoute == Routes.myOrdersPage) {
+      myOrderScrollController = ScrollController();
+      myOrderStatusScrollController = ItemScrollController();
+      await getOrderStatusData(token: token, isForAllOrders: false);
+      myOrderScrollController.addListener(() async {
+        if (myOrderScrollController.position.maxScrollExtent ==
+            myOrderScrollController.offset) {
+          debugPrint('scrollController');
+          await getMyOrdersWithPaginationData(
+              token: token, status: myOrderStatus);
+        }
+      });
+
+      record = Record();
+      audioPlayer = AudioPlayer();
+    }
+  }
+
+  @override
+  void onClose() async {
+    super.onClose();
+
+    debugPrint('Order Controller closed');
+  }
 
   Future<void> removeRequestFromDeveloperInfo(int index) async {
     await GlobalFunctions.deleteRequestInfo(index: index);
@@ -231,6 +277,9 @@ class OrdersController extends GetxController {
     myOrderStatus = status;
     if (index != selectedMyOrderStatus) {
       selectedMyOrderStatus = index;
+
+      myOrderStatusScrollController.jumpTo(index: index);
+
       await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
     }
 
@@ -280,48 +329,6 @@ class OrdersController extends GetxController {
     update();
   }
   //////////////////////////////////////////////////
-
-  @override
-  void onInit() async {
-    super.onInit();
-    debugPrint('Order Controller Init');
-    String token = GlobalFunctions.getFcmToken();
-    if (Get.currentRoute == Routes.orderssPage) {
-      orderScrollController = ScrollController();
-      await getOrderStatusData(token: token, isForAllOrders: true);
-      orderScrollController.addListener(() async {
-        if (orderScrollController.position.maxScrollExtent ==
-            orderScrollController.offset) {
-          debugPrint('scrollController');
-          await getListOrderWithPaginationData(
-              token: token, status: orderStatus);
-        }
-      });
-    }
-
-    if (Get.currentRoute == Routes.myOrdersPage) {
-      myOrderScrollController = ScrollController();
-      await getOrderStatusData(token: token, isForAllOrders: false);
-      myOrderScrollController.addListener(() async {
-        if (myOrderScrollController.position.maxScrollExtent ==
-            myOrderScrollController.offset) {
-          debugPrint('scrollController');
-          await getMyOrdersWithPaginationData(
-              token: token, status: myOrderStatus);
-        }
-      });
-
-      record = Record();
-      audioPlayer = AudioPlayer();
-    }
-  }
-
-  @override
-  void onClose() async {
-    super.onClose();
-
-    debugPrint('Order Controller closed');
-  }
 
   Future<void> chooseOrderStatus(
       {required String status, required int index}) async {
@@ -519,17 +526,19 @@ class OrdersController extends GetxController {
       hideAssignOrderCircleIndicator();
       SnackBarWidgets.showSuccessSnackBar('Assign Order Succeeded'.tr, '');
       Get.close(1);
-      await getListOrderData(token: token, status: orderStatus, offset: 1);
+      Get.offAllNamed(Routes.myOrdersPage);
+      // await getListOrderData(token: token, status: orderStatus, offset: 1);
     });
   }
 
-  Future<void> changeOrderStatus(
-      {required String token,
-      required String status,
-      required int orderId,
-      int? amount,
-      List<ProductModel>? returnedProducts,
-      String? file}) async {
+  Future<void> changeOrderStatus({
+    required String token,
+    required String status,
+    required int orderId,
+    int? amount,
+    List<ProductModel>? returnedProducts,
+    String? file,
+  }) async {
     showChangeOrderStatusCircleIndicator();
     final failureOrData = await changeOrderStatusProvider.call(
         token: token,
@@ -558,7 +567,20 @@ class OrdersController extends GetxController {
         changeDeliveringButton(true);
         audioPath = '';
       }
-      await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
+
+      if (status == 'partial_return') {
+        await chooseMyOrderStatus(
+            status: status, index: selectedMyOrderStatus + 2);
+      } else if (status == 'returned') {
+        await chooseMyOrderStatus(
+            status: status, index: selectedMyOrderStatus + 3);
+      } else if (status == 'failed') {
+        await chooseMyOrderStatus(
+            status: status, index: selectedMyOrderStatus + 4);
+      } else {
+        await chooseMyOrderStatus(
+            status: status, index: selectedMyOrderStatus + 1);
+      }
     });
   }
 
