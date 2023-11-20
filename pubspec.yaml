@@ -26,6 +26,10 @@ dependencies:
   qr_code_scanner: 1.0.1
   share_plus: 7.0.1
   scrollable_positioned_list: 0.3.8
+  url_launcher:
+  geolocator: ^10.1.0
+  permission_handler:
+  app_settings:
 
 
   cupertino_icons: ^1.0.2

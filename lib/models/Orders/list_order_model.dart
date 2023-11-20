@@ -70,10 +70,11 @@ class OrderModel {
   final ShippingAddressData? shippingAddressData;
   final dynamic billingAddress;
   final dynamic billingAddressData;
+  final dynamic receivedAmount;
   final String? orderStatus;
 
   OrderModel({
-    required this.id,
+    this.id,
     required this.journeyId,
     required this.assignToUserId,
     required this.customerId,
@@ -94,6 +95,7 @@ class OrderModel {
     required this.billingAddress,
     required this.billingAddressData,
     required this.orderStatus,
+    required this.receivedAmount,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
@@ -126,6 +128,7 @@ class OrderModel {
         billingAddress: json["billing_address"] ?? '',
         billingAddressData: json["billing_address_data"],
         orderStatus: json["order_status"] ?? '',
+        receivedAmount: json["received_amount"] ?? '',
       );
 }
 

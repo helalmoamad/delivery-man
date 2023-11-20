@@ -7,11 +7,15 @@ import '../../../shared/widgets/text_widget.dart';
 class OrderDetailsWidget extends StatelessWidget {
   final String title;
   final String value;
+  final Widget? widget;
+  final double? height;
 
   const OrderDetailsWidget({
     Key? key,
     required this.title,
     required this.value,
+    this.widget,
+    this.height = 37,
   }) : super(key: key);
 
   @override
@@ -21,7 +25,7 @@ class OrderDetailsWidget extends StatelessWidget {
         Expanded(
           child: Container(
             padding: const EdgeInsets.all(3),
-            height: 37,
+            height: height,
             decoration: BoxDecoration(
                 color: Get.isDarkMode ? AppColors.darkGrey : AppColors.white,
                 border: Border.all(color: AppColors.grey, width: 0)),
@@ -39,19 +43,28 @@ class OrderDetailsWidget extends StatelessWidget {
         Expanded(
           child: Container(
             padding: const EdgeInsets.all(3),
-            height: 37,
+            height: height,
             decoration: BoxDecoration(
                 color: Get.isDarkMode ? AppColors.darkGrey : AppColors.white,
                 border: Border.all(color: AppColors.grey, width: 0)),
-            child: Center(
-              child: TextWidget(
-                  text: value,
-                  color:
-                      Get.isDarkMode ? AppColors.grey : AppColors.primaryLight,
-                  fontSize: 13,
-                  fontWeight: FontWeight.normal,
-                  textAlign: TextAlign.center,
-                  maxline: 2),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: TextWidget(
+                        text: value,
+                        color: Get.isDarkMode
+                            ? AppColors.grey
+                            : AppColors.primaryLight,
+                        fontSize: 13,
+                        fontWeight: FontWeight.normal,
+                        textAlign: TextAlign.center,
+                        maxline: 2),
+                  ),
+                ),
+                ////////////////////////////
+                widget == null ? Container() : Expanded(child: widget!),
+              ],
             ),
           ),
         ),

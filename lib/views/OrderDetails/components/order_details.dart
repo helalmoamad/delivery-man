@@ -1,3 +1,4 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
@@ -5,7 +6,10 @@ import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:delivery_man_app/views/OrderDetails/components/product_widget.dart';
 import 'package:delivery_man_app/views/OrderDetails/components/title_section_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../models/Orders/list_order_model.dart';
 import '../../../shared/constants/color_constants.dart';
 import 'order_details_widget.dart';
@@ -43,6 +47,7 @@ class OrderDetails extends StatelessWidget {
                 ? 101
                 : 10),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TitleSectionWidget(
               title: 'More Order Info'.tr,
@@ -167,6 +172,7 @@ class OrderDetails extends StatelessWidget {
   Widget buildProductsSection(
       List<ProductModel>? products, int productsIndex, String status) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ////////////////////////////////
         TitleSectionWidget(
@@ -208,7 +214,7 @@ class OrderDetails extends StatelessWidget {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: 9,
+      itemCount: 11,
       itemBuilder: (context, index) {
         if (index == 0) {
           return OrderDetailsWidget(
@@ -258,10 +264,13 @@ class OrderDetails extends StatelessWidget {
         }
         if (index == 7) {
           return OrderDetailsWidget(
-              title: 'Phone'.tr,
-              value: order.shippingAddressData == null
-                  ? 'No Data Now'.tr
-                  : '${order.shippingAddressData!.phone}');
+            title: 'Phone'.tr,
+            value: order.shippingAddressData == null
+                ? 'No Data Now'.tr
+                : '${order.shippingAddressData!.phone}',
+            height: 60,
+            widget: phoneButtons(order),
+          );
         }
         if (index == 8) {
           return OrderDetailsWidget(
@@ -270,9 +279,127 @@ class OrderDetails extends StatelessWidget {
                   ? 'No Data Now'.tr
                   : order.shippingAddressData!.email.toString());
         }
+        if (index == 9) {
+          return OrderDetailsWidget(
+              title: 'Order Amount'.tr,
+              value: order.orderAmountFormatted == null
+                  ? 'No Data Now'.tr
+                  : order.orderAmountFormatted.toString());
+        }
+        if (index == 10) {
+          return OrderDetailsWidget(
+              title: 'Received Amount'.tr,
+              value: order.receivedAmount == ''
+                  ? 'No Data Now'.tr
+                  : order.orderAmountFormatted.toString());
+        }
 
         return null;
       },
+    );
+  }
+
+  Widget phoneButtons(OrderModel order) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        InkWell(
+          onTap: () async {
+            var url = Uri.parse(
+                "tel:${order.shippingAddressData == null ? '' : order.shippingAddressData!.phone}");
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url);
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
+          child: const Icon(
+            Icons.phone,
+            size: 20,
+            color: AppColors.primaryDark,
+          ),
+        ),
+        ////////////////////////////////
+        InkWell(
+          onTap: () async {
+            var url = Uri.parse(
+                "sms:${order.shippingAddressData == null ? '' : order.shippingAddressData!.phone}");
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url);
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
+          child: const Icon(
+            Icons.markunread,
+            size: 20,
+            color: AppColors.primaryDark,
+          ),
+        ),
+        ////////////////////////////////
+        InkWell(
+          onTap: () async {
+            await Permission.location.isDenied.then((value) async {
+              if (value) {
+                await Permission.location.request();
+              }
+
+              bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+              if (!serviceEnabled) {
+                await AppSettings.openAppSettings(
+                    type: AppSettingsType.location);
+              }
+              if (!value && serviceEnabled) {
+                ordersController.showChangeOrderStatusCircleIndicator();
+                await Geolocator.getCurrentPosition(
+                        desiredAccuracy: LocationAccuracy.high)
+                    .then((Position position) async {
+                  ordersController.hideChangeOrderStatusCircleIndicator();
+                  var whatsappUrl = Uri.parse(
+                      "whatsapp://send?phone=${order.shippingAddressData == null ? '' : order.shippingAddressData!.phone}+&text=longitude: ${position.longitude}\nlatitude: ${position.latitude}");
+
+                  if (await canLaunchUrl(whatsappUrl)) {
+                    await launchUrl(whatsappUrl);
+                  } else {
+                    throw 'Could not launch $whatsappUrl';
+                  }
+                }).catchError((e) {
+                  ordersController.hideChangeOrderStatusCircleIndicator();
+                  debugPrint(
+                      '///////////////////////////catchError on getCurrentPosition////////////////////////');
+                  debugPrint(e.toString());
+                });
+              }
+            });
+            ///////////////////////////////////////////////////////////////
+          },
+          child: const Icon(
+            Icons.location_on,
+            size: 20,
+            color: AppColors.primaryDark,
+          ),
+        ),
+        ////////////////////////////////
+        InkWell(
+          onTap: () async {
+            var whatsappUrl = Uri.parse(
+                "whatsapp://send?phone=${order.shippingAddressData == null ? '' : order.shippingAddressData!.phone}");
+
+            if (await canLaunchUrl(whatsappUrl)) {
+              await launchUrl(whatsappUrl);
+            } else {
+              throw 'Could not launch $whatsappUrl';
+            }
+          },
+          child: Image.asset(
+            'assets/pictures/whats_app.png',
+            width: 18,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+          ),
+        ),
+        ////////////////////////////////
+      ],
     );
   }
 

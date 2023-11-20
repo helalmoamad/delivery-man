@@ -133,4 +133,5 @@ const Map<String, String> ar = {
   'Are you sure you want delete to all data ?':
       'هل أنت متأكد من حذف كل البيانات ؟',
   'No Data Now': 'لا يوجد بيانات حالياً',
+  'Received Amount': 'المبلغ المُستلَم',
 };

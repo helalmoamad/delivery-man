@@ -134,4 +134,5 @@ const Map<String, String> en = {
   'Are you sure you want delete to all data ?':
       'Are you sure you want delete to all data ?',
   'No Data Now': 'No Data Now',
+  'Received Amount': 'Received Amount',
 };
