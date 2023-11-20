@@ -355,8 +355,11 @@ class OrderDetails extends StatelessWidget {
                         desiredAccuracy: LocationAccuracy.high)
                     .then((Position position) async {
                   ordersController.hideChangeOrderStatusCircleIndicator();
+                  final maps = Uri.https("google.com", "/maps/search/", {
+                    "api=1&query": "${position.latitude},${position.longitude}"
+                  });
                   var whatsappUrl = Uri.parse(
-                      "whatsapp://send?phone=${order.shippingAddressData == null ? '' : order.shippingAddressData!.phone}+&text=longitude: ${position.longitude}\nlatitude: ${position.latitude}");
+                      "whatsapp://send?phone=${order.shippingAddressData == null ? '' : order.shippingAddressData!.phone}+&text=$maps");
 
                   if (await canLaunchUrl(whatsappUrl)) {
                     await launchUrl(whatsappUrl);

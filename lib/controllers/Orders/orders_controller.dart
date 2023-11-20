@@ -10,6 +10,7 @@ import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../../models/Orders/list_order_model.dart';
@@ -17,6 +18,7 @@ import '../../providers/Orders_providers.dart/get_order_list_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_status_data.dart';
 import '../../shared/handling_errors.dart/handling_errors.dart';
 import '../../shared/widgets/snackbar_widgets.dart';
+import 'package:path/path.dart' as p;
 
 class OrdersController extends GetxController {
   bool isGetOrdersNoInternetConnection = false;
@@ -342,10 +344,15 @@ class OrdersController extends GetxController {
     update();
   }
 
-  Future<void> startRecording() async {
+  Future<void> startRecording({required String orderId}) async {
     try {
       if (await record.hasPermission()) {
-        await record.start();
+        final dir = await getApplicationDocumentsDirectory();
+        final filepath = p.join(
+          dir.path,
+          'audio_${orderId}_${DateTime.now()}.m4a',
+        );
+        await record.start(path: filepath);
         isRecording = true;
         changeDeliveringButton(false);
         update();

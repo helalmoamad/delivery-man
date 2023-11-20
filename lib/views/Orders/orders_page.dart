@@ -86,7 +86,7 @@ class OrdersPage extends StatelessWidget {
                         unColoredIcon1: 'assets/pictures/all orders grey.png',
                         unColoredIcon2: 'assets/pictures/my orders grey.png',
                         onTap1: () {},
-                        onTap2: () async {
+                        onTap2: () {
                           Get.offAllNamed(Routes.myOrdersPage);
                         },
                       )),

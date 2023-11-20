@@ -42,7 +42,8 @@ class OutForDeliveryButtons extends StatelessWidget {
                       backgroundColor: AppColors.primaryDark,
                       onPress: () async {
                         Get.back();
-                        await ordersController.startRecording();
+                        await ordersController.startRecording(
+                            orderId: order.id.toString());
                       },
                     ),
                     ///////////////
