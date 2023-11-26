@@ -1,7 +1,7 @@
 class ListOrderModel {
   final bool? isSuccessful;
   final bool? hasContent;
-  final int? code;
+  final dynamic code;
   final dynamic message;
   final dynamic detailedError;
   final ListOrderDataModel? data;
@@ -28,7 +28,7 @@ class ListOrderModel {
 }
 
 class ListOrderDataModel {
-  final int? currentPage;
+  final dynamic currentPage;
   final List<OrderModel>? data;
   int? total;
 
@@ -53,17 +53,17 @@ class OrderModel {
   final int? id;
   final dynamic journeyId;
   final dynamic assignToUserId;
-  final int? customerId;
-  final String? paymentStatus;
-  final int? orderStatusId;
-  final String? paymentMethod;
-  final String? transactionRef;
-  final int? orderAmount;
-  final String? orderAmountFormatted;
+  final dynamic customerId;
+  final dynamic paymentStatus;
+  final dynamic orderStatusId;
+  final dynamic paymentMethod;
+  final dynamic transactionRef;
+  final dynamic orderAmount;
+  final dynamic orderAmountFormatted;
   final dynamic shippingAddressId;
-  final String? orderGroupId;
-  final String? verificationCode;
-  final String? sellerId;
+  final dynamic orderGroupId;
+  final dynamic verificationCode;
+  final dynamic sellerId;
   final List<ProductModel>? products;
   final List<ProductModel>? returnedProducts;
   final dynamic shippingAddress;
@@ -71,7 +71,7 @@ class OrderModel {
   final dynamic billingAddress;
   final dynamic billingAddressData;
   final dynamic receivedAmount;
-  final String? orderStatus;
+  final dynamic orderStatus;
 
   OrderModel({
     this.id,
@@ -134,24 +134,24 @@ class OrderModel {
 
 class ProductModel {
   final int? id;
-  final int? qty;
-  final int? tax;
-  final String? price;
-  final int? odooId;
-  final String? variant;
-  final String? discount;
-  final int? orderId;
-  final int? productId;
-  final String? discountType;
-  final int? odooOrderId;
-  final String? paymentStatus;
-  final int? refundRequest;
-  final String? deliveryStatus;
-  final int? isOdooProduct;
+  final dynamic qty;
+  final dynamic tax;
+  final dynamic price;
+  final dynamic odooId;
+  final dynamic variant;
+  final dynamic discount;
+  final dynamic orderId;
+  final dynamic productId;
+  final dynamic discountType;
+  final dynamic odooOrderId;
+  final dynamic paymentStatus;
+  final dynamic refundRequest;
+  final dynamic deliveryStatus;
+  final dynamic isOdooProduct;
   final OrderProductDetails? productDetails;
-  final int? isStockDecreased;
+  final dynamic isStockDecreased;
   final dynamic shippingMethodId;
-  final String? priceAfterDiscount;
+  final dynamic priceAfterDiscount;
   final dynamic refundRequestStatus;
 
   ProductModel({
@@ -228,19 +228,19 @@ class ProductModel {
 
 class OrderProductDetails {
   final int? id;
-  final String? name;
-  final String? slug;
+  final dynamic name;
+  final dynamic slug;
   final dynamic price;
   final List<String>? images;
   final Rating? rating;
-  final String? details;
+  final dynamic details;
   final bool? inStock;
-  final String? thumbnail;
-  final String? shareLink;
+  final dynamic thumbnail;
+  final dynamic shareLink;
   final dynamic offerPrice;
   final bool? isFavourite;
-  final String? priceFormatted;
-  final String? offerPriceFormatted;
+  final dynamic priceFormatted;
+  final dynamic offerPriceFormatted;
 
   OrderProductDetails({
     required this.id,
@@ -332,10 +332,10 @@ class ShippingAddressData {
   final dynamic latitude;
   final dynamic longitude;
   final DateTime? createdAt;
-  final int? isBilling;
-  final int? isDefault;
+  final dynamic isBilling;
+  final dynamic isDefault;
   final DateTime? updatedAt;
-  final int? customerId;
+  final dynamic customerId;
   final String? addressType;
   final String? contactPersonName;
 
@@ -386,23 +386,5 @@ class ShippingAddressData {
         customerId: json["customer_id"] ?? '',
         addressType: json["address_type"] ?? '',
         contactPersonName: json["contact_person_name"] ?? '',
-      );
-}
-
-class Link {
-  final String? url;
-  final String? label;
-  final bool? active;
-
-  Link({
-    required this.url,
-    required this.label,
-    required this.active,
-  });
-
-  factory Link.fromJson(Map<String, dynamic> json) => Link(
-        url: json["url"] ?? '',
-        label: json["label"] ?? '',
-        active: json["active"] ?? '',
       );
 }
