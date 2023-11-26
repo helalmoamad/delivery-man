@@ -30,7 +30,7 @@ class ListOrderModel {
 class ListOrderDataModel {
   final dynamic currentPage;
   final List<OrderModel>? data;
-  int? total;
+  dynamic total;
 
   ListOrderDataModel({
     required this.currentPage,
@@ -299,8 +299,8 @@ class OrderProductDetails {
 }
 
 class Rating {
-  final int? totalRating;
-  final int? overallRating;
+  final dynamic totalRating;
+  final dynamic overallRating;
 
   Rating({
     required this.totalRating,
@@ -321,23 +321,23 @@ class Rating {
 class ShippingAddressData {
   final int? id;
   final dynamic zip;
-  final String? city;
-  final String? cost;
-  final String? email;
-  final String? phone;
+  final dynamic city;
+  final dynamic cost;
+  final dynamic email;
+  final dynamic phone;
   final dynamic state;
-  final String? address;
-  final String? country;
+  final dynamic address;
+  final dynamic country;
   final dynamic duration;
   final dynamic latitude;
   final dynamic longitude;
-  final DateTime? createdAt;
+  final dynamic createdAt;
   final dynamic isBilling;
   final dynamic isDefault;
-  final DateTime? updatedAt;
+  final dynamic updatedAt;
   final dynamic customerId;
-  final String? addressType;
-  final String? contactPersonName;
+  final dynamic addressType;
+  final dynamic contactPersonName;
 
   ShippingAddressData({
     required this.id,
@@ -363,7 +363,7 @@ class ShippingAddressData {
 
   factory ShippingAddressData.fromJson(Map<String, dynamic> json) =>
       ShippingAddressData(
-        id: json["id"] ?? '',
+        id: json["id"] ?? 0,
         zip: json["zip"] ?? '',
         city: json["city"] ?? '',
         cost: json["cost"] ?? '',

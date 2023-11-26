@@ -221,70 +221,99 @@ class OrderDetails extends StatelessWidget {
               title: 'Shipping Cost'.tr,
               value: order.shippingAddressData == null
                   ? 'No Data Now'.tr
-                  : order.shippingAddressData!.cost.toString());
+                  : order.shippingAddressData!.cost.toString() == ''
+                      ? 'No Data Now'.tr
+                      : order.shippingAddressData!.cost.toString());
         }
         if (index == 1) {
           return OrderDetailsWidget(
-              title: 'Seller Id'.tr, value: order.sellerId.toString());
+            title: 'Seller Id'.tr,
+            value: order.sellerId.toString() == ''
+                ? 'No Data Now'.tr
+                : order.sellerId.toString(),
+          );
         }
         if (index == 2) {
           return OrderDetailsWidget(
-              title: 'Contact Person Name'.tr,
-              value: order.shippingAddressData == null
-                  ? 'No Data Now'.tr
-                  : order.shippingAddressData!.contactPersonName.toString());
+            title: 'Contact Person Name'.tr,
+            value: order.shippingAddressData == null
+                ? 'No Data Now'.tr
+                : order.shippingAddressData!.contactPersonName.toString() == ''
+                    ? 'No Data Now'.tr
+                    : order.shippingAddressData!.contactPersonName.toString(),
+          );
         }
         if (index == 3) {
           return OrderDetailsWidget(
-              title: 'Address Type'.tr,
-              value: order.shippingAddressData == null
-                  ? 'No Data Now'.tr
-                  : order.shippingAddressData!.addressType.toString());
+            title: 'Address Type'.tr,
+            value: order.shippingAddressData == null
+                ? 'No Data Now'.tr
+                : order.shippingAddressData!.addressType.toString() == ''
+                    ? 'No Data Now'.tr
+                    : order.shippingAddressData!.addressType.toString(),
+          );
         }
         if (index == 4) {
           return OrderDetailsWidget(
-              title: 'Address'.tr,
-              value: order.shippingAddressData == null
-                  ? 'No Data Now'.tr
-                  : order.shippingAddressData!.address.toString());
+            title: 'Address'.tr,
+            value: order.shippingAddressData == null
+                ? 'No Data Now'.tr
+                : order.shippingAddressData!.address.toString() == ''
+                    ? 'No Data Now'.tr
+                    : order.shippingAddressData!.address.toString(),
+          );
         }
         if (index == 5) {
           return OrderDetailsWidget(
-              title: 'City'.tr,
-              value: order.shippingAddressData == null
-                  ? 'No Data Now'.tr
-                  : order.shippingAddressData!.city.toString());
+            title: 'City'.tr,
+            value: order.shippingAddressData == null
+                ? 'No Data Now'.tr
+                : order.shippingAddressData!.city.toString() == ''
+                    ? 'No Data Now'.tr
+                    : order.shippingAddressData!.city.toString(),
+          );
         }
         if (index == 6) {
           return OrderDetailsWidget(
-              title: 'Country'.tr,
-              value: order.shippingAddressData == null
-                  ? 'No Data Now'.tr
-                  : order.shippingAddressData!.country.toString());
+            title: 'Country'.tr,
+            value: order.shippingAddressData == null
+                ? 'No Data Now'.tr
+                : order.shippingAddressData!.country.toString() == ''
+                    ? 'No Data Now'.tr
+                    : order.shippingAddressData!.country.toString(),
+          );
         }
         if (index == 7) {
           return OrderDetailsWidget(
             title: 'Phone'.tr,
             value: order.shippingAddressData == null
                 ? 'No Data Now'.tr
-                : '${order.shippingAddressData!.phone}',
+                : order.shippingAddressData!.phone.toString() == ''
+                    ? 'No Data Now'.tr
+                    : order.shippingAddressData!.phone.toString(),
             height: 60,
             widget: phoneButtons(order),
           );
         }
         if (index == 8) {
           return OrderDetailsWidget(
-              title: 'Email'.tr,
-              value: order.shippingAddressData == null
-                  ? 'No Data Now'.tr
-                  : order.shippingAddressData!.email.toString());
+            title: 'Email'.tr,
+            value: order.shippingAddressData == null
+                ? 'No Data Now'.tr
+                : order.shippingAddressData!.email.toString() == ''
+                    ? 'No Data Now'.tr
+                    : order.shippingAddressData!.email.toString(),
+          );
         }
         if (index == 9) {
           return OrderDetailsWidget(
-              title: 'Order Amount'.tr,
-              value: order.orderAmountFormatted == null
-                  ? 'No Data Now'.tr
-                  : order.orderAmountFormatted.toString());
+            title: 'Order Amount'.tr,
+            value: order.orderAmountFormatted == null
+                ? 'No Data Now'.tr
+                : order.orderAmountFormatted.toString() == ''
+                    ? 'No Data Now'.tr
+                    : order.orderAmountFormatted.toString(),
+          );
         }
         if (index == 10) {
           return OrderDetailsWidget(
@@ -429,8 +458,11 @@ class OrderDetails extends StatelessWidget {
         }
         if (index == 3) {
           return OrderDetailsWidget(
-              title: 'Price After Discount'.tr,
-              value: products![productsIndex].priceAfterDiscount.toString());
+            title: 'Price After Discount'.tr,
+            value: products![productsIndex].priceAfterDiscount.toString() == ''
+                ? 'No Data Now'.tr
+                : products[productsIndex].priceAfterDiscount.toString(),
+          );
         }
         if (index == 4) {
           return OrderDetailsWidget(
