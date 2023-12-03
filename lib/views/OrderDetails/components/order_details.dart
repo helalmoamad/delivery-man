@@ -236,11 +236,17 @@ class OrderDetails extends StatelessWidget {
         if (index == 2) {
           return OrderDetailsWidget(
             title: 'Contact Person Name'.tr,
-            value: order.shippingAddressData == null
-                ? 'No Data Now'.tr
-                : order.shippingAddressData!.contactPersonName.toString() == ''
+            value: (ordersController.selectedOrderStatus == 0 ||
+                    ordersController.selectedOrderStatus == 1 ||
+                    ordersController.selectedOrderStatus == 2)
+                ? '* * * * * * * *'
+                : order.shippingAddressData == null
                     ? 'No Data Now'.tr
-                    : order.shippingAddressData!.contactPersonName.toString(),
+                    : order.shippingAddressData!.contactPersonName.toString() ==
+                            ''
+                        ? 'No Data Now'.tr
+                        : order.shippingAddressData!.contactPersonName
+                            .toString(),
           );
         }
         if (index == 3) {
@@ -286,13 +292,25 @@ class OrderDetails extends StatelessWidget {
         if (index == 7) {
           return OrderDetailsWidget(
             title: 'Phone'.tr,
-            value: order.shippingAddressData == null
-                ? 'No Data Now'.tr
-                : order.shippingAddressData!.phone.toString() == ''
+            value: (ordersController.selectedOrderStatus == 0 ||
+                    ordersController.selectedOrderStatus == 1 ||
+                    ordersController.selectedOrderStatus == 2)
+                ? '* * * * * * * *'
+                : order.shippingAddressData == null
                     ? 'No Data Now'.tr
-                    : order.shippingAddressData!.phone.toString(),
-            height: 60,
-            widget: phoneButtons(order),
+                    : order.shippingAddressData!.phone.toString() == ''
+                        ? 'No Data Now'.tr
+                        : order.shippingAddressData!.phone.toString(),
+            height: (ordersController.selectedOrderStatus == 0 ||
+                    ordersController.selectedOrderStatus == 1 ||
+                    ordersController.selectedOrderStatus == 2)
+                ? 37
+                : 60,
+            widget: (ordersController.selectedOrderStatus == 0 ||
+                    ordersController.selectedOrderStatus == 1 ||
+                    ordersController.selectedOrderStatus == 2)
+                ? null
+                : phoneButtons(order),
           );
         }
         if (index == 8) {
