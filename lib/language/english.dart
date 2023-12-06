@@ -5,6 +5,7 @@ const Map<String, String> en = {
   'Payment Status': 'Payment Status',
   'Order Status': 'Order Status',
   'Order Amount': 'Order Amount',
+  'COD Amount': 'COD Amount',
   'Payment Method': 'Payment Method',
   'Order unique id': 'Order unique id',
   'View Details': 'View Details',

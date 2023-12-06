@@ -60,6 +60,7 @@ class OrderModel {
   final dynamic transactionRef;
   final dynamic orderAmount;
   final dynamic orderAmountFormatted;
+  final dynamic codAmount;
   final dynamic shippingAddressId;
   final dynamic orderGroupId;
   final dynamic verificationCode;
@@ -84,6 +85,7 @@ class OrderModel {
     required this.transactionRef,
     required this.orderAmount,
     required this.orderAmountFormatted,
+    required this.codAmount,
     required this.shippingAddressId,
     required this.orderGroupId,
     required this.verificationCode,
@@ -109,6 +111,7 @@ class OrderModel {
         transactionRef: json["transaction_ref"] ?? '',
         orderAmount: json["order_amount"] ?? '',
         orderAmountFormatted: json["order_amount_formatted"] ?? '',
+        codAmount: json["CODAmount"] ?? '',
         shippingAddressId: json["shipping_address_id"] ?? '',
         orderGroupId: json["order_group_id"] ?? '',
         verificationCode: json["verification_code"] ?? '',

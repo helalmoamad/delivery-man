@@ -33,6 +33,8 @@ class OrdersController extends GetxController {
 
   bool isChangeOrderStatusCircleShown = false;
 
+  bool isMyOrderPage = false;
+
   String previousRoute = '';
 
   late ListOrderModel ordersData;
@@ -105,6 +107,7 @@ class OrdersController extends GetxController {
     debugPrint('Order Controller Init');
     String token = GlobalFunctions.getFcmToken();
     if (Get.currentRoute == Routes.orderssPage) {
+      isMyOrderPage = false;
       orderScrollController = ScrollController();
       await getOrderStatusData(token: token, isForAllOrders: true);
       orderScrollController.addListener(() async {
@@ -118,6 +121,7 @@ class OrdersController extends GetxController {
     }
 
     if (Get.currentRoute == Routes.myOrdersPage) {
+      isMyOrderPage = true;
       myOrderScrollController = ScrollController();
       myOrderStatusScrollController = ItemScrollController();
       await getOrderStatusData(token: token, isForAllOrders: false);

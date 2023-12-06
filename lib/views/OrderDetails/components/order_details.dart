@@ -214,7 +214,7 @@ class OrderDetails extends StatelessWidget {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: 11,
+      itemCount: 12,
       itemBuilder: (context, index) {
         if (index == 0) {
           return OrderDetailsWidget(
@@ -236,9 +236,7 @@ class OrderDetails extends StatelessWidget {
         if (index == 2) {
           return OrderDetailsWidget(
             title: 'Contact Person Name'.tr,
-            value: (ordersController.selectedOrderStatus == 0 ||
-                    ordersController.selectedOrderStatus == 1 ||
-                    ordersController.selectedOrderStatus == 2)
+            value: !ordersController.isMyOrderPage
                 ? '* * * * * * * *'
                 : order.shippingAddressData == null
                     ? 'No Data Now'.tr
@@ -292,35 +290,28 @@ class OrderDetails extends StatelessWidget {
         if (index == 7) {
           return OrderDetailsWidget(
             title: 'Phone'.tr,
-            value: (ordersController.selectedOrderStatus == 0 ||
-                    ordersController.selectedOrderStatus == 1 ||
-                    ordersController.selectedOrderStatus == 2)
+            value: !ordersController.isMyOrderPage
                 ? '* * * * * * * *'
                 : order.shippingAddressData == null
                     ? 'No Data Now'.tr
                     : order.shippingAddressData!.phone.toString() == ''
                         ? 'No Data Now'.tr
                         : order.shippingAddressData!.phone.toString(),
-            height: (ordersController.selectedOrderStatus == 0 ||
-                    ordersController.selectedOrderStatus == 1 ||
-                    ordersController.selectedOrderStatus == 2)
-                ? 37
-                : 60,
-            widget: (ordersController.selectedOrderStatus == 0 ||
-                    ordersController.selectedOrderStatus == 1 ||
-                    ordersController.selectedOrderStatus == 2)
-                ? null
-                : phoneButtons(order),
+            height: !ordersController.isMyOrderPage ? 37 : 60,
+            widget:
+                !ordersController.isMyOrderPage ? null : phoneButtons(order),
           );
         }
         if (index == 8) {
           return OrderDetailsWidget(
             title: 'Email'.tr,
-            value: order.shippingAddressData == null
-                ? 'No Data Now'.tr
-                : order.shippingAddressData!.email.toString() == ''
+            value: !ordersController.isMyOrderPage
+                ? '* * * * * * * *'
+                : order.shippingAddressData == null
                     ? 'No Data Now'.tr
-                    : order.shippingAddressData!.email.toString(),
+                    : order.shippingAddressData!.email.toString() == ''
+                        ? 'No Data Now'.tr
+                        : order.shippingAddressData!.email.toString(),
           );
         }
         if (index == 9) {
@@ -334,6 +325,16 @@ class OrderDetails extends StatelessWidget {
           );
         }
         if (index == 10) {
+          return OrderDetailsWidget(
+            title: 'COD Amount'.tr,
+            value: order.codAmount == null
+                ? 'No Data Now'.tr
+                : order.codAmount.toString() == ''
+                    ? 'No Data Now'.tr
+                    : order.codAmount.toString(),
+          );
+        }
+        if (index == 11) {
           return OrderDetailsWidget(
               title: 'Received Amount'.tr,
               value: order.receivedAmount == ''
