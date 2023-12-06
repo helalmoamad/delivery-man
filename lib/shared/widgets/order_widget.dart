@@ -68,10 +68,23 @@ class OrderWidget extends StatelessWidget {
               const SizedBox(
                 height: 8,
               ),
+              ///////////////////////////
+              buildOrderFirstDetailsWidget(
+                title: '${'COD Amount'.tr} :',
+                isBold: true,
+                value: orders[index].codAmount == null
+                    ? 'No Data Now'.tr
+                    : orders[index].codAmount.toString() == ''
+                        ? 'No Data Now'.tr
+                        : orders[index].codAmount.toString(),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
               /////////////////////////
               buildOrderFirstDetailsWidget(
-                  '${'Order Status'.tr} :',
-                  GlobalFunctions.orderStatusText(
+                  title: '${'Order Status'.tr} :',
+                  value: GlobalFunctions.orderStatusText(
                       inputText: orders[index].orderStatus.toString())),
               ///////////////////////
               const SizedBox(
@@ -79,8 +92,8 @@ class OrderWidget extends StatelessWidget {
               ),
               ///////////////////////////
               buildOrderFirstDetailsWidget(
-                '${'Order Amount'.tr} :',
-                orders[index].orderAmountFormatted.toString(),
+                title: '${'Order Amount'.tr} :',
+                value: orders[index].orderAmountFormatted.toString(),
               ),
 
               ///
@@ -89,8 +102,8 @@ class OrderWidget extends StatelessWidget {
               ),
               ////
               buildOrderFirstDetailsWidget(
-                '${'Payment Method'.tr} :',
-                orders[index].paymentMethod.toString(),
+                title: '${'Payment Method'.tr} :',
+                value: orders[index].paymentMethod.toString(),
               ),
 
               ///
@@ -99,8 +112,8 @@ class OrderWidget extends StatelessWidget {
               ),
               ////
               buildOrderFirstDetailsWidget(
-                '${'Order unique id'.tr} :',
-                orders[index].id.toString(),
+                title: '${'Order unique id'.tr} :',
+                value: orders[index].id.toString(),
               ),
 
               ///
@@ -143,7 +156,11 @@ class OrderWidget extends StatelessWidget {
         ));
   }
 
-  Widget buildOrderFirstDetailsWidget(String title, String value) {
+  Widget buildOrderFirstDetailsWidget({
+    required String title,
+    required String value,
+    bool isBold = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
@@ -154,7 +171,7 @@ class OrderWidget extends StatelessWidget {
                 text: title,
                 color: AppColors.blackDark,
                 fontSize: 13,
-                fontWeight: FontWeight.normal,
+                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
                 textAlign: TextAlign.start,
                 maxline: 1),
           ),
@@ -164,7 +181,7 @@ class OrderWidget extends StatelessWidget {
                 text: value,
                 color: AppColors.grey,
                 fontSize: 13,
-                fontWeight: FontWeight.normal,
+                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
                 textAlign: TextAlign.end,
                 maxline: 2),
           ),

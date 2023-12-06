@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
 import '../../../shared/constants/color_constants.dart';
 import '../../../shared/widgets/text_widget.dart';
 
@@ -9,6 +7,8 @@ class OrderDetailsWidget extends StatelessWidget {
   final String value;
   final Widget? widget;
   final double? height;
+  final Color color;
+  final bool isBold;
 
   const OrderDetailsWidget({
     Key? key,
@@ -16,6 +16,8 @@ class OrderDetailsWidget extends StatelessWidget {
     required this.value,
     this.widget,
     this.height = 37,
+    this.color = AppColors.white,
+    this.isBold = false,
   }) : super(key: key);
 
   @override
@@ -27,14 +29,17 @@ class OrderDetailsWidget extends StatelessWidget {
             padding: const EdgeInsets.all(3),
             height: height,
             decoration: BoxDecoration(
-                color: Get.isDarkMode ? AppColors.darkGrey : AppColors.white,
-                border: Border.all(color: AppColors.grey, width: 0)),
+                color: color,
+                border: Border.all(
+                  color: AppColors.grey,
+                  width: 0,
+                )),
             child: Center(
               child: TextWidget(
                   text: title,
-                  color: AppColors.secondary,
+                  color: AppColors.blackDark,
                   fontSize: 13,
-                  fontWeight: FontWeight.normal,
+                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
                   textAlign: TextAlign.center,
                   maxline: 2),
             ),
@@ -45,7 +50,7 @@ class OrderDetailsWidget extends StatelessWidget {
             padding: const EdgeInsets.all(3),
             height: height,
             decoration: BoxDecoration(
-                color: Get.isDarkMode ? AppColors.darkGrey : AppColors.white,
+                color: color,
                 border: Border.all(color: AppColors.grey, width: 0)),
             child: Column(
               children: [
@@ -53,11 +58,10 @@ class OrderDetailsWidget extends StatelessWidget {
                   child: Center(
                     child: TextWidget(
                         text: value,
-                        color: Get.isDarkMode
-                            ? AppColors.grey
-                            : AppColors.primaryLight,
+                        color: AppColors.primaryDark,
                         fontSize: 13,
-                        fontWeight: FontWeight.normal,
+                        fontWeight:
+                            isBold ? FontWeight.bold : FontWeight.normal,
                         textAlign: TextAlign.center,
                         maxline: 2),
                   ),

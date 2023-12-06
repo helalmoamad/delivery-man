@@ -326,20 +326,22 @@ class OrderDetails extends StatelessWidget {
         }
         if (index == 10) {
           return OrderDetailsWidget(
+              title: 'Received Amount'.tr,
+              value: order.receivedAmount == ''
+                  ? 'No Data Now'.tr
+                  : order.orderAmountFormatted.toString());
+        }
+        if (index == 11) {
+          return OrderDetailsWidget(
             title: 'COD Amount'.tr,
+            color: AppColors.lightGray,
+            isBold: true,
             value: order.codAmount == null
                 ? 'No Data Now'.tr
                 : order.codAmount.toString() == ''
                     ? 'No Data Now'.tr
                     : order.codAmount.toString(),
           );
-        }
-        if (index == 11) {
-          return OrderDetailsWidget(
-              title: 'Received Amount'.tr,
-              value: order.receivedAmount == ''
-                  ? 'No Data Now'.tr
-                  : order.orderAmountFormatted.toString());
         }
 
         return null;
