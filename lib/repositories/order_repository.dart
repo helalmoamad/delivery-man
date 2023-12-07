@@ -183,22 +183,24 @@ class OrdersRepository {
     }
   }
 
-  Future<Either<Failure, Unit>> changeStatus(
-      {required String token,
-      required String status,
-      required int orderId,
-      required int? amount,
-      required List<ProductModel>? returnedProducts,
-      required String? file}) async {
+  Future<Either<Failure, Unit>> changeStatus({
+    required String token,
+    required String status,
+    required int orderId,
+    required double? amount,
+    required List<ProductModel>? returnedProducts,
+    required String? file,
+  }) async {
     if (await networkInfo.isConnected) {
       try {
         await ordersApiService.postChangeStatusApi(
-            token: token,
-            orderId: orderId,
-            file: file,
-            status: status,
-            returnedProducts: returnedProducts,
-            amount: amount);
+          token: token,
+          orderId: orderId,
+          file: file,
+          status: status,
+          returnedProducts: returnedProducts,
+          amount: amount,
+        );
         return const Right(unit);
       } on ServerException {
         return left(ServerFailure());

@@ -32,7 +32,7 @@ abstract class OrdersApiService {
       {required String token,
       required String status,
       required int orderId,
-      required int? amount,
+      required double? amount,
       required List<ProductModel>? returnedProducts,
       required String? file});
 }
@@ -126,7 +126,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     required String token,
     required String status,
     required int orderId,
-    required int? amount,
+    required double? amount,
     required List<ProductModel>? returnedProducts,
     required String? file,
   }) async {

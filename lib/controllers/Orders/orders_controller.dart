@@ -546,7 +546,7 @@ class OrdersController extends GetxController {
     required String token,
     required String status,
     required int orderId,
-    int? amount,
+    double? amount,
     List<ProductModel>? returnedProducts,
     String? file,
   }) async {

@@ -255,17 +255,20 @@ class OutForDeliveryButtons extends StatelessWidget {
               onPress: () async {
                 if (formKey.currentState!.validate()) {
                   Get.back();
-                  await ordersController.stopRecording().then((value) async {
-                    await ordersController.changeOrderStatus(
+                  await ordersController.stopRecording().then(
+                    (value) async {
+                      await ordersController.changeOrderStatus(
                         token: GlobalFunctions.getFcmToken(),
                         status: orderStatus,
                         orderId: order.id!,
                         returnedProducts: orderStatus == 'partial_return'
                             ? ordersController.returnedProductsList
                             : null,
-                        amount: int.parse(cashKey.text),
-                        file: ordersController.audioPath);
-                  });
+                        amount: double.parse(cashKey.text),
+                        file: ordersController.audioPath,
+                      );
+                    },
+                  );
                 }
               },
             ),

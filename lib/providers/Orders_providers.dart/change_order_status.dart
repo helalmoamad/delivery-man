@@ -8,13 +8,14 @@ class ChangeOrderStatusProvider {
 
   ChangeOrderStatusProvider(this.ordersRepository);
 
-  Future<Either<Failure, Unit>> call(
-      {required String token,
-      required String status,
-      required int orderId,
-      required int? amount,
-      required List<ProductModel>? returnedProducts,
-      required String? file}) async {
+  Future<Either<Failure, Unit>> call({
+    required String token,
+    required String status,
+    required int orderId,
+    required double? amount,
+    required List<ProductModel>? returnedProducts,
+    required String? file,
+  }) async {
     return await ordersRepository.changeStatus(
         token: token,
         orderId: orderId,
