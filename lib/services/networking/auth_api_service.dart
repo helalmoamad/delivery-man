@@ -17,11 +17,13 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
     clientController.reOpenClient();
 
     final response = await ApiRequests.postRequest<UserModel>(
-        urlPath: 'users/login',
-        token: '',
-        client: clientController.client,
-        body: loginModel.toJson(),
-        fromJson: UserModel.fromJson);
+      urlPath: 'users/login',
+      token: '',
+      client: clientController.client,
+      body: loginModel.toJson(),
+      fromJson: UserModel.fromJson,
+      isForAuth: true,
+    );
     return response;
   }
 }

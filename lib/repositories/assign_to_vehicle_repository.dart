@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/assign_to_vehicle_model.dart';
 import 'package:delivery_man_app/services/networking/assign_to_vehicle_api_service.dart';
+import 'package:http/http.dart';
 import '../shared/errors/exceptions.dart';
 import '../shared/errors/failures.dart';
 import '../shared/network_info/network_info.dart';
@@ -23,6 +26,10 @@ class AssignToVehicleRepository {
         return left(CantAssignToVehicleFailure());
       } on ServerException {
         return left(ServerFailure());
+      } on ClientException {
+        return left(OfflineFailure());
+      } on TimeoutException {
+        return left(OfflineFailure());
       }
     } else {
       return Left(OfflineFailure());

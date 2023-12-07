@@ -58,8 +58,8 @@ class OrderModel {
   final dynamic orderStatusId;
   final dynamic paymentMethod;
   final dynamic transactionRef;
-  final dynamic orderAmount;
-  final dynamic orderAmountFormatted;
+  dynamic orderAmount;
+  dynamic orderAmountFormatted;
   final dynamic codAmount;
   final dynamic shippingAddressId;
   final dynamic orderGroupId;
@@ -71,7 +71,7 @@ class OrderModel {
   final ShippingAddressData? shippingAddressData;
   final dynamic billingAddress;
   final dynamic billingAddressData;
-  final dynamic receivedAmount;
+  dynamic receivedAmount;
   final dynamic orderStatus;
 
   OrderModel({

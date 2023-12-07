@@ -1,4 +1,5 @@
 import 'package:delivery_man_app/providers/Orders_providers.dart/assign_order_tome_provider.dart';
+import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_received_amount_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_status.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/get_my_orders_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/unassign_to_vehicle_provider.dart';
@@ -41,6 +42,10 @@ class OrdersBinding implements Bindings {
 
     Get.lazyPut<GetMyOrdersProvider>(
       () => GetMyOrdersProvider(Get.find()),
+    );
+
+    Get.lazyPut<ChangeOrderReceivedAmountProvider>(
+      () => ChangeOrderReceivedAmountProvider(Get.find()),
     );
   }
 }

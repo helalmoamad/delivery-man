@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:http/http.dart';
 import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import '../models/AssignToVehicle/unassign_to_vehicle_model.dart';
@@ -23,91 +25,11 @@ class OrdersRepository {
             token: token, status: status, offset: offset);
         return Right(orderDataResponse);
       } on ServerException {
-        // final orderDataResponse = ListOrderModel(
-        //     data: ListOrderDataModel(
-        //   currentPage: 1,
-        //   total: 1,
-        //   data: [
-        //     OrderModel(
-        //         id: 1,
-        //         journeyId: 1,
-        //         assignToUserId: 3,
-        //         customerId: 4,
-        //         paymentStatus: 'paymentStatus',
-        //         orderStatusId: 2,
-        //         paymentMethod: 'paymentMethod',
-        //         transactionRef: 'transactionRef',
-        //         orderAmount: 200,
-        //         orderAmountFormatted: 'orderAmountFormatted',
-        //         shippingAddressId: 'shippingAddressId',
-        //         orderGroupId: 'orderGroupId',
-        //         verificationCode: 'verificationCode',
-        //         sellerId: 'sellerId',
-        //         details: [
-        //           Detail(
-        //               id: 1,
-        //               qty: 1,
-        //               tax: 2,
-        //               price: 'price',
-        //               odooId: 1,
-        //               variant: 'variant',
-        //               discount: 'discount',
-        //               orderId: 3,
-        //               productId: 2,
-        //               discountType: 'discountType',
-        //               odooOrderId: 1,
-        //               paymentStatus: 'paymentStatus',
-        //               refundRequest: 2,
-        //               deliveryStatus: 'deliveryStatus',
-        //               isOdooProduct: 1,
-        //               productDetails: OrderProductDetails(
-        //                   id: 1,
-        //                   name: 'name',
-        //                   slug: 'slug',
-        //                   price: 'price',
-        //                   images: [''],
-        //                   rating: Rating(totalRating: 1, overallRating: 2),
-        //                   details: 'details',
-        //                   inStock: false,
-        //                   thumbnail: 'thumbnail',
-        //                   shareLink: 'shareLink',
-        //                   offerPrice: 'offerPrice',
-        //                   isFavourite: false,
-        //                   priceFormatted: 'priceFormatted',
-        //                   offerPriceFormatted: 'offerPriceFormatted'),
-        //               isStockDecreased: 1,
-        //               shippingMethodId: 'shippingMethodId',
-        //               priceAfterDiscount: 'priceAfterDiscount',
-        //               refundRequestStatus: 'refundRequestStatus'),
-        //         ],
-        //         shippingAddress: 'shippingAddress',
-        //         shippingAddressData: ShippingAddressData(
-        //             id: 1,
-        //             zip: 'zip',
-        //             city: 'city',
-        //             cost: 'cost',
-        //             email: 'email',
-        //             phone: 'phone',
-        //             state: 'state',
-        //             address: 'address',
-        //             country: 'country',
-        //             duration: 'duration',
-        //             latitude: 'latitude',
-        //             longitude: 'longitude',
-        //             createdAt: null,
-        //             isBilling: 1,
-        //             isDefault: 1,
-        //             updatedAt: null,
-        //             customerId: 1,
-        //             addressType: 'addressType',
-        //             contactPersonName: 'contactPersonName'),
-        //         billingAddress: 'billingAddress',
-        //         billingAddressData: 'billingAddressData',
-        //         orderStatus: 'orderStatus'),
-        //   ],
-        // ));
-        // return Right(orderDataResponse);
         return left(ServerFailure());
+      } on ClientException {
+        return left(OfflineFailure());
+      } on TimeoutException {
+        return left(OfflineFailure());
       }
     } else {
       return Left(OfflineFailure());
@@ -125,6 +47,10 @@ class OrdersRepository {
         return Right(orderDataResponse);
       } on ServerException {
         return left(ServerFailure());
+      } on ClientException {
+        return left(OfflineFailure());
+      } on TimeoutException {
+        return left(OfflineFailure());
       }
     } else {
       return Left(OfflineFailure());
@@ -140,13 +66,11 @@ class OrdersRepository {
             await ordersApiService.getOrderStatusDataApi(token);
         return Right(orderStatusDataResponse);
       } on ServerException {
-        // final orderStatusDataResponse = [
-        //   'pending',
-        //   'processing',
-        //   'ready_to_shipping'
-        // ];
-        // return Right(orderStatusDataResponse);
         return left(ServerFailure());
+      } on ClientException {
+        return left(OfflineFailure());
+      } on TimeoutException {
+        return left(OfflineFailure());
       }
     } else {
       return Left(OfflineFailure());
@@ -162,14 +86,20 @@ class OrdersRepository {
         return Right(dataResponse);
       } on ServerException {
         return left(ServerFailure());
+      } on ClientException {
+        return left(OfflineFailure());
+      } on TimeoutException {
+        return left(OfflineFailure());
       }
     } else {
       return Left(OfflineFailure());
     }
   }
 
-  Future<Either<Failure, AssignOrderToMeDataModel>> assignOrderToMe(
-      {required String token, required int orderId}) async {
+  Future<Either<Failure, AssignOrderToMeDataModel>> assignOrderToMe({
+    required String token,
+    required int orderId,
+  }) async {
     if (await networkInfo.isConnected) {
       try {
         final dataResponse = await ordersApiService.postAssignOrderToMeApi(
@@ -177,6 +107,10 @@ class OrdersRepository {
         return Right(dataResponse);
       } on ServerException {
         return left(ServerFailure());
+      } on ClientException {
+        return left(OfflineFailure());
+      } on TimeoutException {
+        return left(OfflineFailure());
       }
     } else {
       return Left(OfflineFailure());
@@ -204,6 +138,36 @@ class OrdersRepository {
         return const Right(unit);
       } on ServerException {
         return left(ServerFailure());
+      } on ClientException {
+        return left(OfflineFailure());
+      } on TimeoutException {
+        return left(OfflineFailure());
+      }
+    } else {
+      return Left(OfflineFailure());
+    }
+  }
+
+  Future<Either<Failure, OrderModel>> changeOrderReceivedAmount({
+    required String token,
+    required int orderId,
+    required double receivedAmount,
+  }) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final dataResponse =
+            await ordersApiService.postChangeOrderReceivedAmountApi(
+          token: token,
+          orderId: orderId,
+          receivedAmount: receivedAmount,
+        );
+        return Right(dataResponse);
+      } on ServerException {
+        return left(ServerFailure());
+      } on ClientException {
+        return left(OfflineFailure());
+      } on TimeoutException {
+        return left(OfflineFailure());
       }
     } else {
       return Left(OfflineFailure());

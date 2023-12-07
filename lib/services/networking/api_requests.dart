@@ -15,12 +15,15 @@ class ApiRequests {
   }) async {
     final uri = Uri.parse(
         '${ApiConstants.baseUrl}/api/${ApiConstants.version}/$urlPath');
-    final response = await client.get(uri, headers: {
-      'Content-type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-      'Connection': 'keep-alive',
-    });
+    final response = await client.get(
+      uri,
+      headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+        'Connection': 'keep-alive',
+      },
+    ).timeout(const Duration(seconds: 30));
     debugPrint('/////1///////');
 
     /////////////////store request info//////////////////////////////////
@@ -57,15 +60,20 @@ class ApiRequests {
     required Client client,
     required Map<String, dynamic> body,
     T Function(Map<String, dynamic>)? fromJson,
+    bool isForAuth = false,
   }) async {
     final uri = Uri.parse(
         '${ApiConstants.baseUrl}/api/${ApiConstants.version}/$urlPath');
-    final response = await client.post(uri, body: json.encode(body), headers: {
-      'Content-type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-      'Connection': 'keep-alive',
-    });
+    final response = await client.post(
+      uri,
+      body: json.encode(body),
+      headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+        'Connection': 'keep-alive',
+      },
+    ).timeout(const Duration(seconds: 30));
     debugPrint('/////1///////');
     /////////////////store request info//////////////////////////////////
     final data = RequestInfoModel(
@@ -82,16 +90,25 @@ class ApiRequests {
       debugPrint('2');
       final data = jsonDecode(response.body);
       debugPrint('get $urlPath data success');
-      if (data['isSuccessful'] == true) {
+      if (isForAuth) {
+        if (data['message'] == 'Data Got!') {
+          if (fromJson != null) {
+            final resposeData = fromJson(data);
+            return resposeData;
+          } else {
+            return data as T;
+          }
+        } else {
+          debugPrint('wrong entry data');
+          throw WrongDataException();
+        }
+      } else {
         if (fromJson != null) {
           final resposeData = fromJson(data);
           return resposeData;
         } else {
           return data as T;
         }
-      } else {
-        debugPrint('wrong entry data');
-        throw WrongDataException();
       }
     } else {
       debugPrint('3');

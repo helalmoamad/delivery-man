@@ -3,6 +3,7 @@ import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_mode
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import 'package:delivery_man_app/models/Orders/change_status_model.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/assign_order_tome_provider.dart';
+import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_received_amount_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_status.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/get_my_orders_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/unassign_to_vehicle_provider.dart';
@@ -51,6 +52,9 @@ class OrdersController extends GetxController {
   late ChangeOrderStatusProvider changeOrderStatusProvider =
       Get.find<ChangeOrderStatusProvider>();
   late ChangeStatusModle changeStatusData;
+
+  late ChangeOrderReceivedAmountProvider changeOrderReceivedAmountProvider =
+      Get.find<ChangeOrderReceivedAmountProvider>();
 
   int orderIndex = 0;
 
@@ -646,5 +650,36 @@ class OrdersController extends GetxController {
         update();
       });
     }
+  }
+
+  Future<void> changeOrderReceivedAmount({
+    required String token,
+    required int orderId,
+    required double receivedAmount,
+  }) async {
+    showAssignOrderCircleIndicator();
+    final failureOrData = await changeOrderReceivedAmountProvider.call(
+      token: token,
+      orderId: orderId,
+      receivedAmount: receivedAmount,
+    );
+
+    failureOrData.fold((failure) {
+      HandlingErrors.networkErrorrHandling(
+          failure: failure,
+          hideCircleIndicator: hideAssignOrderCircleIndicator,
+          showNoInternetPage: () {});
+    }, (data) async {
+      bool test =
+          myOrdersData.data!.data!.any((element) => element.id == orderId);
+
+      if (test) {
+        myOrdersData.data!.data!
+            .firstWhere((element) => element.id == orderId)
+            .receivedAmount = data.receivedAmount;
+      }
+
+      hideAssignOrderCircleIndicator();
+    });
   }
 }

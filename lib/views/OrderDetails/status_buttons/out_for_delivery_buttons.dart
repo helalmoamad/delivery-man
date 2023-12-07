@@ -4,8 +4,8 @@ import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
 import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
-import 'package:delivery_man_app/shared/widgets/custom_text_field.dart';
 import 'package:delivery_man_app/shared/widgets/snackbar_widgets.dart';
+import 'package:delivery_man_app/views/OrderDetails/status_buttons/cash_dialog_action.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -78,9 +78,32 @@ class OutForDeliveryButtons extends StatelessWidget {
                   backgroundColor: const Color.fromARGB(255, 38, 121, 41),
                   onPress: () {
                     AppDialogs.showAppDialogWidget(
-                        context: context,
-                        title: 'Enter The Cash Amount'.tr,
-                        actions: [buildDialogAction(order, 'delivered')]);
+                      context: context,
+                      title: 'Enter The Cash Amount'.tr,
+                      actions: [
+                        buildCashDialogAction(
+                          cashKey: cashKey,
+                          formKey: formKey,
+                          onPress: () async {
+                            if (formKey.currentState!.validate()) {
+                              Get.back();
+                              await ordersController.stopRecording().then(
+                                (value) async {
+                                  await ordersController.changeOrderStatus(
+                                    token: GlobalFunctions.getFcmToken(),
+                                    status: 'delivered',
+                                    orderId: order.id!,
+                                    returnedProducts: null,
+                                    amount: double.parse(cashKey.text),
+                                    file: ordersController.audioPath,
+                                  );
+                                },
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    );
                   }),
             ),
             /////////////////
@@ -158,7 +181,28 @@ class OutForDeliveryButtons extends StatelessWidget {
                           context: context,
                           title: 'Enter The Cash Amount'.tr,
                           actions: [
-                            buildDialogAction(order, 'partial_return')
+                            buildCashDialogAction(
+                                cashKey: cashKey,
+                                formKey: formKey,
+                                onPress: () async {
+                                  if (formKey.currentState!.validate()) {
+                                    Get.back();
+                                    await ordersController.stopRecording().then(
+                                      (value) async {
+                                        await ordersController
+                                            .changeOrderStatus(
+                                          token: GlobalFunctions.getFcmToken(),
+                                          status: 'partial_return',
+                                          orderId: order.id!,
+                                          returnedProducts: ordersController
+                                              .returnedProductsList,
+                                          amount: double.parse(cashKey.text),
+                                          file: ordersController.audioPath,
+                                        );
+                                      },
+                                    );
+                                  }
+                                })
                           ]);
                     }
                   }),
@@ -218,68 +262,6 @@ class OutForDeliveryButtons extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-
-  Padding buildDialogAction(OrderModel order, String orderStatus) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Form(
-        key: formKey,
-        child: Column(
-          children: [
-            CustomTextField(
-              textInputType: TextInputType.number,
-              controller: cashKey,
-              hintText: '',
-              labelText: 'Cash Amount'.tr,
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Cash Amount should not be empty'.tr;
-                }
-              },
-              prefixIcon: null,
-              suffixIcon: null,
-            ),
-            /////////////////////
-            const SizedBox(
-              height: 30,
-            ),
-            /////////////////////
-            AppButton.normalButton(
-              title: 'Confirm The Process'.tr,
-              shadow: false,
-              height: 35,
-              titleColor: AppColors.white,
-              backgroundColor: AppColors.primaryDark,
-              onPress: () async {
-                if (formKey.currentState!.validate()) {
-                  Get.back();
-                  await ordersController.stopRecording().then(
-                    (value) async {
-                      await ordersController.changeOrderStatus(
-                        token: GlobalFunctions.getFcmToken(),
-                        status: orderStatus,
-                        orderId: order.id!,
-                        returnedProducts: orderStatus == 'partial_return'
-                            ? ordersController.returnedProductsList
-                            : null,
-                        amount: double.parse(cashKey.text),
-                        file: ordersController.audioPath,
-                      );
-                    },
-                  );
-                }
-              },
-            ),
-            /////////////////////
-            const SizedBox(
-              height: 20,
-            ),
-            /////////////////////
-          ],
-        ),
-      ),
     );
   }
 }

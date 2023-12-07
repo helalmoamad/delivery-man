@@ -135,4 +135,5 @@ const Map<String, String> ar = {
       'هل أنت متأكد من حذف كل البيانات ؟',
   'No Data Now': 'لا يوجد بيانات حالياً',
   'Received Amount': 'المبلغ المُستلَم',
+  'Add Received Amount': 'إضافة المبلغ المُستلَم',
 };

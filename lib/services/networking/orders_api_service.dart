@@ -25,16 +25,25 @@ abstract class OrdersApiService {
   Future<UnAssignToVehicleModel> postUnAssignToVehicleApi(
       {required String token, required int vehicleId});
 
-  Future<AssignOrderToMeDataModel> postAssignOrderToMeApi(
-      {required String token, required int orderId});
+  Future<AssignOrderToMeDataModel> postAssignOrderToMeApi({
+    required String token,
+    required int orderId,
+  });
 
-  Future<Unit> postChangeStatusApi(
-      {required String token,
-      required String status,
-      required int orderId,
-      required double? amount,
-      required List<ProductModel>? returnedProducts,
-      required String? file});
+  Future<Unit> postChangeStatusApi({
+    required String token,
+    required String status,
+    required int orderId,
+    required double? amount,
+    required List<ProductModel>? returnedProducts,
+    required String? file,
+  });
+
+  Future<OrderModel> postChangeOrderReceivedAmountApi({
+    required String token,
+    required int orderId,
+    required double receivedAmount,
+  });
 }
 
 class OrdersApiServiceImpWithHttp implements OrdersApiService {
@@ -160,7 +169,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
 
     debugPrint('1');
 
-    var response = await request.send();
+    var response = await request.send().timeout(const Duration(seconds: 30));
     debugPrint(response.statusCode.toString());
     final res = await response.stream.transform(utf8.decoder).first;
     /////////////////store request info//////////////////////////////////
@@ -187,5 +196,26 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       debugPrint('ChangeStatus Failed');
       throw ServerException();
     }
+  }
+
+  @override
+  Future<OrderModel> postChangeOrderReceivedAmountApi({
+    required String token,
+    required int orderId,
+    required double receivedAmount,
+  }) async {
+    clientController.reOpenClient();
+
+    final response = await ApiRequests.postRequest<OrderModel>(
+        urlPath: 'orders/receive_amount',
+        token: token,
+        client: clientController.client,
+        body: {
+          "received_amount": receivedAmount,
+          "order_id": orderId,
+        },
+        fromJson: OrderModel.fromJson);
+
+    return response;
   }
 }

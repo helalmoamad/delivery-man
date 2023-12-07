@@ -6,11 +6,14 @@ import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
 import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
+import 'package:delivery_man_app/views/OrderDetails/status_buttons/cash_dialog_action.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ReadyToShippingButtons extends StatelessWidget {
   final OrdersController ordersController = Get.find<OrdersController>();
+  final formKey = GlobalKey<FormState>();
+  final TextEditingController cashKey = TextEditingController();
   ReadyToShippingButtons({super.key});
 
   @override
@@ -24,83 +27,129 @@ class ReadyToShippingButtons extends StatelessWidget {
       orderIndex = ordersController.orderIndex;
       order = ordersController.ordersData.data!.data![orderIndex];
     }
-    return AppButton.normalButton(
-        title: GlobalFunctions.getUserId() != order.assignToUserId
-            ? 'Assign To Me'.tr
-            : 'Convert To Shipped'.tr,
-        height: 40,
-        titleSize: 15,
-        backgroundColor: GlobalFunctions.getUserId() != order.assignToUserId
-            ? AppColors.secondary
-            : AppColors.darkGrey,
-        onPress: () async {
-          if (GlobalFunctions.getUserId() != order.assignToUserId) {
-            AppDialogs.showAppDialogWidget(
-              context: context,
-              title: 'The order  will be assigned to you'.tr,
-              actions: [
-                AppButton.normalButton(
-                  title: 'Confirm'.tr,
-                  shadow: false,
-                  width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                  height: 30,
-                  titleColor: AppColors.white,
-                  backgroundColor: AppColors.primaryDark,
-                  onPress: () async {
-                    Get.back();
-                    await ordersController.assignOrderToMe(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        AppButton.normalButton(
+          title: GlobalFunctions.getUserId() != order.assignToUserId
+              ? 'Assign To Me'.tr
+              : 'Convert To Shipped'.tr,
+          height: 40,
+          titleSize: 15,
+          backgroundColor: GlobalFunctions.getUserId() != order.assignToUserId
+              ? AppColors.secondary
+              : AppColors.darkGrey,
+          onPress: () async {
+            if (GlobalFunctions.getUserId() != order.assignToUserId) {
+              AppDialogs.showAppDialogWidget(
+                context: context,
+                title: 'The order  will be assigned to you'.tr,
+                actions: [
+                  AppButton.normalButton(
+                    title: 'Confirm'.tr,
+                    shadow: false,
+                    width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                    height: 30,
+                    titleColor: AppColors.white,
+                    backgroundColor: AppColors.primaryDark,
+                    onPress: () async {
+                      Get.back();
+                      await ordersController.assignOrderToMe(
+                          token: GlobalFunctions.getFcmToken(),
+                          orderId: order.id!);
+                    },
+                  ),
+                  ///////////////
+                  AppButton.normalButton(
+                      title: 'Back'.tr,
+                      shadow: false,
+                      width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                      backgroundColor: AppColors.white,
+                      titleColor: AppColors.primaryDark,
+                      height: 30,
+                      onPress: () {
+                        Get.back();
+                      })
+                ],
+              );
+            } else {
+              AppDialogs.showAppDialogWidget(
+                context: context,
+                title: 'The order status will be changed to "shipped"'.tr,
+                actions: [
+                  AppButton.normalButton(
+                    title: 'Confirm'.tr,
+                    shadow: false,
+                    width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                    height: 30,
+                    titleColor: AppColors.white,
+                    backgroundColor: AppColors.primaryDark,
+                    onPress: () async {
+                      Get.back();
+                      await ordersController.changeOrderStatus(
                         token: GlobalFunctions.getFcmToken(),
-                        orderId: order.id!);
-                  },
-                ),
-                ///////////////
-                AppButton.normalButton(
-                    title: 'Back'.tr,
-                    shadow: false,
-                    width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                    backgroundColor: AppColors.white,
-                    titleColor: AppColors.primaryDark,
-                    height: 30,
-                    onPress: () {
-                      Get.back();
-                    })
-              ],
-            );
-          } else {
-            AppDialogs.showAppDialogWidget(
-              context: context,
-              title: 'The order status will be changed to "shipped"'.tr,
-              actions: [
-                AppButton.normalButton(
-                  title: 'Confirm'.tr,
-                  shadow: false,
-                  width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                  height: 30,
-                  titleColor: AppColors.white,
-                  backgroundColor: AppColors.primaryDark,
-                  onPress: () async {
-                    Get.back();
-                    await ordersController.changeOrderStatus(
-                      token: GlobalFunctions.getFcmToken(),
-                      status: 'shipped',
-                      orderId: order.id!,
-                    );
-                  },
-                ),
-                ///////////////
-                AppButton.normalButton(
-                    title: 'Back'.tr,
-                    shadow: false,
-                    width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                    backgroundColor: AppColors.white,
-                    titleColor: AppColors.primaryDark,
-                    height: 30,
-                    onPress: () {
-                      Get.back();
-                    })
-              ],
-            );
-          }
-        });
+                        status: 'shipped',
+                        orderId: order.id!,
+                      );
+                    },
+                  ),
+                  ///////////////
+                  AppButton.normalButton(
+                      title: 'Back'.tr,
+                      shadow: false,
+                      width: ScreenSizeUtils.getWidthInPercent(context, 25),
+                      backgroundColor: AppColors.white,
+                      titleColor: AppColors.primaryDark,
+                      height: 30,
+                      onPress: () {
+                        Get.back();
+                      })
+                ],
+              );
+            }
+          },
+        ),
+        ////////////////////////
+        GlobalFunctions.getUserId() == order.assignToUserId
+            ? const SizedBox(
+                height: 10,
+              )
+            : Container(),
+        ////////////////////////
+        GlobalFunctions.getUserId() == order.assignToUserId
+            ? AppButton.normalButton(
+                title: 'Add Received Amount'.tr,
+                height: 40,
+                titleSize: 15,
+                shadow: false,
+                backgroundColor: AppColors.primaryDark,
+                onPress: () {
+                  AppDialogs.showAppDialogWidget(
+                    context: context,
+                    title: 'Enter The Cash Amount'.tr,
+                    actions: [
+                      buildCashDialogAction(
+                        cashKey: cashKey,
+                        formKey: formKey,
+                        onPress: () async {
+                          if (formKey.currentState!.validate()) {
+                            Get.back();
+                            /////////////////////////////////
+                            String token = GlobalFunctions.getFcmToken();
+                            await ordersController.changeOrderReceivedAmount(
+                              token: token,
+                              orderId: order.id!,
+                              receivedAmount: double.parse(cashKey.text),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  );
+                },
+              )
+            : Container(),
+      ],
+    );
   }
 }
