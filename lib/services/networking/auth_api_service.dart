@@ -22,7 +22,6 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
       client: clientController.client,
       body: loginModel.toJson(),
       fromJson: UserModel.fromJson,
-      isForAuth: true,
     );
     return response;
   }
