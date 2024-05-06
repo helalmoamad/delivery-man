@@ -26,13 +26,16 @@ class MyOrderStatusWidget extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
               return InkWell(
-                onTap: () {
-                  ordersController.chooseMyOrderStatus(
-                      status: ordersController.orderStatusData[index + 2]
-                          .toString(),
-                      index: index);
+                onTap: () async {
+                  await ordersController.chooseMyOrderStatus(
+                    status:
+                        ordersController.orderStatusData[index + 2].toString(),
+                    index: index,
+                  );
 
                   debugPrint(ordersController.myOrderStatus);
+
+                  debugPrint(index.toString());
                 },
                 child: SizedBox(
                   height: 33,

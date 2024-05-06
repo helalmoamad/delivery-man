@@ -4,13 +4,16 @@ import 'package:http/http.dart' as http;
 
 class HttpClientController extends GetxController {
   late http.Client _client;
+  late http.Client _secondaryClient;
 
   http.Client get client => _client;
+  http.Client get secondaryClient => _secondaryClient;
 
   @override
   void onInit() {
     super.onInit();
     _client = http.Client();
+    _secondaryClient = http.Client();
     debugPrint('init Client');
   }
 
@@ -21,12 +24,23 @@ class HttpClientController extends GetxController {
   }
 
   void closeClient() {
-    _client.close();
+    closeClient();
+    closeSecondaryClient();
     debugPrint('closeClient');
   }
 
   void reOpenClient() {
     _client = http.Client();
     debugPrint('reopenClient');
+  }
+
+  void closeSecondaryClient() {
+    _secondaryClient.close();
+    debugPrint('closeSecondaryClient');
+  }
+
+  void reOpenSecondaryClient() {
+    _secondaryClient = http.Client();
+    debugPrint('reOpenSecondaryClient');
   }
 }

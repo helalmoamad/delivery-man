@@ -13,7 +13,7 @@ class OrderList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final orders = ordersController.ordersData.data!.data!;
+    final orders = ordersController.ordersData!.data!.data!;
     return orders.isEmpty
         ? EmptyDataWidget(
             onTap: () async {

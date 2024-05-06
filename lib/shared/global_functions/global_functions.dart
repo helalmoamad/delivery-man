@@ -107,6 +107,17 @@ class GlobalFunctions {
     return assignedVehicleName!;
   }
 
+  static Future<void> setisForAssignOrderToMe(
+      {required bool isForAssignOrderToMe}) async {
+    await GetStorage().write('isForAssignOrderToMe', isForAssignOrderToMe);
+  }
+
+  static bool getisForAssignOrderToMe() {
+    bool? isForAssignOrderToMe =
+        GetStorage().read<bool>('isForAssignOrderToMe') ?? false;
+    return isForAssignOrderToMe;
+  }
+
   static String orderStatusText({required String inputText}) {
     String text = '';
 

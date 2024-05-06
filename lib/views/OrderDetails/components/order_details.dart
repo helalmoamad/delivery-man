@@ -32,7 +32,7 @@ class OrderDetails extends StatelessWidget {
       status = ordersController.myOrderStatus;
     } else {
       orderIndex = ordersController.orderIndex;
-      order = ordersController.ordersData.data!.data![orderIndex];
+      order = ordersController.ordersData!.data!.data![orderIndex];
       status = ordersController.orderStatus;
     }
     return SingleChildScrollView(

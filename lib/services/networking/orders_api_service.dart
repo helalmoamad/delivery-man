@@ -59,7 +59,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     clientController.reOpenClient();
 
     final response = await ApiRequests.getRequest<ListOrderModel>(
-        urlPath: 'orders/index?order_status=$status&limit=5&page=$offset',
+        urlPath: 'orders?order_status=$status&limit=5&page=$offset',
         token: token,
         client: clientController.client,
         fromJson: ListOrderModel.fromJson);

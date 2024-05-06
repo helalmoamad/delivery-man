@@ -25,7 +25,7 @@ class ReadyToShippingButtons extends StatelessWidget {
       order = ordersController.myOrdersData.data!.data![orderIndex];
     } else {
       orderIndex = ordersController.orderIndex;
-      order = ordersController.ordersData.data!.data![orderIndex];
+      order = ordersController.ordersData!.data!.data![orderIndex];
     }
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

@@ -6,6 +6,7 @@ import '../../../shared/widgets/text_widget.dart';
 
 class OrderStatusWidget extends StatelessWidget {
   final OrdersController ordersController;
+
   const OrderStatusWidget({
     super.key,
     required this.ordersController,
@@ -37,8 +38,8 @@ class OrderStatusWidget extends StatelessWidget {
   Widget buildStatusContent(int index) {
     return Expanded(
       child: InkWell(
-        onTap: () {
-          ordersController.chooseOrderStatus(
+        onTap: () async {
+          await ordersController.chooseOrderStatus(
               status: ordersController.orderStatusData[index].toString(),
               index: index);
 

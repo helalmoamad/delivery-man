@@ -27,69 +27,19 @@ class OrdersDetailsPage extends StatelessWidget {
     return SafeArea(
         child: WillPopScope(
       onWillPop: () async {
-        if ((ordersController.previousRoute == Routes.myOrdersPage) &&
-            (ordersController.myOrderStatus == 'out_for_delivery') &&
-            (!ordersController.isStartDeliveryButton)) {
-          AppDialogs.showAppDialogWidget(
-            context: context,
-            title: 'Are you sure to stop recording and leave this page ?'.tr,
-            actions: [
-              AppButton.normalButton(
-                title: 'Confirm'.tr,
-                shadow: false,
-                width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                height: 30,
-                titleColor: AppColors.white,
-                backgroundColor: AppColors.primaryDark,
-                onPress: () async {
-                  Get.back();
-                  Get.close(1);
-                  ordersController.changeDeliveringButton(true);
-                  await ordersController.stopRecording();
-                  ordersController.returnedProductsList.clear();
-                  ordersController.audioPath = '';
-                },
-              ),
-              ///////////////
-              AppButton.normalButton(
-                  title: 'Back'.tr,
-                  shadow: false,
-                  width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                  backgroundColor: AppColors.white,
-                  titleColor: AppColors.primaryDark,
-                  height: 30,
-                  onPress: () {
-                    Get.back();
-                  })
-            ],
-          );
-        }
+        stopRecordingCondition(context);
+        ///////////////////////////////////////
         debugPrint('previousRoute is ${ordersController.previousRoute}');
-        return true;
+        ///////////////////////////////////////
+        if (ordersController.isAssignOrderCircleShown ||
+            ordersController.isChangeOrderStatusCircleShown) {
+          return false;
+        } else {
+          return true;
+        }
       },
       child: Scaffold(
-          appBar: customAppBar(
-              title: 'Order Details'.tr,
-              button: GetBuilder<OrdersController>(builder: (_) {
-                return ordersController.isRecording
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextWidget(
-                              text: 'Recording . . .'.tr,
-                              color: AppColors.blackDark,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              textAlign: TextAlign.start,
-                              maxline: 1),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          const Icon(Icons.settings_voice_outlined),
-                        ],
-                      )
-                    : Container();
-              })),
+          appBar: buildAppBar(),
           body: GetBuilder<OrdersController>(builder: (_) {
             return Stack(
               alignment: Alignment.bottomCenter,
@@ -132,5 +82,70 @@ class OrdersDetailsPage extends StatelessWidget {
             );
           })),
     ));
+  }
+
+  AppBar buildAppBar() {
+    return customAppBar(
+        title: 'Order Details'.tr,
+        button: GetBuilder<OrdersController>(builder: (_) {
+          return ordersController.isRecording
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextWidget(
+                        text: 'Recording . . .'.tr,
+                        color: AppColors.blackDark,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        textAlign: TextAlign.start,
+                        maxline: 1),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Icon(Icons.settings_voice_outlined),
+                  ],
+                )
+              : Container();
+        }));
+  }
+
+  void stopRecordingCondition(BuildContext context) {
+    if ((ordersController.previousRoute == Routes.myOrdersPage) &&
+        (ordersController.myOrderStatus == 'out_for_delivery') &&
+        (!ordersController.isStartDeliveryButton)) {
+      AppDialogs.showAppDialogWidget(
+        context: context,
+        title: 'Are you sure to stop recording and leave this page ?'.tr,
+        actions: [
+          AppButton.normalButton(
+            title: 'Confirm'.tr,
+            shadow: false,
+            width: ScreenSizeUtils.getWidthInPercent(context, 25),
+            height: 30,
+            titleColor: AppColors.white,
+            backgroundColor: AppColors.primaryDark,
+            onPress: () async {
+              Get.back();
+              Get.close(1);
+              ordersController.changeDeliveringButton(true);
+              await ordersController.stopRecording();
+              ordersController.returnedProductsList.clear();
+              ordersController.audioPath = '';
+            },
+          ),
+          ///////////////
+          AppButton.normalButton(
+              title: 'Back'.tr,
+              shadow: false,
+              width: ScreenSizeUtils.getWidthInPercent(context, 25),
+              backgroundColor: AppColors.white,
+              titleColor: AppColors.primaryDark,
+              height: 30,
+              onPress: () {
+                Get.back();
+              })
+        ],
+      );
+    }
   }
 }

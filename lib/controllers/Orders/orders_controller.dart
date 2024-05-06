@@ -38,7 +38,7 @@ class OrdersController extends GetxController {
 
   String previousRoute = '';
 
-  late ListOrderModel ordersData;
+  ListOrderModel? ordersData;
   late List<dynamic> orderStatusData;
 
   late UnAssignToVehicleProvider unAssignToVehicleProvider =
@@ -282,13 +282,17 @@ class OrdersController extends GetxController {
 
   /////// MyOrders
   Future<void> chooseMyOrderStatus(
-      {required String status, required int index}) async {
+      {required String status,
+      required int index,
+      bool isForAssignToMe = false}) async {
     String token = GlobalFunctions.getFcmToken();
     myOrderStatus = status;
     if (index != selectedMyOrderStatus) {
       selectedMyOrderStatus = index;
 
-      myOrderStatusScrollController.jumpTo(index: index);
+      isForAssignToMe
+          ? null
+          : myOrderStatusScrollController.jumpTo(index: index);
 
       await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
     }
@@ -429,32 +433,42 @@ class OrdersController extends GetxController {
     });
   }
 
+  bool isGetOrderWithPaginationData = true;
 ///////////////////////////////////
   Future<void> getListOrderWithPaginationData({
     required String token,
     required String status,
   }) async {
-    if (orderNoMoreItems) {
-      debugPrint('No More Items');
-    } else {
-      final failureOrGetOrdersData = await getListOrderDataProvider.call(
-          token: token, status: status, offset: orderPaginationOffset);
-      failureOrGetOrdersData.fold((failure) {
-        HandlingErrors.networkErrorrHandling(
+    if (isGetOrderWithPaginationData == true) {
+      if (orderNoMoreItems) {
+        debugPrint('No More Items');
+      } else {
+        isGetOrderWithPaginationData = false;
+        final failureOrGetOrdersData = await getListOrderDataProvider.call(
+            token: token, status: status, offset: orderPaginationOffset);
+        failureOrGetOrdersData.fold((failure) {
+          HandlingErrors.networkErrorrHandling(
             failure: failure,
             hideCircleIndicator: () {},
-            showNoInternetPage: () {});
-      }, (getOrdersData) {
-        if (getOrdersData.data!.data!.isEmpty) {
-          orderNoMoreItems = true;
-          debugPrint('No More Items');
-        } else {
-          orderPaginationOffset++;
-          ordersData.data!.total = getOrdersData.data!.total;
-          ordersData.data!.data!.addAll(getOrdersData.data!.data!);
-        }
-        update();
-      });
+            showNoInternetPage: () {},
+          );
+          isGetOrderWithPaginationData = true;
+        }, (getOrdersData) {
+          if (getOrdersData.data!.data!.isEmpty) {
+            orderNoMoreItems = true;
+            debugPrint('No More Items');
+          } else {
+            orderPaginationOffset++;
+            ordersData!.data!.total = getOrdersData.data!.total;
+            ordersData!.data!.data!.addAll(getOrdersData.data!.data!);
+          }
+          isGetOrderWithPaginationData = true;
+          update();
+        });
+      }
+    } else {
+      debugPrint(
+          '////////////////// Wait for request ////////////////////////////');
     }
   }
 
@@ -496,10 +510,26 @@ class OrdersController extends GetxController {
       isForAllOrders
           ? hideGetOrderStatusNoInternetPage()
           : hideGetMyOrderStatusNoInternetPage();
-      isForAllOrders
-          ? await getListOrderData(token: token, status: orderStatus, offset: 1)
-          : await getMyOrdersData(
-              token: token, status: myOrderStatus, offset: 1);
+
+      if (isForAllOrders) {
+        await getListOrderData(token: token, status: orderStatus, offset: 1);
+      } else {
+        if (GlobalFunctions.getisForAssignOrderToMe()) {
+          await GlobalFunctions.setisForAssignOrderToMe(
+                  isForAssignOrderToMe: false)
+              .then(
+            (value) async {
+              await chooseMyOrderStatus(
+                status: 'out_for_delivery',
+                index: 2,
+                isForAssignToMe: true,
+              );
+            },
+          );
+        } else {
+          await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
+        }
+      }
     });
   }
 
@@ -525,25 +555,36 @@ class OrdersController extends GetxController {
     });
   }
 
-  Future<void> assignOrderToMe(
-      {required String token, required int orderId}) async {
+  Future<void> assignOrderToMe({
+    required String token,
+    required int orderId,
+  }) async {
     showAssignOrderCircleIndicator();
     final failureOrAssignToVehicle =
         await assignOrderToMeProvider.call(token: token, orderId: orderId);
 
-    failureOrAssignToVehicle.fold((failure) {
-      HandlingErrors.networkErrorrHandling(
+    failureOrAssignToVehicle.fold(
+      (failure) {
+        HandlingErrors.networkErrorrHandling(
           failure: failure,
           hideCircleIndicator: hideAssignOrderCircleIndicator,
-          showNoInternetPage: () {});
-    }, (data) async {
-      assignOrderToMeData = data;
-      hideAssignOrderCircleIndicator();
-      SnackBarWidgets.showSuccessSnackBar('Assign Order Succeeded'.tr, '');
-      Get.close(1);
-      Get.offAllNamed(Routes.myOrdersPage);
-      // await getListOrderData(token: token, status: orderStatus, offset: 1);
-    });
+          showNoInternetPage: () {},
+        );
+      },
+      (data) async {
+        assignOrderToMeData = data;
+        hideAssignOrderCircleIndicator();
+        SnackBarWidgets.showSuccessSnackBar('Assign Order Succeeded'.tr, '');
+        Get.close(1);
+        await const Duration(milliseconds: 500).delay().then(
+          (value) async {
+            await GlobalFunctions.setisForAssignOrderToMe(
+                isForAssignOrderToMe: true);
+            Get.offAllNamed(Routes.myOrdersPage);
+          },
+        );
+      },
+    );
   }
 
   Future<void> changeOrderStatus({
@@ -623,32 +664,45 @@ class OrdersController extends GetxController {
     });
   }
 
-// ///////////////////////////////////
+  bool isGetMyOrderWithPaginationData = true;
+/////////////////////////////////////
   Future<void> getMyOrdersWithPaginationData({
     required String token,
     required String status,
   }) async {
-    if (myOrderNoMoreItems) {
-      debugPrint('No More Items');
+    if (isGetMyOrderWithPaginationData == true) {
+      if (myOrderNoMoreItems) {
+        debugPrint('No More Items');
+      } else {
+        isGetMyOrderWithPaginationData = false;
+        final failureOrGetOrdersData = await getMyOrdersProvider.call(
+            token: token, status: status, offset: myOrderPaginationOffset);
+        failureOrGetOrdersData.fold(
+          (failure) {
+            HandlingErrors.networkErrorrHandling(
+              failure: failure,
+              hideCircleIndicator: () {},
+              showNoInternetPage: () {},
+            );
+            isGetMyOrderWithPaginationData = true;
+          },
+          (getOrdersData) {
+            if (getOrdersData.data!.data!.isEmpty) {
+              myOrderNoMoreItems = true;
+              debugPrint('No More Items');
+            } else {
+              myOrderPaginationOffset++;
+              myOrdersData.data!.total = getOrdersData.data!.total;
+              myOrdersData.data!.data!.addAll(getOrdersData.data!.data!);
+            }
+            isGetMyOrderWithPaginationData = true;
+            update();
+          },
+        );
+      }
     } else {
-      final failureOrGetOrdersData = await getMyOrdersProvider.call(
-          token: token, status: status, offset: myOrderPaginationOffset);
-      failureOrGetOrdersData.fold((failure) {
-        HandlingErrors.networkErrorrHandling(
-            failure: failure,
-            hideCircleIndicator: () {},
-            showNoInternetPage: () {});
-      }, (getOrdersData) {
-        if (getOrdersData.data!.data!.isEmpty) {
-          myOrderNoMoreItems = true;
-          debugPrint('No More Items');
-        } else {
-          myOrderPaginationOffset++;
-          myOrdersData.data!.total = getOrdersData.data!.total;
-          myOrdersData.data!.data!.addAll(getOrdersData.data!.data!);
-        }
-        update();
-      });
+      debugPrint(
+          '////////////////// Wait for request ////////////////////////////');
     }
   }
 
