@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'package:http/http.dart';
 import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import '../models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import '../models/Orders/list_order_model.dart';
 import '../services/networking/orders_api_service.dart';
-import '../shared/errors/exceptions.dart';
 import '../shared/errors/failures.dart';
+import '../shared/handling_errors.dart/request_error_handling.dart';
 import '../shared/network_info/network_info.dart';
 
 class OrdersRepository {
@@ -24,12 +23,10 @@ class OrdersRepository {
         final orderDataResponse = await ordersApiService.getListOrderDataApi(
             token: token, status: status, offset: offset);
         return Right(orderDataResponse);
-      } on ServerException {
-        return left(ServerFailure());
-      } on ClientException {
-        return left(OfflineFailure());
-      } on TimeoutException {
-        return left(OfflineFailure());
+      } catch (e) {
+        return RequestErrorHandling.handle(
+          exception: e,
+        );
       }
     } else {
       return Left(OfflineFailure());
@@ -45,12 +42,10 @@ class OrdersRepository {
         final orderDataResponse = await ordersApiService.getMyOrdersDataApi(
             token: token, status: status, offset: offset);
         return Right(orderDataResponse);
-      } on ServerException {
-        return left(ServerFailure());
-      } on ClientException {
-        return left(OfflineFailure());
-      } on TimeoutException {
-        return left(OfflineFailure());
+      } catch (e) {
+        return RequestErrorHandling.handle(
+          exception: e,
+        );
       }
     } else {
       return Left(OfflineFailure());
@@ -65,12 +60,10 @@ class OrdersRepository {
         final orderStatusDataResponse =
             await ordersApiService.getOrderStatusDataApi(token);
         return Right(orderStatusDataResponse);
-      } on ServerException {
-        return left(ServerFailure());
-      } on ClientException {
-        return left(OfflineFailure());
-      } on TimeoutException {
-        return left(OfflineFailure());
+      } catch (e) {
+        return RequestErrorHandling.handle(
+          exception: e,
+        );
       }
     } else {
       return Left(OfflineFailure());
@@ -84,12 +77,10 @@ class OrdersRepository {
         final dataResponse = await ordersApiService.postUnAssignToVehicleApi(
             token: token, vehicleId: vehicleId);
         return Right(dataResponse);
-      } on ServerException {
-        return left(ServerFailure());
-      } on ClientException {
-        return left(OfflineFailure());
-      } on TimeoutException {
-        return left(OfflineFailure());
+      } catch (e) {
+        return RequestErrorHandling.handle(
+          exception: e,
+        );
       }
     } else {
       return Left(OfflineFailure());
@@ -105,12 +96,10 @@ class OrdersRepository {
         final dataResponse = await ordersApiService.postAssignOrderToMeApi(
             token: token, orderId: orderId);
         return Right(dataResponse);
-      } on ServerException {
-        return left(ServerFailure());
-      } on ClientException {
-        return left(OfflineFailure());
-      } on TimeoutException {
-        return left(OfflineFailure());
+      } catch (e) {
+        return RequestErrorHandling.handle(
+          exception: e,
+        );
       }
     } else {
       return Left(OfflineFailure());
@@ -136,12 +125,10 @@ class OrdersRepository {
           amount: amount,
         );
         return const Right(unit);
-      } on ServerException {
-        return left(ServerFailure());
-      } on ClientException {
-        return left(OfflineFailure());
-      } on TimeoutException {
-        return left(OfflineFailure());
+      } catch (e) {
+        return RequestErrorHandling.handle(
+          exception: e,
+        );
       }
     } else {
       return Left(OfflineFailure());
@@ -162,12 +149,10 @@ class OrdersRepository {
           receivedAmount: receivedAmount,
         );
         return Right(dataResponse);
-      } on ServerException {
-        return left(ServerFailure());
-      } on ClientException {
-        return left(OfflineFailure());
-      } on TimeoutException {
-        return left(OfflineFailure());
+      } catch (e) {
+        return RequestErrorHandling.handle(
+          exception: e,
+        );
       }
     } else {
       return Left(OfflineFailure());

@@ -10,3 +10,5 @@ class ServerFailure extends Failure {}
 class WrongDataFailure extends Failure {}
 
 class CantAssignToVehicleFailure extends Failure {}
+
+class UnExpectedFailure extends Failure {}

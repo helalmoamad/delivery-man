@@ -6,6 +6,7 @@ import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_storage/get_storage.dart';
 import 'app_bindings.dart';
@@ -43,6 +44,7 @@ class MyHttpOverrides extends HttpOverrides {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await GetStorage.init();
   // statusBarColor
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(

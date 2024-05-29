@@ -1,6 +1,6 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiConstants {
-  static const baseUrl = "https://fleet.trydos.tech/public";
-  // static const baseUrl =
-  //     "https://moot-fleet.trydos.tech/fleet_managment/public";
+  static String baseUrl = dotenv.env['BASE_URL']!;
   static const version = 'v1';
 }

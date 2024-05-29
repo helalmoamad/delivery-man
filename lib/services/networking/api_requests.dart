@@ -84,6 +84,8 @@ class ApiRequests {
         response: jsonDecode(response.body).toString());
 
     await GlobalFunctions.setRequestInfo(requestInfo: data);
+
+    debugPrint('${response.statusCode}');
     //////////////////////////////////////////////////////////////////
     if (response.statusCode >= 200 && response.statusCode < 300) {
       debugPrint('2');
