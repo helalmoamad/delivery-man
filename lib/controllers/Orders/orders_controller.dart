@@ -721,6 +721,9 @@ class OrdersController extends GetxController {
             .receivedAmount = data.receivedAmount;
       }
 
+      SnackBarWidgets.showSuccessSnackBar(
+          'Process Completed Successfuly'.tr, '');
+
       hideAssignOrderCircleIndicator();
     });
   }
