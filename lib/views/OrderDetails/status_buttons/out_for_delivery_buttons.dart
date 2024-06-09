@@ -1,7 +1,6 @@
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/models/Orders/list_order_model.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
-import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
 import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
 import 'package:delivery_man_app/shared/widgets/snackbar_widgets.dart';
@@ -29,37 +28,17 @@ class OutForDeliveryButtons extends StatelessWidget {
               titleSize: 15,
               backgroundColor: AppColors.secondary,
               onPress: () async {
-                AppDialogs.showAppDialogWidget(
+                AppDialogs.showConfirmationDialog(
                   context: context,
                   title: 'Audio recording will start'.tr,
-                  actions: [
-                    AppButton.normalButton(
-                      title: 'Confirm'.tr,
-                      shadow: false,
-                      width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                      height: 30,
-                      titleColor: AppColors.white,
-                      backgroundColor: AppColors.primaryDark,
-                      onPress: () async {
-                        Get.back();
-                        await ordersController.startRecording(
-                            orderId: order.id.toString());
-                      },
-                    ),
-                    ///////////////
-                    AppButton.normalButton(
-                        title: 'Back'.tr,
-                        shadow: false,
-                        width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                        backgroundColor: AppColors.white,
-                        titleColor: AppColors.primaryDark,
-                        height: 30,
-                        onPress: () {
-                          Get.back();
-                        })
-                  ],
+                  onConfirm: () async {
+                    Get.back();
+                    await ordersController.startRecording(
+                        orderId: order.id.toString());
+                  },
                 );
-              })
+              },
+            )
           : buildConvertButtons(context, order);
     });
   }
@@ -113,51 +92,29 @@ class OutForDeliveryButtons extends StatelessWidget {
             /////////////////
             Expanded(
               child: AppButton.normalButton(
-                  title: 'Convert To Returned'.tr,
-                  height: 40,
-                  titleSize: 13,
-                  backgroundColor: AppColors.darkGrey,
-                  onPress: () {
-                    AppDialogs.showAppDialogWidget(
-                      context: context,
-                      title:
-                          'The order status will be changed to "Returned"'.tr,
-                      actions: [
-                        AppButton.normalButton(
-                          title: 'Confirm'.tr,
-                          shadow: false,
-                          width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                          height: 30,
-                          titleColor: AppColors.white,
-                          backgroundColor: AppColors.primaryDark,
-                          onPress: () async {
-                            Get.back();
-                            await ordersController
-                                .stopRecording()
-                                .then((value) async {
-                              await ordersController.changeOrderStatus(
-                                  token: GlobalFunctions.getFcmToken(),
-                                  status: 'returned',
-                                  orderId: order.id!,
-                                  file: ordersController.audioPath);
-                            });
-                          },
-                        ),
-                        ///////////////
-                        AppButton.normalButton(
-                            title: 'Back'.tr,
-                            shadow: false,
-                            width:
-                                ScreenSizeUtils.getWidthInPercent(context, 25),
-                            backgroundColor: AppColors.white,
-                            titleColor: AppColors.primaryDark,
-                            height: 30,
-                            onPress: () {
-                              Get.back();
-                            })
-                      ],
-                    );
-                  }),
+                title: 'Convert To Returned'.tr,
+                height: 40,
+                titleSize: 13,
+                backgroundColor: AppColors.darkGrey,
+                onPress: () {
+                  AppDialogs.showConfirmationDialog(
+                    context: context,
+                    title: 'The order status will be changed to "Returned"'.tr,
+                    onConfirm: () async {
+                      Get.back();
+                      await ordersController.stopRecording().then(
+                        (value) async {
+                          await ordersController.changeOrderStatus(
+                              token: GlobalFunctions.getFcmToken(),
+                              status: 'returned',
+                              orderId: order.id!,
+                              file: ordersController.audioPath);
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
             )
           ],
         ),
@@ -219,43 +176,21 @@ class OutForDeliveryButtons extends StatelessWidget {
                   titleSize: 13,
                   backgroundColor: const Color.fromARGB(255, 136, 25, 17),
                   onPress: () {
-                    AppDialogs.showAppDialogWidget(
+                    AppDialogs.showConfirmationDialog(
                       context: context,
                       title: 'The order status will be changed to "Failed"'.tr,
-                      actions: [
-                        AppButton.normalButton(
-                          title: 'Confirm'.tr,
-                          shadow: false,
-                          width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                          height: 30,
-                          titleColor: AppColors.white,
-                          backgroundColor: AppColors.primaryDark,
-                          onPress: () async {
-                            Get.back();
-                            await ordersController
-                                .stopRecording()
-                                .then((value) async {
-                              await ordersController.changeOrderStatus(
-                                  token: GlobalFunctions.getFcmToken(),
-                                  status: 'failed',
-                                  orderId: order.id!,
-                                  file: ordersController.audioPath);
-                            });
-                          },
-                        ),
-                        ///////////////
-                        AppButton.normalButton(
-                            title: 'Back'.tr,
-                            shadow: false,
-                            width:
-                                ScreenSizeUtils.getWidthInPercent(context, 25),
-                            backgroundColor: AppColors.white,
-                            titleColor: AppColors.primaryDark,
-                            height: 30,
-                            onPress: () {
-                              Get.back();
-                            })
-                      ],
+                      onConfirm: () async {
+                        Get.back();
+                        await ordersController
+                            .stopRecording()
+                            .then((value) async {
+                          await ordersController.changeOrderStatus(
+                              token: GlobalFunctions.getFcmToken(),
+                              status: 'failed',
+                              orderId: order.id!,
+                              file: ordersController.audioPath);
+                        });
+                      },
                     );
                   }),
             )

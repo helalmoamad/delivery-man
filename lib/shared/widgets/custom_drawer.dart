@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/Auth/auth_controller.dart';
 import '../constants/color_constants.dart';
-import '../helpers/screen_size_utils.dart';
-import 'app_buttons.dart';
 import 'app_dialogs.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -98,33 +96,13 @@ class CustomDrawer extends StatelessWidget {
                 textAlign: TextAlign.start,
                 maxline: 1),
             onTap: () {
-              AppDialogs.showAppDialogWidget(
+              AppDialogs.showConfirmationDialog(
                 context: context,
                 title: 'Are you sure to logout ?'.tr,
-                actions: [
-                  AppButton.normalButton(
-                    title: 'Confirm'.tr,
-                    shadow: false,
-                    width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                    height: 30,
-                    titleColor: AppColors.white,
-                    backgroundColor: AppColors.primaryDark,
-                    onPress: () async {
-                      await authController.logOut();
-                    },
-                  ),
-                  ///////////////
-                  AppButton.normalButton(
-                      title: 'Back'.tr,
-                      shadow: false,
-                      width: ScreenSizeUtils.getWidthInPercent(context, 25),
-                      backgroundColor: AppColors.white,
-                      titleColor: AppColors.primaryDark,
-                      height: 30,
-                      onPress: () {
-                        Get.back();
-                      })
-                ],
+                onConfirm: () async {
+                  Get.back();
+                  await authController.logOut();
+                },
               );
             },
           ),

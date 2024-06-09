@@ -136,4 +136,7 @@ const Map<String, String> ar = {
   'No Data Now': 'لا يوجد بيانات حالياً',
   'Received Amount': 'المبلغ المُستلَم',
   'Add Received Amount': 'إضافة المبلغ المُستلَم',
+  'Process Completed Successfuly': 'تمت العملية بنجاح',
+  'Are you sure to exit the application ?':
+      'هل أنت متأكد من الخروج من التطبيق ؟',
 };

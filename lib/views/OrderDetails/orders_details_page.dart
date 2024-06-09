@@ -2,8 +2,6 @@ import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
-import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
-import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
 import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
 import 'package:delivery_man_app/shared/widgets/circle_indecator_widget.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
@@ -113,38 +111,17 @@ class OrdersDetailsPage extends StatelessWidget {
     if ((ordersController.previousRoute == Routes.myOrdersPage) &&
         (ordersController.myOrderStatus == 'out_for_delivery') &&
         (!ordersController.isStartDeliveryButton)) {
-      AppDialogs.showAppDialogWidget(
+      AppDialogs.showConfirmationDialog(
         context: context,
         title: 'Are you sure to stop recording and leave this page ?'.tr,
-        actions: [
-          AppButton.normalButton(
-            title: 'Confirm'.tr,
-            shadow: false,
-            width: ScreenSizeUtils.getWidthInPercent(context, 25),
-            height: 30,
-            titleColor: AppColors.white,
-            backgroundColor: AppColors.primaryDark,
-            onPress: () async {
-              Get.back();
-              Get.close(1);
-              ordersController.changeDeliveringButton(true);
-              await ordersController.stopRecording();
-              ordersController.returnedProductsList.clear();
-              ordersController.audioPath = '';
-            },
-          ),
-          ///////////////
-          AppButton.normalButton(
-              title: 'Back'.tr,
-              shadow: false,
-              width: ScreenSizeUtils.getWidthInPercent(context, 25),
-              backgroundColor: AppColors.white,
-              titleColor: AppColors.primaryDark,
-              height: 30,
-              onPress: () {
-                Get.back();
-              })
-        ],
+        onConfirm: () async {
+          Get.back();
+          Get.close(1);
+          ordersController.changeDeliveringButton(true);
+          await ordersController.stopRecording();
+          ordersController.returnedProductsList.clear();
+          ordersController.audioPath = '';
+        },
       );
     }
   }

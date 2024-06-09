@@ -1,7 +1,6 @@
 import 'package:delivery_man_app/controllers/Auth/auth_controller.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
-import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
 import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
 import 'package:delivery_man_app/shared/widgets/custom_app_bar.dart';
@@ -18,45 +17,24 @@ class InfoForDeveloperPage extends StatelessWidget {
     return SafeArea(
         child: Scaffold(
             appBar: customAppBar(
-                title: 'Info For Developer'.tr,
-                button: AppButton.normalButton(
-                    title: 'Delete All Data'.tr,
-                    height: 40,
-                    titleSize: 13,
-                    backgroundColor: AppColors.darkGrey,
-                    onPress: () async {
-                      AppDialogs.showAppDialogWidget(
-                        context: context,
-                        title: 'Are you sure you want delete to all data ?'.tr,
-                        actions: [
-                          AppButton.normalButton(
-                            title: 'Confirm'.tr,
-                            shadow: false,
-                            width:
-                                ScreenSizeUtils.getWidthInPercent(context, 25),
-                            height: 30,
-                            titleColor: AppColors.white,
-                            backgroundColor: AppColors.primaryDark,
-                            onPress: () async {
-                              await authController.removeAllRequestsInfo();
-                              Get.back();
-                            },
-                          ),
-                          ///////////////
-                          AppButton.normalButton(
-                              title: 'Back'.tr,
-                              shadow: false,
-                              width: ScreenSizeUtils.getWidthInPercent(
-                                  context, 25),
-                              backgroundColor: AppColors.white,
-                              titleColor: AppColors.primaryDark,
-                              height: 30,
-                              onPress: () {
-                                Get.back();
-                              })
-                        ],
-                      );
-                    })),
+              title: 'Info For Developer'.tr,
+              button: AppButton.normalButton(
+                title: 'Delete All Data'.tr,
+                height: 40,
+                titleSize: 13,
+                backgroundColor: AppColors.darkGrey,
+                onPress: () async {
+                  AppDialogs.showConfirmationDialog(
+                    context: context,
+                    title: 'Are you sure you want delete to all data ?'.tr,
+                    onConfirm: () async {
+                      await authController.removeAllRequestsInfo();
+                      Get.back();
+                    },
+                  );
+                },
+              ),
+            ),
             body: GetBuilder<AuthController>(builder: (_) {
               final data = GlobalFunctions.getRequestsInfo();
               return data.isEmpty

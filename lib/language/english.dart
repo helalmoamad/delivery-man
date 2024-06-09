@@ -137,4 +137,7 @@ const Map<String, String> en = {
   'No Data Now': 'No Data Now',
   'Received Amount': 'Received Amount',
   'Add Received Amount': 'Add Received Amount',
+  'Process Completed Successfuly': 'Process Completed Successfuly',
+  'Are you sure to exit the application ?':
+      'Are you sure to exit the application ?',
 };
