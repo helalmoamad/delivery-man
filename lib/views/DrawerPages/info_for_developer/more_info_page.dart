@@ -1,4 +1,3 @@
-import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/models/RequestInfo/request_info_model.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
@@ -6,13 +5,15 @@ import 'package:delivery_man_app/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../controllers/Auth/auth_controller.dart';
+
 class MoreInfoPage extends StatelessWidget {
   MoreInfoPage({super.key});
-  final OrdersController ordersController = Get.find<OrdersController>();
+  final AuthController authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     final data = GlobalFunctions.getRequestsInfo();
-    int index = ordersController.moreDeveloperInfoIndex;
+    int index = authController.moreDeveloperInfoIndex;
     return SafeArea(
         child: Scaffold(
             appBar: customAppBar(title: 'More Info'.tr, button: Container()),

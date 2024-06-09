@@ -1,10 +1,15 @@
 import 'package:delivery_man_app/services/networking/api_requests.dart';
 import '../../controllers/Client/client_controller.dart';
+import '../../models/Auth/fcm_token_model.dart';
 import '../../models/Auth/login_model.dart';
 import '../../models/Auth/user_data_model.dart';
 
 abstract class AuthApiService {
   Future<UserModel> postLoginApi(LoginModel loginModel);
+  Future<SetFcmTokenModel> setFcmTokenApi({
+    required String token,
+    required String fcmToken,
+  });
 }
 
 class AuthApiServiceImpWithHttp implements AuthApiService {
@@ -22,6 +27,23 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
       client: clientController.client,
       body: loginModel.toJson(),
       fromJson: UserModel.fromJson,
+    );
+    return response;
+  }
+
+  @override
+  Future<SetFcmTokenModel> setFcmTokenApi({
+    required String token,
+    required String fcmToken,
+  }) async {
+    clientController.reOpenClient();
+
+    final response = await ApiRequests.postRequest<SetFcmTokenModel>(
+      urlPath: 'users/set_fcm_token',
+      token: token,
+      client: clientController.client,
+      body: {'fcm_token': fcmToken},
+      fromJson: SetFcmTokenModel.fromJson,
     );
     return response;
   }

@@ -17,9 +17,9 @@ class UnAssignToVehicleModel {
 
   factory UnAssignToVehicleModel.fromJson(Map<String, dynamic> json) =>
       UnAssignToVehicleModel(
-        isSuccessful: json["isSuccessful"],
-        hasContent: json["hasContent"],
-        code: json["code"],
+        isSuccessful: json["isSuccessful"] ?? false,
+        hasContent: json["hasContent"] ?? false,
+        code: json["code"] ?? 400,
         message: json["message"] ?? '',
         detailedError: json["detailed_error"] ?? '',
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
@@ -33,7 +33,7 @@ class Data {
   final String? name;
   final dynamic photoPath;
   final String? email;
-  final dynamic assignToUserId;
+  final int? assignToUserId;
   final dynamic assignedVehicle;
   final dynamic currentJourney;
 
@@ -51,11 +51,11 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         id: json["id"],
-        mobilePhone: json["mobile_phone"],
-        username: json["username"],
-        name: json["name"],
-        photoPath: json["photo_path"],
-        email: json["email"],
+        mobilePhone: json["mobile_phone"] ?? '',
+        username: json["username"] ?? '',
+        name: json["name"] ?? '',
+        photoPath: json["photo_path"] ?? '',
+        email: json["email"] ?? '',
         assignToUserId: json["assign_to_user_id"],
         assignedVehicle: json["assigned_vehicle"],
         currentJourney: json["current_journey"],

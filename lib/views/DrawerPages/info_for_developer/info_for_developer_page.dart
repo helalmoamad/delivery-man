@@ -1,4 +1,4 @@
-import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/controllers/Auth/auth_controller.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
@@ -12,7 +12,7 @@ import 'package:get/get.dart';
 
 class InfoForDeveloperPage extends StatelessWidget {
   InfoForDeveloperPage({super.key});
-  final OrdersController ordersController = Get.find<OrdersController>();
+  final AuthController authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -38,7 +38,7 @@ class InfoForDeveloperPage extends StatelessWidget {
                             titleColor: AppColors.white,
                             backgroundColor: AppColors.primaryDark,
                             onPress: () async {
-                              await ordersController.removeAllRequestsInfo();
+                              await authController.removeAllRequestsInfo();
                               Get.back();
                             },
                           ),
@@ -57,7 +57,7 @@ class InfoForDeveloperPage extends StatelessWidget {
                         ],
                       );
                     })),
-            body: GetBuilder<OrdersController>(builder: (_) {
+            body: GetBuilder<AuthController>(builder: (_) {
               final data = GlobalFunctions.getRequestsInfo();
               return data.isEmpty
                   ? const Center(

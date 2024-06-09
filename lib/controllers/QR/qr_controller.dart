@@ -89,12 +89,14 @@ class QRController extends GetxController {
       Future.wait([
         GlobalFunctions.setAssignVehicleToUserId(
             assignToUserId:
-                assignToVehicleData.data!.assignedVehicle!.assignToUserId),
+                assignToVehicleData.data!.assignedVehicle!.assignToUserId ??
+                    -1),
         GlobalFunctions.setAssignedVehicleId(
-            assignedVehicleId: assignToVehicleData.data!.assignedVehicle!.id!),
+            assignedVehicleId:
+                assignToVehicleData.data!.assignedVehicle!.id ?? -1),
         GlobalFunctions.setAssignedVehicleName(
             assignedVehicleName:
-                assignToVehicleData.data!.assignedVehicle!.name!),
+                assignToVehicleData.data!.assignedVehicle!.name ?? ''),
       ]);
       Get.close(1);
       ordersController.update();

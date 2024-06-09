@@ -17,9 +17,9 @@ class AssignToVehicleModel {
 
   factory AssignToVehicleModel.fromJson(Map<String, dynamic> json) =>
       AssignToVehicleModel(
-        isSuccessful: json["isSuccessful"],
-        hasContent: json["hasContent"],
-        code: json["code"],
+        isSuccessful: json["isSuccessful"] ?? false,
+        hasContent: json["hasContent"] ?? false,
+        code: json["code"] ?? 400,
         message: json["message"] ?? '',
         detailedError: json["detailed_error"] ?? '',
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
@@ -49,11 +49,11 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         id: json["id"],
-        mobilePhone: json["mobile_phone"],
-        username: json["username"],
-        name: json["name"],
+        mobilePhone: json["mobile_phone"] ?? '',
+        username: json["username"] ?? '',
+        name: json["name"] ?? '',
         photoPath: json["photo_path"] ?? '',
-        email: json["email"],
+        email: json["email"] ?? '',
         assignToUserId: json["assign_to_user_id"],
         assignedVehicle: json["assigned_vehicle"] == null
             ? null

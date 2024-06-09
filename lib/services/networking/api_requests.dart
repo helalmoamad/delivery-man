@@ -56,29 +56,37 @@ class ApiRequests {
 
   static Future<T> postRequest<T>({
     required String urlPath,
-    required String token,
+    required String? token,
     required Client client,
     required Map<String, dynamic> body,
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
     final uri = Uri.parse(
         '${ApiConstants.baseUrl}/api/${ApiConstants.version}/$urlPath');
-    final response = await client.post(
-      uri,
-      body: json.encode(body),
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-        'Connection': 'keep-alive',
-      },
-    ).timeout(const Duration(seconds: 30));
+
+    Map<String, String>? headers = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+      'Connection': 'keep-alive',
+    };
+
+    if (token == null) {
+      headers.remove('Authorization');
+    }
+    final response = await client
+        .post(
+          uri,
+          body: json.encode(body),
+          headers: headers,
+        )
+        .timeout(const Duration(seconds: 30));
     debugPrint('/////1///////');
     /////////////////store request info//////////////////////////////////
     final data = RequestInfoModel(
         url: uri.toString(),
         requestType: 'POST',
-        token: token,
+        token: token ?? '',
         header: response.headers.toString(),
         body: body.toString(),
         response: jsonDecode(response.body).toString());

@@ -1,16 +1,20 @@
 import 'dart:io';
+import 'package:app_settings/app_settings.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/themes/themes.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'app_bindings.dart';
 import 'language/localization.dart';
+import 'shared/global_functions/push_notification_service.dart';
 
 MaterialColor getMaterialColor(Color color) {
   final int red = color.red;
@@ -45,7 +49,18 @@ class MyHttpOverrides extends HttpOverrides {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  await GetStorage.init();
+  await Firebase.initializeApp();
+  /////////////////////////////////////
+  final sharedPreferences = await SharedPreferences.getInstance();
+  Get.put<SharedPreferences>(sharedPreferences);
+  ///////////////// Notification /////////////////////
+  await PushNotificationService.initializeNotification();
+  /////////////////////////////////////
+  await Permission.notification.isDenied.then((value) async {
+    if (value) {
+      await AppSettings.openAppSettings(type: AppSettingsType.notification);
+    }
+  });
   // statusBarColor
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: AppColors.statusBarColor,

@@ -16,11 +16,11 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-        isSuccessful: json["isSuccessful"],
-        hasContent: json["hasContent"],
-        code: json["code"],
-        message: json["message"],
-        detailedError: json["detailed_error"],
+        isSuccessful: json["isSuccessful"] ?? false,
+        hasContent: json["hasContent"] ?? false,
+        code: json["code"] ?? 400,
+        message: json["message"] ?? '',
+        detailedError: json["detailed_error"] ?? '',
         data:
             json["data"] == null ? null : UserDataModel.fromJson(json["data"]),
       );
@@ -51,11 +51,11 @@ class UserDataModel {
 
   factory UserDataModel.fromJson(Map<String, dynamic> json) => UserDataModel(
         id: json["id"],
-        mobilePhone: json["mobile_phone"],
-        username: json["username"],
-        name: json["name"],
-        photoPath: json["photo_path"],
-        email: json["email"],
+        mobilePhone: json["mobile_phone"] ?? '',
+        username: json["username"] ?? '',
+        name: json["name"] ?? '',
+        photoPath: json["photo_path"] ?? '',
+        email: json["email"] ?? '',
         assignToUserId: json["assign_to_user_id"],
         accessToken: json["access_token"],
         assignedVehicle: json["assigned_vehicle"] == null
@@ -86,11 +86,11 @@ class AssignedVehicleModel {
   factory AssignedVehicleModel.fromJson(Map<String, dynamic> json) =>
       AssignedVehicleModel(
         id: json["id"],
-        mobilePhone: json["mobile_phone"],
-        username: json["username"],
-        name: json["name"],
-        photoPath: json["photo_path"],
-        email: json["email"],
+        mobilePhone: json["mobile_phone"] ?? '',
+        username: json["username"] ?? '',
+        name: json["name"] ?? '',
+        photoPath: json["photo_path"] ?? '',
+        email: json["email"] ?? '',
         assignToUserId: json["assign_to_user_id"],
       );
 }

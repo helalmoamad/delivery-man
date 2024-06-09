@@ -101,8 +101,6 @@ class OrdersController extends GetxController {
 
   List<ProductModel> returnedProductsList = [];
 
-  int moreDeveloperInfoIndex = 0;
-
   late ItemScrollController myOrderStatusScrollController;
 
   @override
@@ -148,16 +146,6 @@ class OrdersController extends GetxController {
     super.onClose();
 
     debugPrint('Order Controller closed');
-  }
-
-  Future<void> removeRequestFromDeveloperInfo(int index) async {
-    await GlobalFunctions.deleteRequestInfo(index: index);
-    update();
-  }
-
-  Future<void> removeAllRequestsInfo() async {
-    await GlobalFunctions.deleteAllRequestsInfo();
-    update();
   }
 
   void addReturnedProducts(ProductModel orderProduct) {
@@ -550,7 +538,7 @@ class OrdersController extends GetxController {
       SnackBarWidgets.showSuccessSnackBar(
           'UnAssign To Vehicle Succeeded'.tr, '');
       await GlobalFunctions.setAssignVehicleToUserId(
-          assignToUserId: unAssignToVehicleData.data!.assignToUserId);
+          assignToUserId: unAssignToVehicleData.data!.assignToUserId ?? -1);
       update();
     });
   }

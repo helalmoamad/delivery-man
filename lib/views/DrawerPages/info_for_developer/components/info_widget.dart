@@ -1,4 +1,3 @@
-import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/models/RequestInfo/request_info_model.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
@@ -8,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../controllers/Auth/auth_controller.dart';
+
 class InfoWidget extends StatelessWidget {
   final int index;
-  final OrdersController ordersController = Get.find<OrdersController>();
+  final AuthController authController = Get.find<AuthController>();
   InfoWidget({super.key, required this.index});
 
   @override
@@ -83,7 +84,7 @@ class InfoWidget extends StatelessWidget {
             right: 0,
             child: InkWell(
               onTap: () async {
-                await ordersController.removeRequestFromDeveloperInfo(index);
+                await authController.removeRequestFromDeveloperInfo(index);
               },
               child: const Icon(
                 Icons.disabled_by_default,
@@ -107,7 +108,7 @@ class InfoWidget extends StatelessWidget {
           Expanded(
             child: InkWell(
               onTap: () {
-                ordersController.moreDeveloperInfoIndex = index;
+                authController.moreDeveloperInfoIndex = index;
                 Get.toNamed(Routes.moreInfoPage);
               },
               child: Container(

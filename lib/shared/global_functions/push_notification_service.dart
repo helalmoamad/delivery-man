@@ -1,0 +1,167 @@
+import 'dart:convert';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../constants/color_constants.dart';
+import '../constants/notifications_types.dart';
+
+class PushNotificationService {
+  static SharedPreferences prefs = Get.find<SharedPreferences>();
+
+  // static final MainController mainController = Get.find<MainController>();
+  // static ProductsController productsController = Get.find<ProductsController>();
+
+  static final firebaseMessaging = FirebaseMessaging.instance;
+
+  static final flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  static const androidChannel = AndroidNotificationChannel(
+    'high_importance_channel',
+    'High Importance Notifications',
+    importance: Importance.max,
+    playSound: true,
+  );
+
+  static Future<void> initializeNotification() async {
+    await initPushNotification();
+    await initLocalNotification();
+  }
+
+  static Future<void> initPushNotification() async {
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    await FirebaseMessaging.instance
+        .getInitialMessage()
+        .then(handleTerminatedMessageOnTap);
+
+    FirebaseMessaging.onMessageOpenedApp
+        .listen(handleMessageBackForGroundOnTap);
+
+    FirebaseMessaging.onBackgroundMessage(backgroundTerminateHandler);
+
+    FirebaseMessaging.onMessage.listen(
+      (message) {
+        final notification = message.notification;
+        if (notification == null) return;
+
+        debugPrint(
+            '//////////////forground notification come //////////////////');
+        AndroidNotification? androidNotification =
+            message.notification?.android;
+        if (androidNotification != null) {
+          flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                androidChannel.id,
+                androidChannel.name,
+                channelDescription: androidChannel.description,
+                color: AppColors.primaryDark,
+                playSound: true,
+                icon: '@mipmap/ic_launcher',
+              ),
+            ),
+            payload: jsonEncode(message.toMap()),
+          );
+        }
+      },
+    );
+  }
+
+  static Future<void> initLocalNotification() async {
+    const initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    final DarwinInitializationSettings initializationSettingsDarwin =
+        DarwinInitializationSettings(
+      onDidReceiveLocalNotification: (id, title, body, payload) {},
+    );
+    const LinuxInitializationSettings initializationSettingsLinux =
+        LinuxInitializationSettings(defaultActionName: 'Open notification');
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
+      linux: initializationSettingsLinux,
+    );
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (details) {
+        final message = RemoteMessage.fromMap(
+          jsonDecode(details.payload!),
+        );
+        handleMessageBackForGroundOnTap(message);
+      },
+    );
+
+    final platform =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+
+    await platform?.createNotificationChannel(androidChannel);
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> backgroundTerminateHandler(RemoteMessage message) async {
+    debugPrint('Handling a background message ${message.messageId}');
+    debugPrint('background message title ${message.notification!.title}');
+    debugPrint('background message body${message.notification!.body}');
+    debugPrint('background message data${message.data}');
+    ///////////////////////////////////////////////////////
+    if (message.data['notification_type'] ==
+            NotificationsTypes.addUpdateProduct ||
+        message.data['notification_type'] ==
+            NotificationsTypes.collectProduct) {
+      bool test = Get.isRegistered<SharedPreferences>();
+      if (!test) {
+        prefs = await SharedPreferences.getInstance();
+        Get.put<SharedPreferences>(prefs);
+      }
+      await prefs.setBool('is_notifi_after_date_for_bg', true);
+    }
+  }
+
+  static void handleMessageBackForGroundOnTap(RemoteMessage? message) async {
+    if (message == null) {
+      debugPrint('//// Message Navigation null ////');
+    } else {
+      debugPrint('//// handle Message Navigation ////');
+      /////////////////////////////////////////////////////
+      if (message.data['notification_type'] ==
+          NotificationsTypes.collectProduct) {}
+    }
+  }
+
+  static void handleTerminatedMessageOnTap(RemoteMessage? message) async {
+    if (message == null) {
+      debugPrint('//// Message On Tap null ////');
+    } else {
+      debugPrint('////Terminate handle Message On Tap ////');
+      ///////////////////////////////////////////////////////////////////
+      if (message.data['notification_type'] ==
+          NotificationsTypes.collectProduct) {
+        debugPrint('//// Navigate to order page from Terminate////');
+        await prefs.setString('notifi_type', NotificationsTypes.collectProduct);
+        await prefs.setString('order_id', message.data['order_id'] ?? '-1');
+      }
+    }
+  }
+
+  static Future<String?> getToken() async {
+    String? token = await firebaseMessaging.getToken();
+    debugPrint('Fcm Token: $token');
+    return token;
+  }
+}

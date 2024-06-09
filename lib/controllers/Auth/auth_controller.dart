@@ -1,12 +1,14 @@
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/Auth/login_model.dart';
 import '../../models/Auth/user_data_model.dart';
 import '../../providers/Auth_providers/login_provider.dart';
+import '../../providers/Auth_providers/set_fcm_token_provider.dart';
 import '../../routes/routes.dart';
 import '../../shared/global_functions/global_functions.dart';
+import '../../shared/global_functions/push_notification_service.dart';
 import '../../shared/handling_errors.dart/handling_errors.dart';
 import '../../shared/widgets/snackbar_widgets.dart';
 
@@ -15,9 +17,11 @@ class AuthController extends GetxController {
   bool isLogin = false;
   bool isObscure = true;
 
-  GetStorage storageBox = GetStorage();
+  SharedPreferences prefs = Get.find<SharedPreferences>();
 
-  late LoginProvider loginProvider = Get.find();
+  late LoginProvider loginProvider = Get.find<LoginProvider>();
+  late SetFcmTokenProvider setFcmTokenProvider =
+      Get.find<SetFcmTokenProvider>();
 
   late UserDataModel userData;
 
@@ -44,49 +48,83 @@ class AuthController extends GetxController {
   Future<void> login({required LoginModel loginModel}) async {
     showCircleIndicator();
     final failureOrLogin = await loginProvider.call(loginModel);
-    failureOrLogin.fold((failure) {
-      HandlingErrors.networkErrorrHandling(
-          failure: failure,
-          hideCircleIndicator: hideCircleIndicator,
-          showNoInternetPage: () {});
-    }, (getUserData) async {
-      userData = getUserData.data!;
-      isLogin = true;
-      Future.wait([
-        GlobalFunctions.setFcmToken(token: userData.accessToken!),
-        GlobalFunctions.setUserId(id: userData.id!),
-        GlobalFunctions.setName(name: userData.name!),
-        GlobalFunctions.setEmail(email: userData.email!),
-        GlobalFunctions.setMobilePhone(mobilePhone: userData.mobilePhone!),
-        GlobalFunctions.setAssignVehicleToUserId(
-            assignToUserId: userData.assignedVehicle == null
-                ? null
-                : userData.assignedVehicle!.assignToUserId),
-        GlobalFunctions.setAssignedVehicleId(
-            assignedVehicleId: userData.assignedVehicle == null
-                ? null
-                : userData.assignedVehicle!.id!),
-        GlobalFunctions.setAssignedVehicleName(
-            assignedVehicleName: userData.assignedVehicle == null
-                ? null
-                : userData.assignedVehicle!.name!),
-        GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
-      ]);
-      hideCircleIndicator();
-      Get.offAllNamed(Routes.orderssPage);
-      SnackBarWidgets.showSuccessSnackBar('Login Succeeded'.tr, '');
-    });
+    failureOrLogin.fold(
+      (failure) {
+        HandlingErrors.networkErrorrHandling(
+            failure: failure,
+            hideCircleIndicator: hideCircleIndicator,
+            showNoInternetPage: () {});
+      },
+      (getUserData) async {
+        userData = getUserData.data!;
+        await PushNotificationService.getToken().then(
+          (fcmToken) async {
+            if (fcmToken != null) {
+              ////////////////////////
+              await sendFcmTokenApi(fcmToken: fcmToken);
+            } else {
+              hideCircleIndicator();
+              SnackBarWidgets.showFailureSnackBar('Get fcm token faild', '');
+            }
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> sendFcmTokenApi({
+    required String fcmToken,
+  }) async {
+    showCircleIndicator();
+    final failureOrLogin = await setFcmTokenProvider.call(
+      token: userData.accessToken ?? '',
+      fcmToken: fcmToken,
+    );
+    failureOrLogin.fold(
+      (failure) {
+        HandlingErrors.networkErrorrHandling(
+            failure: failure,
+            hideCircleIndicator: hideCircleIndicator,
+            showNoInternetPage: () {});
+      },
+      (data) async {
+        isLogin = true;
+        Future.wait([
+          GlobalFunctions.setFcmToken(token: userData.accessToken!),
+          GlobalFunctions.setUserId(id: userData.id!),
+          GlobalFunctions.setName(name: userData.name!),
+          GlobalFunctions.setEmail(email: userData.email!),
+          GlobalFunctions.setMobilePhone(mobilePhone: userData.mobilePhone!),
+          GlobalFunctions.setAssignVehicleToUserId(
+              assignToUserId: userData.assignedVehicle == null
+                  ? -1
+                  : userData.assignedVehicle!.assignToUserId ?? -1),
+          GlobalFunctions.setAssignedVehicleId(
+              assignedVehicleId: userData.assignedVehicle == null
+                  ? -1
+                  : userData.assignedVehicle!.id ?? -1),
+          GlobalFunctions.setAssignedVehicleName(
+              assignedVehicleName: userData.assignedVehicle == null
+                  ? ''
+                  : userData.assignedVehicle!.name ?? ''),
+          GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
+        ]);
+        hideCircleIndicator();
+        Get.offAllNamed(Routes.orderssPage);
+        SnackBarWidgets.showSuccessSnackBar('Login Succeeded'.tr, '');
+      },
+    );
   }
 
   //////////////////
   Future<void> logOut() async {
     isLogin = false;
     Future.wait([
-      storageBox.remove('token'),
-      storageBox.remove('userId'),
-      storageBox.remove('mobilePhone'),
-      storageBox.remove('name'),
-      storageBox.remove('email'),
+      prefs.remove('token'),
+      prefs.remove('userId'),
+      prefs.remove('mobilePhone'),
+      prefs.remove('name'),
+      prefs.remove('email'),
       GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
     ]);
     Get.offAllNamed(Routes.loginPage);
@@ -109,5 +147,17 @@ class AuthController extends GetxController {
 
   Future<void> saveLanguage(String lang) async {
     await GlobalFunctions.setLanLocal(lanLocal: lang);
+  }
+
+  int moreDeveloperInfoIndex = 0;
+
+  Future<void> removeRequestFromDeveloperInfo(int index) async {
+    await GlobalFunctions.deleteRequestInfo(index: index);
+    update();
+  }
+
+  Future<void> removeAllRequestsInfo() async {
+    await GlobalFunctions.deleteAllRequestsInfo();
+    update();
   }
 }

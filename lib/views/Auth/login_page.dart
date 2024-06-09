@@ -1,3 +1,4 @@
+import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
@@ -30,13 +31,18 @@ class LoginPage extends StatelessWidget {
                       height: ScreenSizeUtils.getHeightInPercent(context, 5),
                     ),
                     //////////////////////
-                    Container(
-                        width: 130,
-                        height: 130,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage('assets/pictures/logo.png')),
-                        )),
+                    InkWell(
+                      onLongPress: () {
+                        Get.toNamed(Routes.infoForDeveloper);
+                      },
+                      child: Container(
+                          width: 130,
+                          height: 130,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage('assets/pictures/logo.png')),
+                          )),
+                    ),
                     /////////////////////
                     SizedBox(
                       height: ScreenSizeUtils.getHeightInPercent(context, 5),

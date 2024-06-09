@@ -1,120 +1,124 @@
 import 'dart:convert';
-
 import 'package:delivery_man_app/models/RequestInfo/request_info_model.dart';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/out_for_delivery_buttons.dart';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/ready_toshipping_buttons.dart';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/shipped_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/lang_constants.dart';
 
 class GlobalFunctions {
+  static SharedPreferences prefs = Get.find<SharedPreferences>();
+
+  static Future<void> reloadPrefs() async {
+    await prefs.reload();
+  }
+
   static Future<void> setLanLocal({required String lanLocal}) async {
-    await GetStorage().write('lang', lanLocal);
+    await prefs.setString('lang', lanLocal);
   }
 
   static String getLanLocal() {
-    String lanLocal = GetStorage().read<String>('lang') ?? LangConstants.ara;
+    String lanLocal = prefs.getString('lang') ?? LangConstants.ara;
+
     return lanLocal;
   }
 
   static Future<void> setFcmToken({required String token}) async {
-    await GetStorage().write('token', token);
+    await prefs.setString('token', token);
   }
 
   static String getFcmToken() {
-    String? token = GetStorage().read<String>('token');
-    return token!;
+    String? token = prefs.getString('token') ?? '';
+
+    return token;
   }
 
   static Future<void> setIsLoggedIn({required bool isLoggedIn}) async {
-    await GetStorage().write('isLoggedIn', isLoggedIn);
+    await prefs.setBool('isLoggedIn', isLoggedIn);
     debugPrint(isLoggedIn.toString());
   }
 
   static bool getIsLoggedIn() {
-    bool isLoggedIn = GetStorage().read<bool>('isLoggedIn') ?? false;
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     debugPrint('isLoggedIn :  ${isLoggedIn.toString()}');
     return isLoggedIn;
   }
 
   static Future<void> setUserId({required int id}) async {
-    await GetStorage().write('userId', id);
+    await prefs.setInt('userId', id);
   }
 
   static int getUserId() {
-    int? mobilePhone = GetStorage().read<int>('userId');
+    int? mobilePhone = prefs.getInt('userId');
     return mobilePhone!;
   }
 
   static Future<void> setMobilePhone({required String mobilePhone}) async {
-    await GetStorage().write('mobilePhone', mobilePhone);
+    await prefs.setString('mobilePhone', mobilePhone);
   }
 
   static String getMobilePhone() {
-    String? mobilePhone = GetStorage().read<String>('mobilePhone') ?? 'Empty';
+    String? mobilePhone = prefs.getString('mobilePhone') ?? 'Empty';
     return mobilePhone;
   }
 
   static Future<void> setName({required String name}) async {
-    await GetStorage().write('name', name);
+    await prefs.setString('name', name);
   }
 
   static String getName() {
-    String? name = GetStorage().read<String>('name') ?? 'Empty';
+    String? name = prefs.getString('name') ?? 'Empty';
     return name;
   }
 
   static Future<void> setEmail({required String email}) async {
-    await GetStorage().write('email', email);
+    await prefs.setString('email', email);
   }
 
   static String getEmail() {
-    String? email = GetStorage().read<String>('email') ?? 'Empty';
+    String? email = prefs.getString('email') ?? 'Empty';
     return email;
   }
 
   static Future<void> setAssignVehicleToUserId(
-      {required dynamic assignToUserId}) async {
-    await GetStorage().write('assignToUserId', assignToUserId);
+      {required int assignToUserId}) async {
+    await prefs.setInt('assignToUserId', assignToUserId);
   }
 
   static int getAssignVehicleToUserId() {
-    int? assignToUserId = GetStorage().read<int>('assignToUserId') ?? -1;
+    int assignToUserId = prefs.getInt('assignToUserId') ?? -1;
     return assignToUserId;
   }
 
   static Future<void> setAssignedVehicleId(
-      {required dynamic assignedVehicleId}) async {
-    await GetStorage().write('assignedVehicleId', assignedVehicleId);
+      {required int assignedVehicleId}) async {
+    await prefs.setInt('assignedVehicleId', assignedVehicleId);
   }
 
   static int getAssignedVehicleId() {
-    int? assignedVehicleId = GetStorage().read<int>('assignedVehicleId');
-    return assignedVehicleId!;
+    int assignedVehicleId = prefs.getInt('assignedVehicleId') ?? -1;
+    return assignedVehicleId;
   }
 
   static Future<void> setAssignedVehicleName(
-      {required dynamic assignedVehicleName}) async {
-    await GetStorage().write('assignedVehicleName', assignedVehicleName);
+      {required String assignedVehicleName}) async {
+    await prefs.setString('assignedVehicleName', assignedVehicleName);
   }
 
   static String getAssignedVehicleName() {
-    String? assignedVehicleName =
-        GetStorage().read<String>('assignedVehicleName');
-    return assignedVehicleName!;
+    String assignedVehicleName = prefs.getString('assignedVehicleName') ?? '';
+    return assignedVehicleName;
   }
 
   static Future<void> setisForAssignOrderToMe(
       {required bool isForAssignOrderToMe}) async {
-    await GetStorage().write('isForAssignOrderToMe', isForAssignOrderToMe);
+    await prefs.setBool('isForAssignOrderToMe', isForAssignOrderToMe);
   }
 
   static bool getisForAssignOrderToMe() {
-    bool? isForAssignOrderToMe =
-        GetStorage().read<bool>('isForAssignOrderToMe') ?? false;
+    bool? isForAssignOrderToMe = prefs.getBool('isForAssignOrderToMe') ?? false;
     return isForAssignOrderToMe;
   }
 
@@ -268,11 +272,11 @@ class GlobalFunctions {
 
     String encodedData = json.encode(infoListToJson);
 
-    await GetStorage().write('requestsInfo', encodedData);
+    await prefs.setString('requestsInfo', encodedData);
   }
 
   static List<RequestInfoModel> getRequestsInfo() {
-    final data = GetStorage().read<String>('requestsInfo');
+    final data = prefs.getString('requestsInfo');
     if (data != null) {
       final decodedData = json.decode(data);
       List<RequestInfoModel> infoListFromJson = List<RequestInfoModel>.from(
@@ -293,10 +297,10 @@ class GlobalFunctions {
 
     String encodedData = json.encode(infoListToJson);
 
-    await GetStorage().write('requestsInfo', encodedData);
+    await prefs.setString('requestsInfo', encodedData);
   }
 
   static Future<void> deleteAllRequestsInfo() async {
-    await GetStorage().remove('requestsInfo');
+    await prefs.remove('requestsInfo');
   }
 }
