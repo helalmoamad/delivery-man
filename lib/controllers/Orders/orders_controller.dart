@@ -21,6 +21,9 @@ import '../../shared/handling_errors.dart/handling_errors.dart';
 import '../../shared/widgets/snackbar_widgets.dart';
 import 'package:path/path.dart' as p;
 
+import '../Client/client_controller.dart';
+import '../Client/timer_service.dart';
+
 class OrdersController extends GetxController {
   bool isGetOrdersNoInternetConnection = false;
   bool isGetOrdersCircleShown = false;
@@ -103,6 +106,9 @@ class OrdersController extends GetxController {
 
   late ItemScrollController myOrderStatusScrollController;
 
+  final HttpClientService httpClientController = Get.find<HttpClientService>();
+  final TimerService timerService = Get.find<TimerService>();
+
   @override
   void onInit() async {
     super.onInit();
@@ -111,6 +117,10 @@ class OrdersController extends GetxController {
     if (Get.currentRoute == Routes.orderssPage) {
       isMyOrderPage = false;
       orderScrollController = ScrollController();
+      if (Get.previousRoute == Routes.myOrdersPage) {
+        httpClientController.closeSecondaryClient();
+        timerService.stopTimer(isGlobalTimer: false);
+      }
       await getOrderStatusData(token: token, isForAllOrders: true);
       orderScrollController.addListener(() async {
         if (orderScrollController.position.maxScrollExtent ==
@@ -126,6 +136,10 @@ class OrdersController extends GetxController {
       isMyOrderPage = true;
       myOrderScrollController = ScrollController();
       myOrderStatusScrollController = ItemScrollController();
+      if (Get.previousRoute == Routes.orderssPage) {
+        httpClientController.closeSecondaryClient();
+        timerService.stopTimer(isGlobalTimer: false);
+      }
       await getOrderStatusData(token: token, isForAllOrders: false);
       myOrderScrollController.addListener(() async {
         if (myOrderScrollController.position.maxScrollExtent ==
@@ -269,10 +283,11 @@ class OrdersController extends GetxController {
   }
 
   /////// MyOrders
-  Future<void> chooseMyOrderStatus(
-      {required String status,
-      required int index,
-      bool isForAssignToMe = false}) async {
+  Future<void> chooseMyOrderStatus({
+    required String status,
+    required int index,
+    bool isForAssignToMe = false,
+  }) async {
     String token = GlobalFunctions.getFcmToken();
     myOrderStatus = status;
     if (index != selectedMyOrderStatus) {
@@ -332,8 +347,10 @@ class OrdersController extends GetxController {
   }
   //////////////////////////////////////////////////
 
-  Future<void> chooseOrderStatus(
-      {required String status, required int index}) async {
+  Future<void> chooseOrderStatus({
+    required String status,
+    required int index,
+  }) async {
     String token = GlobalFunctions.getFcmToken();
     orderStatus = status;
     if (index != selectedOrderStatus) {
@@ -410,10 +427,11 @@ class OrdersController extends GetxController {
     final failureOrGetOrdersData = await getListOrderDataProvider.call(
         token: token, status: status, offset: offset);
     failureOrGetOrdersData.fold((failure) {
-      HandlingErrors.networkErrorrHandling(
-          failure: failure,
-          hideCircleIndicator: hideGetOrdersCircleIndicator,
-          showNoInternetPage: showGetOrdersNoInternetPage);
+      HandlingFailures.networkErrorrHandling(
+        failure: failure,
+        hideCircleIndicator: hideGetOrdersCircleIndicator,
+        showNoInternetPage: showGetOrdersNoInternetPage,
+      );
     }, (getOrdersData) {
       ordersData = getOrdersData;
       hideGetOrdersCircleIndicator();
@@ -435,7 +453,7 @@ class OrdersController extends GetxController {
         final failureOrGetOrdersData = await getListOrderDataProvider.call(
             token: token, status: status, offset: orderPaginationOffset);
         failureOrGetOrdersData.fold((failure) {
-          HandlingErrors.networkErrorrHandling(
+          HandlingFailures.networkErrorrHandling(
             failure: failure,
             hideCircleIndicator: () {},
             showNoInternetPage: () {},
@@ -472,7 +490,7 @@ class OrdersController extends GetxController {
     final failureOrGetOrderStatusData =
         await getOrderStatusDataProvider.call(token: token);
     failureOrGetOrderStatusData.fold((failure) {
-      HandlingErrors.networkErrorrHandling(
+      HandlingFailures.networkErrorrHandling(
           failure: failure,
           hideCircleIndicator: isForAllOrders
               ? hideGetOrderStatusCircleIndicator
@@ -528,7 +546,7 @@ class OrdersController extends GetxController {
         token: token, vehicleId: vehicleId);
 
     failureOrAssignToVehicle.fold((failure) {
-      HandlingErrors.networkErrorrHandling(
+      HandlingFailures.networkErrorrHandling(
           failure: failure,
           hideCircleIndicator: hideUnAssignedCircleIndicator,
           showNoInternetPage: () {});
@@ -553,7 +571,7 @@ class OrdersController extends GetxController {
 
     failureOrAssignToVehicle.fold(
       (failure) {
-        HandlingErrors.networkErrorrHandling(
+        HandlingFailures.networkErrorrHandling(
           failure: failure,
           hideCircleIndicator: hideAssignOrderCircleIndicator,
           showNoInternetPage: () {},
@@ -593,7 +611,7 @@ class OrdersController extends GetxController {
         amount: amount);
 
     failureOrData.fold((failure) {
-      HandlingErrors.networkErrorrHandling(
+      HandlingFailures.networkErrorrHandling(
           failure: failure,
           hideCircleIndicator: hideChangeOrderStatusCircleIndicator,
           showNoInternetPage: () {});
@@ -641,7 +659,7 @@ class OrdersController extends GetxController {
     final failureOrGetOrdersData = await getMyOrdersProvider.call(
         token: token, status: status, offset: offset);
     failureOrGetOrdersData.fold((failure) {
-      HandlingErrors.networkErrorrHandling(
+      HandlingFailures.networkErrorrHandling(
           failure: failure,
           hideCircleIndicator: hideGetMyOrdersCircleIndicator,
           showNoInternetPage: showGetMyOrdersNoInternetPage);
@@ -667,7 +685,7 @@ class OrdersController extends GetxController {
             token: token, status: status, offset: myOrderPaginationOffset);
         failureOrGetOrdersData.fold(
           (failure) {
-            HandlingErrors.networkErrorrHandling(
+            HandlingFailures.networkErrorrHandling(
               failure: failure,
               hideCircleIndicator: () {},
               showNoInternetPage: () {},
@@ -707,7 +725,7 @@ class OrdersController extends GetxController {
     );
 
     failureOrData.fold((failure) {
-      HandlingErrors.networkErrorrHandling(
+      HandlingFailures.networkErrorrHandling(
           failure: failure,
           hideCircleIndicator: hideAssignOrderCircleIndicator,
           showNoInternetPage: () {});

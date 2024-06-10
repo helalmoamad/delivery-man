@@ -50,7 +50,7 @@ class AuthController extends GetxController {
     final failureOrLogin = await loginProvider.call(loginModel);
     failureOrLogin.fold(
       (failure) {
-        HandlingErrors.networkErrorrHandling(
+        HandlingFailures.networkErrorrHandling(
             failure: failure,
             hideCircleIndicator: hideCircleIndicator,
             showNoInternetPage: () {});
@@ -82,7 +82,7 @@ class AuthController extends GetxController {
     );
     failureOrLogin.fold(
       (failure) {
-        HandlingErrors.networkErrorrHandling(
+        HandlingFailures.networkErrorrHandling(
             failure: failure,
             hideCircleIndicator: hideCircleIndicator,
             showNoInternetPage: () {});

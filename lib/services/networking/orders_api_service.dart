@@ -3,13 +3,14 @@ import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import 'package:delivery_man_app/models/RequestInfo/request_info_model.dart';
-import 'package:delivery_man_app/services/networking/api_requests.dart';
+import 'package:delivery_man_app/services/networking/api_config/api_methods.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import '../../controllers/Client/client_controller.dart';
+import '../../controllers/Client/timer_service.dart';
 import '../../models/Orders/list_order_model.dart';
 import '../../shared/errors/exceptions.dart';
-import 'api_constants.dart';
+import 'api_config/api_constants.dart';
 import 'package:http/http.dart' as http;
 
 abstract class OrdersApiService {
@@ -47,37 +48,46 @@ abstract class OrdersApiService {
 }
 
 class OrdersApiServiceImpWithHttp implements OrdersApiService {
-  final HttpClientController clientController;
+  final HttpClientService clientController;
+  final TimerService timerService;
 
-  OrdersApiServiceImpWithHttp({required this.clientController});
+  OrdersApiServiceImpWithHttp({
+    required this.clientController,
+    required this.timerService,
+  });
 
   @override
   Future<ListOrderModel> getListOrderDataApi(
       {required String token,
       required String status,
       required int offset}) async {
-    clientController.reOpenClient();
+    clientController.reOpenSecondaryClient();
 
-    final response = await ApiRequests.getRequest<ListOrderModel>(
+    final response = await ApiMethods.getRequest<ListOrderModel>(
         urlPath: 'orders?order_status=$status&limit=5&page=$offset',
         token: token,
-        client: clientController.client,
+        client: clientController.secondaryClient,
+        timerService: timerService,
+        isGlobalTimer: false,
         fromJson: ListOrderModel.fromJson);
 
     return response;
   }
 
   @override
-  Future<ListOrderModel> getMyOrdersDataApi(
-      {required String token,
-      required String status,
-      required int offset}) async {
-    clientController.reOpenClient();
+  Future<ListOrderModel> getMyOrdersDataApi({
+    required String token,
+    required String status,
+    required int offset,
+  }) async {
+    clientController.reOpenSecondaryClient();
 
-    final response = await ApiRequests.getRequest<ListOrderModel>(
+    final response = await ApiMethods.getRequest<ListOrderModel>(
         urlPath: 'orders/my_orders?order_status=$status&limit=5&page=$offset',
         token: token,
-        client: clientController.client,
+        client: clientController.secondaryClient,
+        timerService: timerService,
+        isGlobalTimer: false,
         fromJson: ListOrderModel.fromJson);
 
     return response;
@@ -85,13 +95,16 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
 
   @override
   Future<List<dynamic>> getOrderStatusDataApi(String token) async {
-    clientController.reOpenClient();
+    clientController.reOpenSecondaryClient();
 
-    final response = await ApiRequests.getRequest<List<dynamic>>(
-        urlPath: 'orders/order_statuses',
-        token: token,
-        client: clientController.client,
-        fromJson: null);
+    final response = await ApiMethods.getRequest<List<dynamic>>(
+      urlPath: 'orders/order_statuses',
+      token: token,
+      client: clientController.secondaryClient,
+      timerService: timerService,
+      isGlobalTimer: false,
+      fromJson: null,
+    );
 
     return response;
   }
@@ -101,10 +114,12 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       {required String token, required int vehicleId}) async {
     clientController.reOpenClient();
 
-    final response = await ApiRequests.postRequest<UnAssignToVehicleModel>(
+    final response = await ApiMethods.postRequest<UnAssignToVehicleModel>(
         urlPath: 'vehicle/unassign_user',
         token: token,
         client: clientController.client,
+        timerService: timerService,
+        isGlobalTimer: true,
         body: {
           'vehicle_id': vehicleId,
         },
@@ -118,10 +133,12 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       {required String token, required int orderId}) async {
     clientController.reOpenClient();
 
-    final response = await ApiRequests.postRequest<AssignOrderToMeDataModel>(
+    final response = await ApiMethods.postRequest<AssignOrderToMeDataModel>(
         urlPath: 'orders/assign_to_me',
         token: token,
         client: clientController.client,
+        timerService: timerService,
+        isGlobalTimer: true,
         body: {
           'order_id': orderId,
         },
@@ -206,10 +223,12 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   }) async {
     clientController.reOpenClient();
 
-    final response = await ApiRequests.postRequest<OrderModel>(
+    final response = await ApiMethods.postRequest<OrderModel>(
         urlPath: 'orders/receive_amount',
         token: token,
         client: clientController.client,
+        timerService: timerService,
+        isGlobalTimer: true,
         body: {
           "received_amount": receivedAmount,
           "order_id": orderId,

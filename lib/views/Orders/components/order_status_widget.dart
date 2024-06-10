@@ -1,13 +1,18 @@
+import 'package:delivery_man_app/controllers/Client/timer_service.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../../controllers/Client/client_controller.dart';
 import '../../../shared/constants/color_constants.dart';
 import '../../../shared/widgets/text_widget.dart';
 
 class OrderStatusWidget extends StatelessWidget {
   final OrdersController ordersController;
+  final HttpClientService httpClientController = Get.find<HttpClientService>();
+  final TimerService timerService = Get.find<TimerService>();
 
-  const OrderStatusWidget({
+  OrderStatusWidget({
     super.key,
     required this.ordersController,
   });
@@ -39,6 +44,9 @@ class OrderStatusWidget extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: () async {
+          httpClientController.closeSecondaryClient();
+          timerService.stopTimer(isGlobalTimer: false);
+          /////////////////////////////////////////////////////
           await ordersController.chooseOrderStatus(
               status: ordersController.orderStatusData[index].toString(),
               index: index);

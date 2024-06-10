@@ -9,6 +9,7 @@ import '../../providers/Orders_providers.dart/get_order_status_data.dart';
 import '../../repositories/order_repository.dart';
 import '../../services/networking/orders_api_service.dart';
 import '../Client/client_controller.dart';
+import '../Client/timer_service.dart';
 import 'orders_controller.dart';
 
 class OrdersBinding implements Bindings {
@@ -17,7 +18,9 @@ class OrdersBinding implements Bindings {
     Get.lazyPut<OrdersController>(() => OrdersController());
     ////// Order /////////////////////////////////////
     Get.lazyPut<OrdersApiService>(() => OrdersApiServiceImpWithHttp(
-        clientController: Get.find<HttpClientController>()));
+          clientController: Get.find<HttpClientService>(),
+          timerService: Get.find<TimerService>(),
+        ));
     Get.lazyPut<OrdersRepository>(() => OrdersRepository(
         ordersApiService: Get.find(), networkInfo: Get.find()));
     Get.lazyPut<GetListOrderDataProvider>(

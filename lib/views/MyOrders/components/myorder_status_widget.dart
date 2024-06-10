@@ -2,13 +2,18 @@ import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import '../../../controllers/Client/client_controller.dart';
+import '../../../controllers/Client/timer_service.dart';
 import '../../../shared/constants/color_constants.dart';
 import '../../../shared/widgets/text_widget.dart';
 
 class MyOrderStatusWidget extends StatelessWidget {
   final OrdersController ordersController;
-  const MyOrderStatusWidget({
+  final HttpClientService httpClientController = Get.find<HttpClientService>();
+  final TimerService timerService = Get.find<TimerService>();
+  MyOrderStatusWidget({
     super.key,
     required this.ordersController,
   });
@@ -27,6 +32,9 @@ class MyOrderStatusWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               return InkWell(
                 onTap: () async {
+                  httpClientController.closeSecondaryClient();
+                  timerService.stopTimer(isGlobalTimer: false);
+                  /////////////////////////////////////////////////////
                   await ordersController.chooseMyOrderStatus(
                     status:
                         ordersController.orderStatusData[index + 2].toString(),

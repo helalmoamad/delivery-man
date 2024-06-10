@@ -7,13 +7,15 @@ class RepoNetworkRequest {
   static Future<Either<Failure, T>> makeNetworkRequest<T>({
     required Future<T> Function() request,
     required NetworkInfo networkInfo,
+    bool isClientCloseFailure = false,
   }) async {
     if (await networkInfo.isConnected) {
       try {
         final response = await request();
         return Right(response);
       } catch (e) {
-        return RequestErrorHandling.handle(exception: e);
+        return RequestErrorHandling.handle(
+            exception: e, isClientCloseFailure: isClientCloseFailure);
       }
     } else {
       return Left(OfflineFailure());
@@ -23,13 +25,15 @@ class RepoNetworkRequest {
   static Future<Either<Failure, Unit>> makeNetworkRequestUnit({
     required Future<void> Function() request,
     required NetworkInfo networkInfo,
+    bool isClientCloseFailure = false,
   }) async {
     if (await networkInfo.isConnected) {
       try {
         await request();
         return const Right(unit);
       } catch (e) {
-        return RequestErrorHandling.handle(exception: e);
+        return RequestErrorHandling.handle(
+            exception: e, isClientCloseFailure: isClientCloseFailure);
       }
     } else {
       return Left(OfflineFailure());

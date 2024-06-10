@@ -46,7 +46,7 @@ class OrdersPage extends StatelessWidget {
             appBar: buildAppBar(context),
             drawer: CustomDrawer(),
             body: GetBuilder<OrdersController>(builder: (_) {
-              return HandlingErrors.pageErrorHandling(
+              return HandlingFailures.pageErrorHandling(
                 isCircleShown: ordersController.isGetOrderStatusCircleShown,
                 isNoInternetConnection:
                     ordersController.isGetOrderStatusNoInternetConnection,
@@ -73,7 +73,7 @@ class OrdersPage extends StatelessWidget {
                                 ordersController: ordersController),
                             ////////////////////////////////////
                             Expanded(
-                              child: HandlingErrors.pageErrorHandling(
+                              child: HandlingFailures.pageErrorHandling(
                                 isCircleShown:
                                     ordersController.isGetOrdersCircleShown,
                                 isNoInternetConnection: ordersController

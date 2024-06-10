@@ -20,8 +20,12 @@ class OrdersRepository {
       required int offset}) async {
     return RepoNetworkRequest.makeNetworkRequest<ListOrderModel>(
       networkInfo: networkInfo,
+      isClientCloseFailure: true,
       request: () => ordersApiService.getListOrderDataApi(
-          token: token, status: status, offset: offset),
+        token: token,
+        status: status,
+        offset: offset,
+      ),
     );
   }
 
@@ -31,6 +35,7 @@ class OrdersRepository {
       required int offset}) async {
     return RepoNetworkRequest.makeNetworkRequest<ListOrderModel>(
       networkInfo: networkInfo,
+      isClientCloseFailure: true,
       request: () => ordersApiService.getMyOrdersDataApi(
           token: token, status: status, offset: offset),
     );
@@ -41,6 +46,7 @@ class OrdersRepository {
   }) async {
     return RepoNetworkRequest.makeNetworkRequest<List<dynamic>>(
       networkInfo: networkInfo,
+      isClientCloseFailure: true,
       request: () => ordersApiService.getOrderStatusDataApi(token),
     );
   }
@@ -75,6 +81,7 @@ class OrdersRepository {
   }) async {
     return RepoNetworkRequest.makeNetworkRequestUnit(
       networkInfo: networkInfo,
+      isClientCloseFailure: true,
       request: () => ordersApiService.postChangeStatusApi(
         token: token,
         orderId: orderId,

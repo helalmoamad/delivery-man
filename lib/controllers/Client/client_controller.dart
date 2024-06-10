@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-class HttpClientController extends GetxController {
+class HttpClientService extends GetxService {
   late http.Client _client;
   late http.Client _secondaryClient;
 
@@ -34,13 +34,13 @@ class HttpClientController extends GetxController {
     debugPrint('reopenClient');
   }
 
-  void closeSecondaryClient() {
-    _secondaryClient.close();
-    debugPrint('closeSecondaryClient');
-  }
-
   void reOpenSecondaryClient() {
     _secondaryClient = http.Client();
     debugPrint('reOpenSecondaryClient');
+  }
+
+  void closeSecondaryClient() {
+    _secondaryClient.close();
+    debugPrint('closeSecondaryClient');
   }
 }

@@ -6,7 +6,7 @@ import '../widgets/circle_indecator_widget.dart';
 import '../widgets/no_connection_widget.dart';
 import '../widgets/snackbar_widgets.dart';
 
-class HandlingErrors {
+class HandlingFailures {
   static void networkErrorrHandling(
       {required Failure failure,
       required Function() hideCircleIndicator,
@@ -36,6 +36,8 @@ class HandlingErrors {
         showNoInternetPage();
         SnackBarWidgets.showFailureSnackBar(
             AppFailureMessages.cantAssignToVehicleMessage, '');
+        break;
+      case ClientCloseFailure:
         break;
       default:
         hideCircleIndicator();

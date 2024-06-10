@@ -8,8 +8,10 @@ class AuthBinding implements Bindings {
   @override
   void dependencies() {
     ///////////Auth///////////////////////////////////////////////////////////////
-    Get.lazyPut<AuthApiService>(
-        () => AuthApiServiceImpWithHttp(clientController: Get.find()));
+    Get.lazyPut<AuthApiService>(() => AuthApiServiceImpWithHttp(
+          clientController: Get.find(),
+          timerService: Get.find(),
+        ));
     Get.lazyPut<AuthRepository>(() =>
         AuthRepository(networkInfo: Get.find(), authApiService: Get.find()));
     Get.lazyPut<LoginProvider>(() => LoginProvider(Get.find()));

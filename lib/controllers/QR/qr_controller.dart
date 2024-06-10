@@ -76,7 +76,7 @@ class QRController extends GetxController {
         await assignToVehicleProvider.call(token: token, vehicleId: vehicleId);
 
     failureOrAssignToVehicle.fold((failure) {
-      HandlingErrors.networkErrorrHandling(
+      HandlingFailures.networkErrorrHandling(
           failure: failure,
           hideCircleIndicator: hideCircleIndicator,
           showNoInternetPage: () {});

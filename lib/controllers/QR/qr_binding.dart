@@ -1,4 +1,5 @@
 import 'package:delivery_man_app/controllers/Client/client_controller.dart';
+import 'package:delivery_man_app/controllers/Client/timer_service.dart';
 import 'package:delivery_man_app/controllers/QR/qr_controller.dart';
 import 'package:delivery_man_app/providers/AssignToVehicle_providers/assign_to_vehicle_provider.dart';
 import 'package:delivery_man_app/repositories/assign_to_vehicle_repository.dart';
@@ -11,7 +12,9 @@ class QRBinding implements Bindings {
     Get.lazyPut<QRController>(() => QRController());
 
     Get.lazyPut<AssignToVehicleService>(() => AssignToVehicleServiceImpWithHttp(
-        clientController: Get.find<HttpClientController>()));
+          clientController: Get.find<HttpClientService>(),
+          timerService: Get.find<TimerService>(),
+        ));
     Get.lazyPut<AssignToVehicleRepository>(() => AssignToVehicleRepository(
         assignToVehicleService: Get.find(), networkInfo: Get.find()));
     Get.lazyPut<AssignToVehicleProvider>(

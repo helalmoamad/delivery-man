@@ -8,6 +8,7 @@ import '../errors/failures.dart';
 class RequestErrorHandling {
   static Either<Failure, T> handle<T>({
     required Object exception,
+    required bool isClientCloseFailure,
   }) {
     if (exception is ServerException) {
       debugPrint('//// ServerException ///// \n $exception');
@@ -16,9 +17,13 @@ class RequestErrorHandling {
       );
     } else if (exception is ClientException) {
       debugPrint('//// ClientException ///// \n $exception');
-      return left(
-        OfflineFailure(),
-      );
+      return isClientCloseFailure
+          ? left(
+              ClientCloseFailure(),
+            )
+          : left(
+              UnExpectedFailure(),
+            );
     } else if (exception is CantAssignToVehicleException) {
       debugPrint('//// CantAssignToVehicleException ///// \n $exception');
       return left(
