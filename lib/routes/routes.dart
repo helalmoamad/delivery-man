@@ -6,7 +6,6 @@ import 'package:delivery_man_app/views/DrawerPages/scan_qr_page.dart';
 import 'package:delivery_man_app/views/MyOrders/my_orders_page.dart';
 import 'package:get/get.dart';
 import '../controllers/Auth/auth_binding.dart';
-
 import '../views/Auth/login_page.dart';
 import '../views/OrderDetails/orders_details_page.dart';
 import '../views/Orders/orders_page.dart';
@@ -28,13 +27,13 @@ class AppRoutes {
     GetPage(
       name: Routes.splashPage,
       page: () => const SplashPage(),
+      binding: AuthBinding(),
     ),
     /////////////////////////
     GetPage(
       name: Routes.loginPage,
       page: () => LoginPage(),
       transition: Transition.fade,
-      binding: AuthBinding(),
       transitionDuration: const Duration(milliseconds: 500),
     ),
 

@@ -84,9 +84,22 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(
-              Icons.logout,
-              color: AppColors.primaryDark,
+            leading: GetBuilder<AuthController>(
+              id: 'logout',
+              builder: (_) {
+                return authController.isLogoutCircleShown
+                    ? const SizedBox(
+                        height: 25,
+                        width: 25,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Icon(
+                        Icons.logout,
+                        color: AppColors.primaryDark,
+                      );
+              },
             ),
             title: TextWidget(
                 text: 'Logout'.tr,
@@ -101,7 +114,10 @@ class CustomDrawer extends StatelessWidget {
                 title: 'Are you sure to logout ?'.tr,
                 onConfirm: () async {
                   Get.back();
-                  await authController.logOut();
+                  /////////////////
+                  String token = GlobalFunctions.getToken();
+                  ///////////////////
+                  await authController.logOut(token: token);
                 },
               );
             },

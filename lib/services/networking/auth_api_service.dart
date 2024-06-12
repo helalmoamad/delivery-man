@@ -3,14 +3,14 @@ import '../../controllers/Client/client_controller.dart';
 import '../../controllers/Client/timer_service.dart';
 import '../../models/Auth/fcm_token_model.dart';
 import '../../models/Auth/login_model.dart';
+import '../../models/Auth/logout_model.dart';
 import '../../models/Auth/user_data_model.dart';
 
 abstract class AuthApiService {
   Future<UserModel> postLoginApi(LoginModel loginModel);
-  Future<SetFcmTokenModel> setFcmTokenApi({
-    required String token,
-    required String fcmToken,
-  });
+  Future<SetFcmTokenModel> setFcmTokenApi(
+      {required String token, required String fcmToken});
+  Future<LogOutModel> postLogoutApi({required String token});
 }
 
 class AuthApiServiceImpWithHttp implements AuthApiService {
@@ -52,6 +52,25 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
       body: {'fcm_token': fcmToken},
       fromJson: SetFcmTokenModel.fromJson,
     );
+    return response;
+  }
+
+  @override
+  Future<LogOutModel> postLogoutApi({
+    required String token,
+  }) async {
+    clientController.reOpenClient();
+
+    final response = await ApiMethods.postRequest<LogOutModel>(
+      urlPath: 'users/logout',
+      token: token,
+      client: clientController.client,
+      timerService: timerService,
+      isGlobalTimer: true,
+      body: {},
+      fromJson: LogOutModel.fromJson,
+    );
+
     return response;
   }
 }

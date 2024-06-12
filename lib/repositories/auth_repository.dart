@@ -31,4 +31,15 @@ class AuthRepository {
           authApiService.setFcmTokenApi(token: token, fcmToken: fcmToken),
     );
   }
+
+  Future<Either<Failure, Unit>> postLogout({
+    required String token,
+  }) async {
+    return RepoNetworkRequest.makeNetworkRequestUnit(
+      networkInfo: networkInfo,
+      request: () => authApiService.postLogoutApi(
+        token: token,
+      ),
+    );
+  }
 }

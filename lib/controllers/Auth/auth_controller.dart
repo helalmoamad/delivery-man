@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/Auth/login_model.dart';
 import '../../models/Auth/user_data_model.dart';
 import '../../providers/Auth_providers/login_provider.dart';
+import '../../providers/Auth_providers/logout_provider.dart';
 import '../../providers/Auth_providers/set_fcm_token_provider.dart';
 import '../../routes/routes.dart';
 import '../../shared/global_functions/global_functions.dart';
@@ -22,6 +23,7 @@ class AuthController extends GetxController {
   late LoginProvider loginProvider = Get.find<LoginProvider>();
   late SetFcmTokenProvider setFcmTokenProvider =
       Get.find<SetFcmTokenProvider>();
+  late LogOutProvider logOutProvider = Get.find();
 
   late UserDataModel userData;
 
@@ -116,18 +118,51 @@ class AuthController extends GetxController {
     );
   }
 
+  bool isLogoutCircleShown = false;
+  /////////////////////////
+  void showLogoutCircleIndicator() {
+    if (isLogoutCircleShown == false) {
+      isLogoutCircleShown = true;
+      update(['logout']);
+    }
+  }
+
+////////////////////////////
+  void hideLogoutCircleIndicator() {
+    if (isLogoutCircleShown == true) {
+      isLogoutCircleShown = false;
+      update(['logout']);
+    }
+  }
+
   //////////////////
-  Future<void> logOut() async {
-    isLogin = false;
-    Future.wait([
-      prefs.remove('token'),
-      prefs.remove('userId'),
-      prefs.remove('mobilePhone'),
-      prefs.remove('name'),
-      prefs.remove('email'),
-      GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
-    ]);
-    Get.offAllNamed(Routes.loginPage);
+  Future<void> logOut({
+    required String token,
+  }) async {
+    showLogoutCircleIndicator();
+    ///////////////////////////////////
+    final failureOrLogout = await logOutProvider.call(token: token);
+    failureOrLogout.fold(
+      (failure) {
+        HandlingFailures.networkErrorrHandling(
+          failure: failure,
+          hideCircleIndicator: hideLogoutCircleIndicator,
+          showNoInternetPage: () {},
+        );
+      },
+      (data) {
+        isLogin = false;
+        Future.wait([
+          prefs.remove('token'),
+          prefs.remove('userId'),
+          prefs.remove('mobilePhone'),
+          prefs.remove('name'),
+          prefs.remove('email'),
+          GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
+        ]);
+        Get.offAllNamed(Routes.loginPage);
+      },
+    );
   }
 
   //for setting language

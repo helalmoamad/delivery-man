@@ -7,9 +7,9 @@ import 'package:delivery_man_app/shared/widgets/snackbar_widgets.dart';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/cash_dialog_action.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../shared/constants/color_constants.dart';
 import '../../../shared/constants/order_statuses.dart';
+import 'received_amount_button.dart';
 
 class OutForDeliveryButtons extends StatelessWidget {
   final OrdersController ordersController = Get.find<OrdersController>();
@@ -24,23 +24,39 @@ class OutForDeliveryButtons extends StatelessWidget {
         .firstWhere((element) => element.id! == orderId);
     return GetBuilder<OrdersController>(builder: (_) {
       return ordersController.isStartDeliveryButton
-          ? AppButton.normalButton(
-              title: 'Start Delivering'.tr,
-              height: 40,
-              titleSize: 15,
-              backgroundColor: AppColors.secondary,
-              onPress: () async {
-                AppDialogs.showConfirmationDialog(
-                  context: context,
-                  title: 'Audio recording will start'.tr,
-                  onConfirm: () async {
-                    Get.back();
-                    await ordersController.startRecording(
-                      orderId: order.id.toString(),
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AppButton.normalButton(
+                  title: 'Start Delivering'.tr,
+                  height: 40,
+                  titleSize: 15,
+                  backgroundColor: AppColors.secondary,
+                  onPress: () async {
+                    AppDialogs.showConfirmationDialog(
+                      context: context,
+                      title: 'Audio recording will start'.tr,
+                      onConfirm: () async {
+                        Get.back();
+                        await ordersController.startRecording(
+                          orderId: order.id.toString(),
+                        );
+                      },
                     );
                   },
-                );
-              },
+                ),
+                ///////////
+                const SizedBox(
+                  height: 10,
+                ),
+                ///////////
+                ReceivedAmountButton(
+                  ordersController: ordersController,
+                  formKey: formKey,
+                  cashKey: cashKey,
+                  orderId: order.id!,
+                )
+              ],
             )
           : buildConvertButtons(context, order);
     });

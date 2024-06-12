@@ -4,11 +4,11 @@ import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
 import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
-import 'package:delivery_man_app/views/OrderDetails/status_buttons/cash_dialog_action.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../shared/constants/order_statuses.dart';
+import 'received_amount_button.dart';
 
 class ShippedButtons extends StatelessWidget {
   final OrdersController ordersController = Get.find<OrdersController>();
@@ -50,37 +50,12 @@ class ShippedButtons extends StatelessWidget {
           height: 10,
         ),
         ////////////////////////
-        AppButton.normalButton(
-          title: 'Add Received Amount'.tr,
-          height: 40,
-          titleSize: 15,
-          shadow: false,
-          backgroundColor: AppColors.primaryDark,
-          onPress: () {
-            AppDialogs.showAppDialogWidget(
-              context: context,
-              title: 'Enter The Cash Amount'.tr,
-              actions: [
-                buildCashDialogAction(
-                  cashKey: cashKey,
-                  formKey: formKey,
-                  onPress: () async {
-                    if (formKey.currentState!.validate()) {
-                      Get.back();
-                      /////////////////////////////////
-                      String token = GlobalFunctions.getToken();
-                      await ordersController.changeOrderReceivedAmount(
-                        token: token,
-                        orderId: order.id!,
-                        receivedAmount: double.parse(cashKey.text),
-                      );
-                    }
-                  },
-                ),
-              ],
-            );
-          },
-        ),
+        ReceivedAmountButton(
+          ordersController: ordersController,
+          formKey: formKey,
+          cashKey: cashKey,
+          orderId: order.id!,
+        )
       ],
     );
   }

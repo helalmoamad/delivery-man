@@ -6,6 +6,12 @@ import 'package:delivery_man_app/views/OrderDetails/status_buttons/shipped_butto
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../views/OrderDetails/status_buttons/canceled_archived_buttons.dart';
+import '../../views/OrderDetails/status_buttons/canceled_buttons.dart';
+import '../../views/OrderDetails/status_buttons/delivered_buttons.dart';
+import '../../views/OrderDetails/status_buttons/failed_buttons.dart';
+import '../../views/OrderDetails/status_buttons/partial_return_buttons.dart';
+import '../../views/OrderDetails/status_buttons/return_buttons.dart';
 import '../constants/lang_constants.dart';
 import '../constants/order_statuses.dart';
 
@@ -250,6 +256,35 @@ class GlobalFunctions {
       case OrderStatuses.outForDelivery:
         {
           return OutForDeliveryButtons();
+        }
+      case OrderStatuses.delivered:
+        {
+          return DeliveredButtons();
+        }
+
+      case OrderStatuses.partialReturn:
+        {
+          return PartialReturnButtons();
+        }
+
+      case OrderStatuses.returned:
+        {
+          return ReturnButtons();
+        }
+
+      case OrderStatuses.failed:
+        {
+          return FailedButtons();
+        }
+
+      case OrderStatuses.canceled:
+        {
+          return CanceledButtons();
+        }
+
+      case OrderStatuses.canceledArchived:
+        {
+          return CanceledArchivedButtons();
         }
 
       default:
