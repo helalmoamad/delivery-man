@@ -52,7 +52,7 @@ class QRController extends GetxController {
         this.barcode = barcode;
         debugPrint(barcode.code.toString());
         await assignToVehicle(
-            token: GlobalFunctions.getFcmToken(),
+            token: GlobalFunctions.getToken(),
             vehicleId: int.parse(barcode.code!));
       }
     });

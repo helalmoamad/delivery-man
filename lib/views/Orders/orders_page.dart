@@ -51,7 +51,7 @@ class OrdersPage extends StatelessWidget {
                 isNoInternetConnection:
                     ordersController.isGetOrderStatusNoInternetConnection,
                 onTapTry: () async {
-                  String token = GlobalFunctions.getFcmToken();
+                  String token = GlobalFunctions.getToken();
                   await ordersController.getOrderStatusData(
                       token: token, isForAllOrders: true);
                 },
@@ -61,7 +61,7 @@ class OrdersPage extends StatelessWidget {
                       color: AppColors.primaryDark,
                       onRefresh: () async {
                         debugPrint('refresh');
-                        String token = GlobalFunctions.getFcmToken();
+                        String token = GlobalFunctions.getToken();
                         await ordersController.getOrderStatusData(
                             token: token, isForAllOrders: true);
                       },
@@ -79,7 +79,7 @@ class OrdersPage extends StatelessWidget {
                                 isNoInternetConnection: ordersController
                                     .isGetOrdersNoInternetConnection,
                                 onTapTry: () async {
-                                  String token = GlobalFunctions.getFcmToken();
+                                  String token = GlobalFunctions.getToken();
                                   await ordersController.getListOrderData(
                                       token: token,
                                       status: ordersController.orderStatus,
@@ -173,7 +173,7 @@ class OrdersPage extends StatelessWidget {
                   onConfirm: () async {
                     Get.back();
                     await ordersController.unAssignToVehicle(
-                        token: GlobalFunctions.getFcmToken(),
+                        token: GlobalFunctions.getToken(),
                         vehicleId: GlobalFunctions.getAssignedVehicleId());
                   },
                 );

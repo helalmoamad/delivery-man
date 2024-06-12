@@ -12,6 +12,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../models/Orders/list_order_model.dart';
 import '../../../shared/constants/color_constants.dart';
+import '../../../shared/constants/order_statuses.dart';
+import '../../../shared/global_functions/global_functions.dart';
 import 'order_details_widget.dart';
 
 class OrderDetails extends StatelessWidget {
@@ -23,147 +25,172 @@ class OrderDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int orderIndex;
+    int orderId;
     String status;
-    final OrderModel order;
-    if (ordersController.previousRoute == Routes.myOrdersPage) {
-      orderIndex = ordersController.myOrderIndex;
-      order = ordersController.myOrdersData.data!.data![orderIndex];
-      status = ordersController.myOrderStatus;
+    bool isForMyOrder;
+    final OrderDataModel order;
+    debugPrint(
+        '///////isFromNotifiForNewOrder///${GlobalFunctions.getIsFromNotifiForNewOrder()}');
+    if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
+      isForMyOrder = false;
+      orderId = int.parse(GlobalFunctions.getOrderId() ?? '-1');
+      order = ordersController.orderDetails!;
+      status = OrderStatuses.readyToShipping;
     } else {
-      orderIndex = ordersController.orderIndex;
-      order = ordersController.ordersData!.data!.data![orderIndex];
-      status = ordersController.orderStatus;
+      if (ordersController.previousRoute == Routes.myOrdersPage) {
+        isForMyOrder = true;
+        orderId = ordersController.myOrderIdForDetails;
+        order = ordersController.myOrdersData!.data!.data!
+            .firstWhere((element) => element.id! == orderId);
+        status = ordersController.myOrderStatus;
+      } else {
+        isForMyOrder = false;
+        orderId = ordersController.orderIdForDetails;
+        order = ordersController.ordersData!.data!.data!
+            .firstWhere((element) => element.id! == orderId);
+        status = ordersController.orderStatus;
+      }
     }
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.only(
-            right: 5,
-            left: 5,
-            top: 0,
-            bottom: (status == 'ready_to_shipping' ||
-                    status == 'shipped' ||
-                    status == 'out_for_delivery')
-                ? 101
-                : 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TitleSectionWidget(
-              title: 'More Order Info'.tr,
-              index: '',
-            ),
-            ///////////////
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Container(
-                height: 3,
-                width: double.infinity,
-                color: AppColors.primaryDark,
+    return RefreshIndicator(
+      onRefresh: () async {
+        String token = GlobalFunctions.getToken();
+        ///////////////////////////////////////////
+        await ordersController.getOrderDetailsData(
+          token: token,
+          orderId: orderId,
+          isForMyOrder: isForMyOrder,
+        );
+      },
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+              right: 5,
+              left: 5,
+              top: 0,
+              bottom: (status == OrderStatuses.readyToShipping ||
+                      status == OrderStatuses.shipped ||
+                      status == OrderStatuses.outForDelivery)
+                  ? 101
+                  : 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TitleSectionWidget(
+                title: 'More Order Info'.tr,
+                index: '',
               ),
-            ),
-            // ////////////////////////////////
-            moreOrderInfoSection(order),
-            ///////////////
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Container(
-                height: 3,
-                width: double.infinity,
-                color: AppColors.primaryDark,
+              ///////////////
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Container(
+                  height: 3,
+                  width: double.infinity,
+                  color: AppColors.primaryDark,
+                ),
               ),
-            ),
-            //////////////////////////////////
-            TitleSectionWidget(
-              title: 'Order Products'.tr,
-              index: '',
-              widget: (status == 'out_for_delivery' &&
-                      !ordersController.isStartDeliveryButton)
-                  ? TextWidget(
-                      text:
-                          '${'Returned Products'.tr} : ${ordersController.returnedProductsList.length}',
-                      color: AppColors.primaryDark,
-                      fontSize: 13,
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                      maxline: 2)
-                  : Container(),
-            ),
-            // ////////////////////////////////
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Container(
-                height: 3,
-                width: double.infinity,
-                color: AppColors.primaryDark,
+              // ////////////////////////////////
+              moreOrderInfoSection(order),
+              ///////////////
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Container(
+                  height: 3,
+                  width: double.infinity,
+                  color: AppColors.primaryDark,
+                ),
               ),
-            ),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: order.products!.length,
-              itemBuilder: (context, index) {
-                return buildProductsSection(order.products, index, status);
-              },
-              separatorBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: Container(
-                    height: 3,
-                    width: double.infinity,
-                    color: AppColors.primaryDark,
-                  ),
-                );
-              },
-            ),
-
-            order.returnedProducts!.isEmpty
-                ? Container()
-                : Padding(
+              //////////////////////////////////
+              TitleSectionWidget(
+                title: 'Order Products'.tr,
+                index: '',
+                widget: (status == OrderStatuses.outForDelivery &&
+                        !ordersController.isStartDeliveryButton)
+                    ? TextWidget(
+                        text:
+                            '${'Returned Products'.tr} : ${ordersController.returnedProductsList.length}',
+                        color: AppColors.primaryDark,
+                        fontSize: 13,
+                        fontWeight: FontWeight.normal,
+                        textAlign: TextAlign.center,
+                        maxline: 2)
+                    : Container(),
+              ),
+              // ////////////////////////////////
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Container(
+                  height: 3,
+                  width: double.infinity,
+                  color: AppColors.primaryDark,
+                ),
+              ),
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: order.products!.length,
+                itemBuilder: (context, index) {
+                  return buildProductsSection(order.products, index, status);
+                },
+                separatorBuilder: (context, index) {
+                  return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5),
                     child: Container(
                       height: 3,
                       width: double.infinity,
                       color: AppColors.primaryDark,
                     ),
-                  ),
-            // ////////////////////////////////
-            order.returnedProducts!.isEmpty
-                ? Container()
-                : TitleSectionWidget(
-                    title: 'Returned Products'.tr,
-                    index: '',
-                  ),
-            ///////////////
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Container(
-                height: 3,
-                width: double.infinity,
-                color: AppColors.primaryDark,
+                  );
+                },
               ),
-            ),
-            // ////////////////////////////////
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: order.returnedProducts!.length,
-              itemBuilder: (context, index) {
-                return buildProductsSection(
-                    order.returnedProducts, index, status);
-              },
-              separatorBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: Container(
-                    height: 3,
-                    width: double.infinity,
-                    color: AppColors.primaryDark,
-                  ),
-                );
-              },
-            ),
-          ],
+
+              order.returnedProducts!.isEmpty
+                  ? Container()
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: Container(
+                        height: 3,
+                        width: double.infinity,
+                        color: AppColors.primaryDark,
+                      ),
+                    ),
+              // ////////////////////////////////
+              order.returnedProducts!.isEmpty
+                  ? Container()
+                  : TitleSectionWidget(
+                      title: 'Returned Products'.tr,
+                      index: '',
+                    ),
+              ///////////////
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Container(
+                  height: 3,
+                  width: double.infinity,
+                  color: AppColors.primaryDark,
+                ),
+              ),
+              // ////////////////////////////////
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: order.returnedProducts!.length,
+                itemBuilder: (context, index) {
+                  return buildProductsSection(
+                      order.returnedProducts, index, status);
+                },
+                separatorBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Container(
+                      height: 3,
+                      width: double.infinity,
+                      color: AppColors.primaryDark,
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -178,7 +205,7 @@ class OrderDetails extends StatelessWidget {
         TitleSectionWidget(
           title: 'Product'.tr,
           index: '#${productsIndex + 1}  ',
-          widget: (status == 'out_for_delivery' &&
+          widget: (status == OrderStatuses.outForDelivery &&
                   !ordersController.isStartDeliveryButton)
               ? AppButton.normalButton(
                   title: ordersController
@@ -210,13 +237,19 @@ class OrderDetails extends StatelessWidget {
     );
   }
 
-  Widget moreOrderInfoSection(final OrderModel order) {
+  Widget moreOrderInfoSection(final OrderDataModel order) {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: 12,
+      itemCount: 13,
       itemBuilder: (context, index) {
         if (index == 0) {
+          return OrderDetailsWidget(
+            title: 'Order unique id'.tr,
+            value: order.id == null ? 'No Data Now'.tr : order.id.toString(),
+          );
+        }
+        if (index == 1) {
           return OrderDetailsWidget(
               title: 'Shipping Cost'.tr,
               value: order.shippingAddressData == null
@@ -225,7 +258,7 @@ class OrderDetails extends StatelessWidget {
                       ? 'No Data Now'.tr
                       : order.shippingAddressData!.cost.toString());
         }
-        if (index == 1) {
+        if (index == 2) {
           return OrderDetailsWidget(
             title: 'Seller Id'.tr,
             value: order.sellerId.toString() == ''
@@ -233,7 +266,7 @@ class OrderDetails extends StatelessWidget {
                 : order.sellerId.toString(),
           );
         }
-        if (index == 2) {
+        if (index == 3) {
           return OrderDetailsWidget(
             title: 'Contact Person Name'.tr,
             value: !ordersController.isMyOrderPage
@@ -247,7 +280,7 @@ class OrderDetails extends StatelessWidget {
                             .toString(),
           );
         }
-        if (index == 3) {
+        if (index == 4) {
           return OrderDetailsWidget(
             title: 'Address Type'.tr,
             value: order.shippingAddressData == null
@@ -257,7 +290,7 @@ class OrderDetails extends StatelessWidget {
                     : order.shippingAddressData!.addressType.toString(),
           );
         }
-        if (index == 4) {
+        if (index == 5) {
           return OrderDetailsWidget(
             title: 'Address'.tr,
             value: order.shippingAddressData == null
@@ -267,7 +300,7 @@ class OrderDetails extends StatelessWidget {
                     : order.shippingAddressData!.address.toString(),
           );
         }
-        if (index == 5) {
+        if (index == 6) {
           return OrderDetailsWidget(
             title: 'City'.tr,
             value: order.shippingAddressData == null
@@ -277,7 +310,7 @@ class OrderDetails extends StatelessWidget {
                     : order.shippingAddressData!.city.toString(),
           );
         }
-        if (index == 6) {
+        if (index == 7) {
           return OrderDetailsWidget(
             title: 'Country'.tr,
             value: order.shippingAddressData == null
@@ -287,7 +320,7 @@ class OrderDetails extends StatelessWidget {
                     : order.shippingAddressData!.country.toString(),
           );
         }
-        if (index == 7) {
+        if (index == 8) {
           return OrderDetailsWidget(
             title: 'Phone'.tr,
             value: !ordersController.isMyOrderPage
@@ -302,7 +335,7 @@ class OrderDetails extends StatelessWidget {
                 !ordersController.isMyOrderPage ? null : phoneButtons(order),
           );
         }
-        if (index == 8) {
+        if (index == 9) {
           return OrderDetailsWidget(
             title: 'Email'.tr,
             value: !ordersController.isMyOrderPage
@@ -314,7 +347,7 @@ class OrderDetails extends StatelessWidget {
                         : order.shippingAddressData!.email.toString(),
           );
         }
-        if (index == 9) {
+        if (index == 10) {
           return OrderDetailsWidget(
             title: 'Order Amount'.tr,
             value: order.orderAmountFormatted == null
@@ -324,14 +357,14 @@ class OrderDetails extends StatelessWidget {
                     : order.orderAmountFormatted.toString(),
           );
         }
-        if (index == 10) {
+        if (index == 11) {
           return OrderDetailsWidget(
               title: 'Received Amount'.tr,
               value: order.receivedAmount == ''
                   ? 'No Data Now'.tr
-                  : order.orderAmountFormatted.toString());
+                  : order.receivedAmount.toString());
         }
-        if (index == 11) {
+        if (index == 12) {
           return OrderDetailsWidget(
             title: 'COD Amount'.tr,
             color: AppColors.lightGray,
@@ -349,7 +382,7 @@ class OrderDetails extends StatelessWidget {
     );
   }
 
-  Widget phoneButtons(OrderModel order) {
+  Widget phoneButtons(OrderDataModel order) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [

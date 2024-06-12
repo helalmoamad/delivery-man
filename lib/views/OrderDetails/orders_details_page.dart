@@ -2,90 +2,90 @@ import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
+import 'package:delivery_man_app/shared/handling_errors.dart/handling_errors.dart';
 import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
-import 'package:delivery_man_app/shared/widgets/circle_indecator_widget.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../shared/constants/order_statuses.dart';
 import '../../shared/widgets/custom_app_bar.dart';
-import 'components/order_details.dart';
+import 'order_details_with_status_buttons.dart';
 
-class OrdersDetailsPage extends StatelessWidget {
+class OrdersDetailsPage extends StatefulWidget {
+  const OrdersDetailsPage({super.key});
+
+  @override
+  State<OrdersDetailsPage> createState() => _OrdersDetailsPageState();
+}
+
+class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
   final OrdersController ordersController = Get.find<OrdersController>();
-  OrdersDetailsPage({super.key});
+
+  @override
+  void initState() {
+    super.initState();
+    //////////////
+    getAllData();
+  }
+
+  void getAllData() async {
+    if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
+      String token = GlobalFunctions.getToken();
+      //////////////////////////////////////////////////////////
+      await ordersController.getOrderDetailsData(
+        token: token,
+        orderId: int.parse(GlobalFunctions.getOrderId() ?? '-1'),
+        isForMyOrder: false,
+        isFromNotifiOrder: true,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    String status;
-    if (ordersController.previousRoute == Routes.myOrdersPage) {
-      status = ordersController.myOrderStatus;
-    } else {
-      status = ordersController.orderStatus;
-    }
     return SafeArea(
-        child: WillPopScope(
-      onWillPop: () async {
-        stopRecordingCondition(context);
-        ///////////////////////////////////////
-        debugPrint('previousRoute is ${ordersController.previousRoute}');
-        ///////////////////////////////////////
-        if (ordersController.isAssignOrderCircleShown ||
-            ordersController.isChangeOrderStatusCircleShown) {
-          return false;
-        } else {
-          return true;
-        }
-      },
-      child: Scaffold(
+      child: WillPopScope(
+        onWillPop: () async {
+          stopRecordingCondition(context);
+          ///////////////////////////////////////
+          debugPrint('previousRoute is ${ordersController.previousRoute}');
+          ///////////////////////////////////////
+          if (ordersController.isAssignOrderCircleShown ||
+              ordersController.isChangeOrderStatusCircleShown ||
+              ordersController.isGetOrderDetailsCircleShown) {
+            return false;
+          } else {
+            return true;
+          }
+        },
+        child: Scaffold(
           appBar: buildAppBar(),
-          body: GetBuilder<OrdersController>(builder: (_) {
-            return Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                OrderDetails(),
-                //////////////////////
-                if (status == 'ready_to_shipping' ||
-                    status == 'shipped' ||
-                    status == 'out_for_delivery')
-                  Container(
-                    width: double.infinity,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: AppColors.darkWhite,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black
-                              .withOpacity(0.2), // Shadow color with opacity
-                          spreadRadius: 3, // Spread radius
-                          blurRadius: 12, // Blur radius
-                          offset: const Offset(
-                              0, -1), // Offset to create a top shadow
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 5),
-                        child: Center(
-                          child: GlobalFunctions.chooseStatusButtons(
-                              inputText: status),
-                        )),
-                  ),
-                ////////////////////////////////////////////////////////
-                ordersController.isAssignOrderCircleShown ||
-                        ordersController.isChangeOrderStatusCircleShown
-                    ? const CircleIndicatorWidget()
-                    : Container(),
-              ],
-            );
-          })),
-    ));
+          body: GetBuilder<OrdersController>(
+            id: 'all_order_details_page',
+            builder: (_) {
+              return HandlingFailures.pageErrorHandling(
+                isCircleShown: ordersController.isGetOrderDetailsCircleShown,
+                isNoInternetConnection:
+                    GlobalFunctions.getIsFromNotifiForNewOrder()
+                        ? ordersController.isGetOrderDetailsNoInternetShown
+                        : false,
+                onTapTry: () {
+                  getAllData();
+                },
+                page: OrderDetailsWithStatusButtons(),
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 
   AppBar buildAppBar() {
     return customAppBar(
-        title: 'Order Details'.tr,
-        button: GetBuilder<OrdersController>(builder: (_) {
+      title: 'Order Details'.tr,
+      button: GetBuilder<OrdersController>(
+        builder: (_) {
           return ordersController.isRecording
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -104,13 +104,16 @@ class OrdersDetailsPage extends StatelessWidget {
                   ],
                 )
               : Container();
-        }));
+        },
+      ),
+    );
   }
 
   void stopRecordingCondition(BuildContext context) {
     if ((ordersController.previousRoute == Routes.myOrdersPage) &&
-        (ordersController.myOrderStatus == 'out_for_delivery') &&
-        (!ordersController.isStartDeliveryButton)) {
+        (ordersController.myOrderStatus == OrderStatuses.outForDelivery) &&
+        (!ordersController.isStartDeliveryButton &&
+            !GlobalFunctions.getIsFromNotifiForNewOrder())) {
       AppDialogs.showConfirmationDialog(
         context: context,
         title: 'Are you sure to stop recording and leave this page ?'.tr,

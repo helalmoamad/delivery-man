@@ -9,6 +9,8 @@ import 'package:delivery_man_app/views/OrderDetails/status_buttons/cash_dialog_a
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../shared/constants/order_statuses.dart';
+
 class ReadyToShippingButtons extends StatelessWidget {
   final OrdersController ordersController = Get.find<OrdersController>();
   final formKey = GlobalKey<FormState>();
@@ -17,14 +19,21 @@ class ReadyToShippingButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int orderIndex;
-    final OrderModel order;
-    if (ordersController.previousRoute == Routes.myOrdersPage) {
-      orderIndex = ordersController.myOrderIndex;
-      order = ordersController.myOrdersData.data!.data![orderIndex];
+    int orderId;
+    final OrderDataModel order;
+    if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
+      orderId = int.parse(GlobalFunctions.getOrderId() ?? '-1');
+      order = ordersController.orderDetails!;
     } else {
-      orderIndex = ordersController.orderIndex;
-      order = ordersController.ordersData!.data!.data![orderIndex];
+      if (ordersController.previousRoute == Routes.myOrdersPage) {
+        orderId = ordersController.myOrderIdForDetails;
+        order = ordersController.myOrdersData!.data!.data!
+            .firstWhere((element) => element.id! == orderId);
+      } else {
+        orderId = ordersController.orderIdForDetails;
+        order = ordersController.ordersData!.data!.data!
+            .firstWhere((element) => element.id! == orderId);
+      }
     }
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +55,7 @@ class ReadyToShippingButtons extends StatelessWidget {
                 onConfirm: () async {
                   Get.back();
                   await ordersController.assignOrderToMe(
-                      token: GlobalFunctions.getFcmToken(), orderId: order.id!);
+                      token: GlobalFunctions.getToken(), orderId: order.id!);
                 },
               );
             } else {
@@ -56,8 +65,8 @@ class ReadyToShippingButtons extends StatelessWidget {
                 onConfirm: () async {
                   Get.back();
                   await ordersController.changeOrderStatus(
-                    token: GlobalFunctions.getFcmToken(),
-                    status: 'shipped',
+                    token: GlobalFunctions.getToken(),
+                    status: OrderStatuses.shipped,
                     orderId: order.id!,
                   );
                 },
@@ -91,7 +100,7 @@ class ReadyToShippingButtons extends StatelessWidget {
                           if (formKey.currentState!.validate()) {
                             Get.back();
                             /////////////////////////////////
-                            String token = GlobalFunctions.getFcmToken();
+                            String token = GlobalFunctions.getToken();
                             await ordersController.changeOrderReceivedAmount(
                               token: token,
                               orderId: order.id!,

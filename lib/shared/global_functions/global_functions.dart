@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/lang_constants.dart';
+import '../constants/order_statuses.dart';
 
 class GlobalFunctions {
   static SharedPreferences prefs = Get.find<SharedPreferences>();
@@ -25,11 +26,11 @@ class GlobalFunctions {
     return lanLocal;
   }
 
-  static Future<void> setFcmToken({required String token}) async {
+  static Future<void> setToken({required String token}) async {
     await prefs.setString('token', token);
   }
 
-  static String getFcmToken() {
+  static String getToken() {
     String? token = prefs.getString('token') ?? '';
 
     return token;
@@ -118,75 +119,107 @@ class GlobalFunctions {
   }
 
   static bool getisForAssignOrderToMe() {
-    bool? isForAssignOrderToMe = prefs.getBool('isForAssignOrderToMe') ?? false;
-    return isForAssignOrderToMe;
+    bool? val = prefs.getBool('isForAssignOrderToMe') ?? false;
+    return val;
+  }
+
+  static Future<void> setIsFromNotifiForNewOrder(
+      {required bool isFromNotifiForNewOrder}) async {
+    await prefs.setBool(
+        'is_from_notifi_for_new_order', isFromNotifiForNewOrder);
+  }
+
+  static bool getIsFromNotifiForNewOrder() {
+    bool notifiType = prefs.getBool('is_from_notifi_for_new_order') ?? false;
+
+    return notifiType;
+  }
+
+  static Future<void> setNotifiType({required String notifiType}) async {
+    await prefs.setString('notifi_type', notifiType);
+  }
+
+  static String getNotifiType() {
+    String notifiType = prefs.getString('notifi_type') ?? '';
+
+    return notifiType;
+  }
+
+  static Future<void> setOrderId({required String orderId}) async {
+    await prefs.setString('order_id', orderId);
+  }
+
+  static String? getOrderId() {
+    String? orderId = prefs.getString('order_id');
+
+    return orderId;
   }
 
   static String orderStatusText({required String inputText}) {
     String text = '';
 
     switch (inputText) {
-      case 'pending':
+      case OrderStatuses.pending:
         {
           text = 'Pending'.tr;
           break;
         }
 
-      case 'processing':
+      case OrderStatuses.processing:
         {
           text = 'Processing'.tr;
           break;
         }
 
-      case 'ready_to_shipping':
+      case OrderStatuses.readyToShipping:
         {
           text = 'Ready To Shipping'.tr;
           break;
         }
 
-      case 'shipped':
+      case OrderStatuses.shipped:
         {
           text = 'Shipped'.tr;
           break;
         }
 
-      case 'out_for_delivery':
+      case OrderStatuses.outForDelivery:
         {
           text = 'Out For Delivery'.tr;
           break;
         }
 
-      case 'delivered':
+      case OrderStatuses.delivered:
         {
           text = 'Delivered'.tr;
           break;
         }
 
-      case 'partial_return':
+      case OrderStatuses.partialReturn:
         {
           text = 'Partial Return'.tr;
           break;
         }
 
-      case 'returned':
+      case OrderStatuses.returned:
         {
           text = 'Returned'.tr;
           break;
         }
 
-      case 'failed':
+      case OrderStatuses.failed:
         {
           text = 'Failed'.tr;
           break;
         }
 
-      case 'canceled':
+      case OrderStatuses.canceled:
         {
           text = 'Canceled'.tr;
           break;
         }
 
-      case 'canceled_archived':
+      case OrderStatuses.canceledArchived:
         {
           text = 'Canceled Archived'.tr;
           break;
@@ -204,17 +237,17 @@ class GlobalFunctions {
 
   static Widget chooseStatusButtons({required String inputText}) {
     switch (inputText) {
-      case 'ready_to_shipping':
+      case OrderStatuses.readyToShipping:
         {
           return ReadyToShippingButtons();
         }
 
-      case 'shipped':
+      case OrderStatuses.shipped:
         {
           return ShippedButtons();
         }
 
-      case 'out_for_delivery':
+      case OrderStatuses.outForDelivery:
         {
           return OutForDeliveryButtons();
         }

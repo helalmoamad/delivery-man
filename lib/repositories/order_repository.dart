@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import '../models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import '../models/Orders/list_order_model.dart';
+import '../models/Orders/update_order_response_model.dart';
 import '../services/networking/orders_api_service.dart';
 import '../shared/errors/failures.dart';
 import '../shared/network_info/network_info.dart';
@@ -51,6 +52,20 @@ class OrdersRepository {
     );
   }
 
+  Future<Either<Failure, UpdateOrderResponseModel>> getOrderDetails({
+    required String token,
+    required int orderId,
+  }) async {
+    return RepoNetworkRequest.makeNetworkRequest<UpdateOrderResponseModel>(
+      networkInfo: networkInfo,
+      isClientCloseFailure: true,
+      request: () => ordersApiService.getOrderDetailsApi(
+        token: token,
+        orderId: orderId,
+      ),
+    );
+  }
+
   Future<Either<Failure, UnAssignToVehicleModel>> unAssignToVehicle(
       {required String token, required int vehicleId}) async {
     return RepoNetworkRequest.makeNetworkRequest<UnAssignToVehicleModel>(
@@ -93,12 +108,12 @@ class OrdersRepository {
     );
   }
 
-  Future<Either<Failure, OrderModel>> changeOrderReceivedAmount({
+  Future<Either<Failure, OrderDataModel>> changeOrderReceivedAmount({
     required String token,
     required int orderId,
     required double receivedAmount,
   }) async {
-    return RepoNetworkRequest.makeNetworkRequest<OrderModel>(
+    return RepoNetworkRequest.makeNetworkRequest<OrderDataModel>(
       networkInfo: networkInfo,
       request: () => ordersApiService.postChangeOrderReceivedAmountApi(
         token: token,

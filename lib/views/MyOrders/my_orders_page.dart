@@ -47,7 +47,7 @@ class MyOrdersPage extends StatelessWidget {
                 isNoInternetConnection:
                     ordersController.isGetMyOrderStatusNoInternetConnection,
                 onTapTry: () async {
-                  String token = GlobalFunctions.getFcmToken();
+                  String token = GlobalFunctions.getToken();
                   await ordersController.getOrderStatusData(
                       token: token, isForAllOrders: false);
                 },
@@ -57,7 +57,7 @@ class MyOrdersPage extends StatelessWidget {
                       color: AppColors.primaryDark,
                       onRefresh: () async {
                         debugPrint('refresh');
-                        String token = GlobalFunctions.getFcmToken();
+                        String token = GlobalFunctions.getToken();
                         await ordersController.getOrderStatusData(
                             token: token, isForAllOrders: false);
                       },
@@ -71,11 +71,12 @@ class MyOrdersPage extends StatelessWidget {
                             Expanded(
                               child: HandlingFailures.pageErrorHandling(
                                 isCircleShown:
-                                    ordersController.isGetMyOrdersCircleShown,
+                                    ordersController.isGetMyOrdersCircleShown ||
+                                        ordersController.myOrdersData == null,
                                 isNoInternetConnection: ordersController
                                     .isGetMyOrdersNoInternetConnection,
                                 onTapTry: () async {
-                                  String token = GlobalFunctions.getFcmToken();
+                                  String token = GlobalFunctions.getToken();
                                   await ordersController.getMyOrdersData(
                                       token: token,
                                       status: ordersController.myOrderStatus,
@@ -102,6 +103,7 @@ class MyOrdersPage extends StatelessWidget {
                           unColoredIcon1: 'assets/pictures/all orders grey.png',
                           unColoredIcon2: 'assets/pictures/my orders grey.png',
                           onTap1: () {
+                            ordersController.myOrderStatus = '';
                             Get.offAllNamed(Routes.orderssPage);
                           },
                           onTap2: () {},

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../shared/constants/color_constants.dart';
+import '../../../shared/constants/order_statuses.dart';
 
 class OutForDeliveryButtons extends StatelessWidget {
   final OrdersController ordersController = Get.find<OrdersController>();
@@ -18,8 +19,9 @@ class OutForDeliveryButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int orderIndex = ordersController.myOrderIndex;
-    OrderModel order = ordersController.myOrdersData.data!.data![orderIndex];
+    int orderId = ordersController.myOrderIdForDetails;
+    OrderDataModel order = ordersController.myOrdersData!.data!.data!
+        .firstWhere((element) => element.id! == orderId);
     return GetBuilder<OrdersController>(builder: (_) {
       return ordersController.isStartDeliveryButton
           ? AppButton.normalButton(
@@ -34,7 +36,8 @@ class OutForDeliveryButtons extends StatelessWidget {
                   onConfirm: () async {
                     Get.back();
                     await ordersController.startRecording(
-                        orderId: order.id.toString());
+                      orderId: order.id.toString(),
+                    );
                   },
                 );
               },
@@ -43,7 +46,7 @@ class OutForDeliveryButtons extends StatelessWidget {
     });
   }
 
-  Widget buildConvertButtons(BuildContext context, OrderModel order) {
+  Widget buildConvertButtons(BuildContext context, OrderDataModel order) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -69,8 +72,8 @@ class OutForDeliveryButtons extends StatelessWidget {
                               await ordersController.stopRecording().then(
                                 (value) async {
                                   await ordersController.changeOrderStatus(
-                                    token: GlobalFunctions.getFcmToken(),
-                                    status: 'delivered',
+                                    token: GlobalFunctions.getToken(),
+                                    status: OrderStatuses.delivered,
                                     orderId: order.id!,
                                     returnedProducts: null,
                                     amount: double.parse(cashKey.text),
@@ -105,8 +108,8 @@ class OutForDeliveryButtons extends StatelessWidget {
                       await ordersController.stopRecording().then(
                         (value) async {
                           await ordersController.changeOrderStatus(
-                              token: GlobalFunctions.getFcmToken(),
-                              status: 'returned',
+                              token: GlobalFunctions.getToken(),
+                              status: OrderStatuses.returned,
                               orderId: order.id!,
                               file: ordersController.audioPath);
                         },
@@ -148,8 +151,8 @@ class OutForDeliveryButtons extends StatelessWidget {
                                       (value) async {
                                         await ordersController
                                             .changeOrderStatus(
-                                          token: GlobalFunctions.getFcmToken(),
-                                          status: 'partial_return',
+                                          token: GlobalFunctions.getToken(),
+                                          status: OrderStatuses.partialReturn,
                                           orderId: order.id!,
                                           returnedProducts: ordersController
                                               .returnedProductsList,
@@ -185,8 +188,8 @@ class OutForDeliveryButtons extends StatelessWidget {
                             .stopRecording()
                             .then((value) async {
                           await ordersController.changeOrderStatus(
-                              token: GlobalFunctions.getFcmToken(),
-                              status: 'failed',
+                              token: GlobalFunctions.getToken(),
+                              status: OrderStatuses.failed,
                               orderId: order.id!,
                               file: ordersController.audioPath);
                         });

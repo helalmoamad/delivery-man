@@ -29,7 +29,7 @@ class ListOrderModel {
 
 class ListOrderDataModel {
   final dynamic currentPage;
-  final List<OrderModel>? data;
+  final List<OrderDataModel>? data;
   dynamic total;
 
   ListOrderDataModel({
@@ -43,13 +43,13 @@ class ListOrderDataModel {
         currentPage: json["current_page"],
         data: json["data"] == null
             ? []
-            : List<OrderModel>.from(
-                json["data"]!.map((x) => OrderModel.fromJson(x))),
+            : List<OrderDataModel>.from(
+                json["data"]!.map((x) => OrderDataModel.fromJson(x))),
         total: json["total"],
       );
 }
 
-class OrderModel {
+class OrderDataModel {
   final int? id;
   final dynamic journeyId;
   final dynamic assignToUserId;
@@ -74,7 +74,7 @@ class OrderModel {
   dynamic receivedAmount;
   final dynamic orderStatus;
 
-  OrderModel({
+  OrderDataModel({
     this.id,
     required this.journeyId,
     required this.assignToUserId,
@@ -100,7 +100,7 @@ class OrderModel {
     required this.receivedAmount,
   });
 
-  factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
+  factory OrderDataModel.fromJson(Map<String, dynamic> json) => OrderDataModel(
         id: json["id"],
         journeyId: json["journey_id"] ?? '',
         assignToUserId: json["assign_to_user_id"] ?? '',

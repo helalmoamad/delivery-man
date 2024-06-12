@@ -57,7 +57,7 @@ class AppRoutes {
     ///////
     GetPage(
       name: Routes.ordersDetailsPage,
-      page: () => OrdersDetailsPage(),
+      page: () => const OrdersDetailsPage(),
       transition: Transition.fade,
       transitionDuration: const Duration(milliseconds: 500),
     ),

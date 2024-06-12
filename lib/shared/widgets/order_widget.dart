@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class OrderWidget extends StatelessWidget {
-  final List<OrderModel> orders;
+  final List<OrderDataModel> orders;
   final int index;
   final void Function() onTapViewDetails;
   const OrderWidget(

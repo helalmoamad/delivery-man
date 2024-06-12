@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import '../../controllers/Client/client_controller.dart';
 import '../../controllers/Client/timer_service.dart';
 import '../../models/Orders/list_order_model.dart';
+import '../../models/Orders/update_order_response_model.dart';
 import '../../shared/errors/exceptions.dart';
 import 'api_config/api_constants.dart';
 import 'package:http/http.dart' as http;
@@ -22,6 +23,11 @@ abstract class OrdersApiService {
   Future<List<dynamic>> getOrderStatusDataApi(
     String token,
   );
+
+  Future<UpdateOrderResponseModel> getOrderDetailsApi({
+    required String token,
+    required int orderId,
+  });
 
   Future<UnAssignToVehicleModel> postUnAssignToVehicleApi(
       {required String token, required int vehicleId});
@@ -40,7 +46,7 @@ abstract class OrdersApiService {
     required String? file,
   });
 
-  Future<OrderModel> postChangeOrderReceivedAmountApi({
+  Future<OrderDataModel> postChangeOrderReceivedAmountApi({
     required String token,
     required int orderId,
     required double receivedAmount,
@@ -104,6 +110,25 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       timerService: timerService,
       isGlobalTimer: false,
       fromJson: null,
+    );
+
+    return response;
+  }
+
+  @override
+  Future<UpdateOrderResponseModel> getOrderDetailsApi({
+    required String token,
+    required int orderId,
+  }) async {
+    clientController.reOpenSecondaryClient();
+
+    final response = await ApiMethods.getRequest<UpdateOrderResponseModel>(
+      urlPath: 'orders/order_details/$orderId',
+      token: token,
+      client: clientController.secondaryClient,
+      isGlobalTimer: false,
+      timerService: timerService,
+      fromJson: UpdateOrderResponseModel.fromJson,
     );
 
     return response;
@@ -216,14 +241,14 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   }
 
   @override
-  Future<OrderModel> postChangeOrderReceivedAmountApi({
+  Future<OrderDataModel> postChangeOrderReceivedAmountApi({
     required String token,
     required int orderId,
     required double receivedAmount,
   }) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethods.postRequest<OrderModel>(
+    final response = await ApiMethods.postRequest<OrderDataModel>(
         urlPath: 'orders/receive_amount',
         token: token,
         client: clientController.client,
@@ -233,7 +258,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
           "received_amount": receivedAmount,
           "order_id": orderId,
         },
-        fromJson: OrderModel.fromJson);
+        fromJson: OrderDataModel.fromJson);
 
     return response;
   }

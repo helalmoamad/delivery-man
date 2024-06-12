@@ -90,7 +90,7 @@ class AuthController extends GetxController {
       (data) async {
         isLogin = true;
         Future.wait([
-          GlobalFunctions.setFcmToken(token: userData.accessToken!),
+          GlobalFunctions.setToken(token: userData.accessToken!),
           GlobalFunctions.setUserId(id: userData.id!),
           GlobalFunctions.setName(name: userData.name!),
           GlobalFunctions.setEmail(email: userData.email!),

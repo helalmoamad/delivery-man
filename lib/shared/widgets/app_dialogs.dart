@@ -115,7 +115,9 @@ class AppDialogs {
                           height: 30,
                           onPress: () {
                             Get.back();
-                            onBackActions!();
+                            if (onBackActions != null) {
+                              onBackActions();
+                            }
                           },
                         ),
                       ),

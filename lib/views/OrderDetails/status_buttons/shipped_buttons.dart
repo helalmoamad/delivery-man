@@ -8,6 +8,8 @@ import 'package:delivery_man_app/views/OrderDetails/status_buttons/cash_dialog_a
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../shared/constants/order_statuses.dart';
+
 class ShippedButtons extends StatelessWidget {
   final OrdersController ordersController = Get.find<OrdersController>();
   final formKey = GlobalKey<FormState>();
@@ -16,8 +18,9 @@ class ShippedButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int orderIndex = ordersController.myOrderIndex;
-    OrderModel order = ordersController.myOrdersData.data!.data![orderIndex];
+    int orderId = ordersController.myOrderIdForDetails;
+    OrderDataModel order = ordersController.myOrdersData!.data!.data!
+        .firstWhere((element) => element.id! == orderId);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -34,8 +37,8 @@ class ShippedButtons extends StatelessWidget {
               onConfirm: () async {
                 Get.back();
                 await ordersController.changeOrderStatus(
-                  token: GlobalFunctions.getFcmToken(),
-                  status: 'out_for_delivery',
+                  token: GlobalFunctions.getToken(),
+                  status: OrderStatuses.outForDelivery,
                   orderId: order.id!,
                 );
               },
@@ -65,7 +68,7 @@ class ShippedButtons extends StatelessWidget {
                     if (formKey.currentState!.validate()) {
                       Get.back();
                       /////////////////////////////////
-                      String token = GlobalFunctions.getFcmToken();
+                      String token = GlobalFunctions.getToken();
                       await ordersController.changeOrderReceivedAmount(
                         token: token,
                         orderId: order.id!,

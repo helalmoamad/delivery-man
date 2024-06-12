@@ -17,7 +17,7 @@ class OrderList extends StatelessWidget {
     return orders.isEmpty
         ? EmptyDataWidget(
             onTap: () async {
-              String token = GlobalFunctions.getFcmToken();
+              String token = GlobalFunctions.getToken();
               await ordersController.getListOrderData(
                   token: token,
                   status: ordersController.orderStatus,
@@ -33,8 +33,10 @@ class OrderList extends StatelessWidget {
                 return OrderWidget(
                     orders: orders,
                     index: index,
-                    onTapViewDetails: () {
-                      ordersController.orderIndex = index;
+                    onTapViewDetails: () async {
+                      ordersController.orderIdForDetails = orders[index].id!;
+                      await GlobalFunctions.setIsFromNotifiForNewOrder(
+                          isFromNotifiForNewOrder: false);
                       ordersController.previousRoute = Get.currentRoute;
                       Get.toNamed(Routes.ordersDetailsPage);
                     });
