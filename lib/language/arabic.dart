@@ -139,4 +139,6 @@ const Map<String, String> ar = {
   'Process Completed Successfuly': 'تمت العملية بنجاح',
   'Are you sure to exit the application ?':
       'هل أنت متأكد من الخروج من التطبيق ؟',
+  'Original Order Id': 'معرّف الطلب في المتجر',
+  'UnAssign Order': 'إلغاء إسناد الطلب',
 };

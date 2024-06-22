@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import '../../controllers/Client/client_controller.dart';
 import '../../controllers/Client/timer_service.dart';
 import '../../models/Orders/list_order_model.dart';
+import '../../models/Orders/unassign_order_tome_model.dart';
 import '../../models/Orders/update_order_response_model.dart';
 import '../../shared/errors/exceptions.dart';
 import 'api_config/api_constants.dart';
@@ -33,6 +34,11 @@ abstract class OrdersApiService {
       {required String token, required int vehicleId});
 
   Future<AssignOrderToMeDataModel> postAssignOrderToMeApi({
+    required String token,
+    required int orderId,
+  });
+
+  Future<UnAssignOrderToMeDataModel> postUnAssignOrderToMeApi({
     required String token,
     required int orderId,
   });
@@ -259,6 +265,27 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
           "order_id": orderId,
         },
         fromJson: OrderDataModel.fromJson);
+
+    return response;
+  }
+
+  @override
+  Future<UnAssignOrderToMeDataModel> postUnAssignOrderToMeApi({
+    required String token,
+    required int orderId,
+  }) async {
+    clientController.reOpenClient();
+
+    final response = await ApiMethods.postRequest<UnAssignOrderToMeDataModel>(
+        urlPath: 'orders/unassign_from_me',
+        token: token,
+        client: clientController.client,
+        timerService: timerService,
+        isGlobalTimer: true,
+        body: {
+          'order_id': orderId,
+        },
+        fromJson: UnAssignOrderToMeDataModel.fromJson);
 
     return response;
   }

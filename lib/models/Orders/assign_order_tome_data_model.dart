@@ -4,7 +4,7 @@ class AssignOrderToMeDataModel {
   final int? code;
   final dynamic message;
   final dynamic detailedError;
-  final Data? data;
+  final AssignUnAssignOrderDataModel? data;
 
   AssignOrderToMeDataModel({
     this.isSuccessful,
@@ -22,11 +22,13 @@ class AssignOrderToMeDataModel {
         code: json["code"],
         message: json["message"],
         detailedError: json["detailed_error"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+        data: json["data"] == null
+            ? null
+            : AssignUnAssignOrderDataModel.fromJson(json["data"]),
       );
 }
 
-class Data {
+class AssignUnAssignOrderDataModel {
   final int? id;
   final int? journeyId;
   final int? assignToUserId;
@@ -43,7 +45,7 @@ class Data {
   final String? sellerId;
   final String? orderStatus;
 
-  Data({
+  AssignUnAssignOrderDataModel({
     this.id,
     this.journeyId,
     this.assignToUserId,
@@ -61,7 +63,8 @@ class Data {
     this.orderStatus,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory AssignUnAssignOrderDataModel.fromJson(Map<String, dynamic> json) =>
+      AssignUnAssignOrderDataModel(
         id: json["id"],
         journeyId: json["journey_id"],
         assignToUserId: json["assign_to_user_id"],

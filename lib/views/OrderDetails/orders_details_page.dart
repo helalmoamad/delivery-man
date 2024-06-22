@@ -8,6 +8,7 @@ import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../shared/constants/order_statuses.dart';
+import '../../shared/widgets/app_buttons.dart';
 import '../../shared/widgets/custom_app_bar.dart';
 import 'order_details_with_status_buttons.dart';
 
@@ -50,7 +51,7 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
           ///////////////////////////////////////
           debugPrint('previousRoute is ${ordersController.previousRoute}');
           ///////////////////////////////////////
-          if (ordersController.isAssignOrderCircleShown ||
+          if (ordersController.isAssignUnAssignOrderCircleShown ||
               ordersController.isChangeOrderStatusCircleShown ||
               ordersController.isGetOrderDetailsCircleShown) {
             return false;
@@ -86,24 +87,48 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
       title: 'Order Details'.tr,
       button: GetBuilder<OrdersController>(
         builder: (_) {
-          return ordersController.isRecording
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextWidget(
-                        text: 'Recording . . .'.tr,
-                        color: AppColors.blackDark,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        textAlign: TextAlign.start,
-                        maxline: 1),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Icon(Icons.settings_voice_outlined),
-                  ],
-                )
-              : Container();
+          if (ordersController.isRecording) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextWidget(
+                    text: 'Recording . . .'.tr,
+                    color: AppColors.blackDark,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    textAlign: TextAlign.start,
+                    maxline: 1),
+                const SizedBox(
+                  width: 5,
+                ),
+                const Icon(Icons.settings_voice_outlined),
+              ],
+            );
+          } else {
+            if (ordersController.previousRoute == Routes.myOrdersPage) {
+              String status = ordersController.myOrderStatus;
+              return (status == OrderStatuses.readyToShipping) ||
+                      (status == OrderStatuses.shipped) ||
+                      (status == OrderStatuses.outForDelivery)
+                  ? AppButton.normalButton(
+                      title: 'UnAssign Order'.tr,
+                      height: 40,
+                      titleSize: 13,
+                      backgroundColor: AppColors.secondary,
+                      onPress: () async {
+                        int orderId = ordersController.myOrderIdForDetails;
+                        String token = GlobalFunctions.getToken();
+                        await ordersController.unAssignOrderToMe(
+                          token: token,
+                          orderId: orderId,
+                        );
+                      },
+                    )
+                  : Container();
+            } else {
+              return Container();
+            }
+          }
         },
       ),
     );

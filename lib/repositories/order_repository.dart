@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import '../models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import '../models/Orders/list_order_model.dart';
+import '../models/Orders/unassign_order_tome_model.dart';
 import '../models/Orders/update_order_response_model.dart';
 import '../services/networking/orders_api_service.dart';
 import '../shared/errors/failures.dart';
@@ -83,6 +84,19 @@ class OrdersRepository {
       networkInfo: networkInfo,
       request: () => ordersApiService.postAssignOrderToMeApi(
           token: token, orderId: orderId),
+    );
+  }
+
+  Future<Either<Failure, UnAssignOrderToMeDataModel>> unAssignOrderToMe({
+    required String token,
+    required int orderId,
+  }) async {
+    return RepoNetworkRequest.makeNetworkRequest<UnAssignOrderToMeDataModel>(
+      networkInfo: networkInfo,
+      request: () => ordersApiService.postUnAssignOrderToMeApi(
+        token: token,
+        orderId: orderId,
+      ),
     );
   }
 

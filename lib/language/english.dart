@@ -140,4 +140,6 @@ const Map<String, String> en = {
   'Process Completed Successfuly': 'Process Completed Successfuly',
   'Are you sure to exit the application ?':
       'Are you sure to exit the application ?',
+  'Original Order Id': 'Original Order Id',
+  'UnAssign Order': 'UnAssign Order',
 };

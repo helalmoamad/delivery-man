@@ -15,9 +15,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../../models/Orders/list_order_model.dart';
+import '../../models/Orders/unassign_order_tome_model.dart';
 import '../../providers/Orders_providers.dart/get_details_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_list_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_status_data.dart';
+import '../../providers/Orders_providers.dart/unassign_order_tome_provider.dart';
 import '../../shared/constants/notifications_types.dart';
 import '../../shared/constants/order_statuses.dart';
 import '../../shared/handling_errors.dart/handling_errors.dart';
@@ -36,7 +38,7 @@ class OrdersController extends GetxController {
 
   bool isAnAssignedCircleShown = false;
 
-  bool isAssignOrderCircleShown = false;
+  bool isAssignUnAssignOrderCircleShown = false;
 
   bool isChangeOrderStatusCircleShown = false;
 
@@ -64,6 +66,9 @@ class OrdersController extends GetxController {
 
   late GetOrderDetailsProvider getOrderDetailsProvider =
       Get.find<GetOrderDetailsProvider>();
+
+  late UnAssignOrderToMeProvider unAssignOrderToMeProvider =
+      Get.find<UnAssignOrderToMeProvider>();
 
   int orderIdForDetails = 0;
   int myOrderIdForDetails = 0;
@@ -270,13 +275,13 @@ class OrdersController extends GetxController {
   }
 
   // ///////////////////////////
-  void showAssignOrderCircleIndicator() {
-    isAssignOrderCircleShown = true;
+  void showAssignUnAssignOrderCircleIndicator() {
+    isAssignUnAssignOrderCircleShown = true;
     update(['change_status']);
   }
 
-  void hideAssignOrderCircleIndicator() {
-    isAssignOrderCircleShown = false;
+  void hideAssignUnAssignOrderCircleIndicator() {
+    isAssignUnAssignOrderCircleShown = false;
     update(['change_status']);
   }
 
@@ -539,21 +544,22 @@ class OrdersController extends GetxController {
       if (isForAllOrders) {
         await getListOrderData(token: token, status: orderStatus, offset: 1);
       } else {
-        if (GlobalFunctions.getisForAssignOrderToMe()) {
-          await GlobalFunctions.setisForAssignOrderToMe(
-                  isForAssignOrderToMe: false)
-              .then(
-            (value) async {
-              await chooseMyOrderStatus(
-                status: OrderStatuses.outForDelivery,
-                index: 2,
-                isForAssignToMe: true,
-              );
-            },
-          );
-        } else {
-          await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
-        }
+        await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
+        // if (GlobalFunctions.getisForAssignOrderToMe()) {
+        //   await GlobalFunctions.setisForAssignOrderToMe(
+        //           isForAssignOrderToMe: false)
+        //       .then(
+        //     (value) async {
+        //       await chooseMyOrderStatus(
+        //         status: OrderStatuses.readyToShipping,
+        //         index: 0,
+        //         isForAssignToMe: true,
+        //       );
+        //     },
+        //   );
+        // } else {
+        //   await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
+        // }
       }
     });
   }
@@ -584,7 +590,7 @@ class OrdersController extends GetxController {
     required String token,
     required int orderId,
   }) async {
-    showAssignOrderCircleIndicator();
+    showAssignUnAssignOrderCircleIndicator();
     final failureOrAssignToVehicle =
         await assignOrderToMeProvider.call(token: token, orderId: orderId);
 
@@ -592,20 +598,58 @@ class OrdersController extends GetxController {
       (failure) {
         HandlingFailures.networkErrorrHandling(
           failure: failure,
-          hideCircleIndicator: hideAssignOrderCircleIndicator,
+          hideCircleIndicator: hideAssignUnAssignOrderCircleIndicator,
           showNoInternetPage: () {},
         );
       },
       (data) async {
         assignOrderToMeData = data;
-        hideAssignOrderCircleIndicator();
+        hideAssignUnAssignOrderCircleIndicator();
         SnackBarWidgets.showSuccessSnackBar('Assign Order Succeeded'.tr, '');
         Get.close(1);
         await const Duration(milliseconds: 500).delay().then(
           (value) async {
-            await GlobalFunctions.setisForAssignOrderToMe(
-                isForAssignOrderToMe: true);
+            // await GlobalFunctions.setisForAssignOrderToMe(
+            //     isForAssignOrderToMe: true);
             Get.offAllNamed(Routes.myOrdersPage);
+          },
+        );
+      },
+    );
+  }
+
+  UnAssignOrderToMeDataModel? unAssignOrderToMeData;
+
+  Future<void> unAssignOrderToMe({
+    required String token,
+    required int orderId,
+  }) async {
+    showAssignUnAssignOrderCircleIndicator();
+    final failureOrAssignToVehicle =
+        await unAssignOrderToMeProvider.call(token: token, orderId: orderId);
+
+    failureOrAssignToVehicle.fold(
+      (failure) {
+        HandlingFailures.networkErrorrHandling(
+          failure: failure,
+          hideCircleIndicator: hideAssignUnAssignOrderCircleIndicator,
+          showNoInternetPage: () {},
+        );
+      },
+      (data) async {
+        unAssignOrderToMeData = data;
+
+        hideAssignUnAssignOrderCircleIndicator();
+        SnackBarWidgets.showSuccessSnackBar(
+            'Process Completed Successfuly'.tr, '');
+
+        Get.close(1);
+
+        await const Duration(milliseconds: 5).delay().then(
+          (value) {
+            myOrdersData!.data!.data!
+                .removeWhere((element) => element.id == orderId);
+            update();
           },
         );
       },
@@ -736,7 +780,7 @@ class OrdersController extends GetxController {
     required int orderId,
     required double receivedAmount,
   }) async {
-    showAssignOrderCircleIndicator();
+    showAssignUnAssignOrderCircleIndicator();
     final failureOrData = await changeOrderReceivedAmountProvider.call(
       token: token,
       orderId: orderId,
@@ -746,7 +790,7 @@ class OrdersController extends GetxController {
     failureOrData.fold((failure) {
       HandlingFailures.networkErrorrHandling(
           failure: failure,
-          hideCircleIndicator: hideAssignOrderCircleIndicator,
+          hideCircleIndicator: hideAssignUnAssignOrderCircleIndicator,
           showNoInternetPage: () {});
     }, (data) async {
       bool test =
@@ -756,12 +800,16 @@ class OrdersController extends GetxController {
         myOrdersData!.data!.data!
             .firstWhere((element) => element.id == orderId)
             .receivedAmount = data.receivedAmount;
+
+        myOrdersData!.data!.data!
+            .firstWhere((element) => element.id == orderId)
+            .paymentStatus = data.paymentStatus;
       }
 
       SnackBarWidgets.showSuccessSnackBar(
           'Process Completed Successfuly'.tr, '');
 
-      hideAssignOrderCircleIndicator();
+      hideAssignUnAssignOrderCircleIndicator();
     });
   }
 

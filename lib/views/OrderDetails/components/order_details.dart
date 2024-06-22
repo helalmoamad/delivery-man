@@ -241,7 +241,7 @@ class OrderDetails extends StatelessWidget {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: 13,
+      itemCount: 14,
       itemBuilder: (context, index) {
         if (index == 0) {
           return OrderDetailsWidget(
@@ -251,6 +251,14 @@ class OrderDetails extends StatelessWidget {
         }
         if (index == 1) {
           return OrderDetailsWidget(
+            title: 'Original Order Id'.tr,
+            value: order.originalOrderId == null
+                ? 'No Data Now'.tr
+                : order.originalOrderId.toString(),
+          );
+        }
+        if (index == 2) {
+          return OrderDetailsWidget(
               title: 'Shipping Cost'.tr,
               value: order.shippingAddressData == null
                   ? 'No Data Now'.tr
@@ -258,7 +266,7 @@ class OrderDetails extends StatelessWidget {
                       ? 'No Data Now'.tr
                       : order.shippingAddressData!.cost.toString());
         }
-        if (index == 2) {
+        if (index == 3) {
           return OrderDetailsWidget(
             title: 'Seller Id'.tr,
             value: order.sellerId.toString() == ''
@@ -266,7 +274,7 @@ class OrderDetails extends StatelessWidget {
                 : order.sellerId.toString(),
           );
         }
-        if (index == 3) {
+        if (index == 4) {
           return OrderDetailsWidget(
             title: 'Contact Person Name'.tr,
             value: !ordersController.isMyOrderPage
@@ -280,7 +288,7 @@ class OrderDetails extends StatelessWidget {
                             .toString(),
           );
         }
-        if (index == 4) {
+        if (index == 5) {
           return OrderDetailsWidget(
             title: 'Address Type'.tr,
             value: order.shippingAddressData == null
@@ -290,7 +298,7 @@ class OrderDetails extends StatelessWidget {
                     : order.shippingAddressData!.addressType.toString(),
           );
         }
-        if (index == 5) {
+        if (index == 6) {
           return OrderDetailsWidget(
             title: 'Address'.tr,
             value: order.shippingAddressData == null
@@ -300,7 +308,7 @@ class OrderDetails extends StatelessWidget {
                     : order.shippingAddressData!.address.toString(),
           );
         }
-        if (index == 6) {
+        if (index == 7) {
           return OrderDetailsWidget(
             title: 'City'.tr,
             value: order.shippingAddressData == null
@@ -310,7 +318,7 @@ class OrderDetails extends StatelessWidget {
                     : order.shippingAddressData!.city.toString(),
           );
         }
-        if (index == 7) {
+        if (index == 8) {
           return OrderDetailsWidget(
             title: 'Country'.tr,
             value: order.shippingAddressData == null
@@ -320,7 +328,7 @@ class OrderDetails extends StatelessWidget {
                     : order.shippingAddressData!.country.toString(),
           );
         }
-        if (index == 8) {
+        if (index == 9) {
           return OrderDetailsWidget(
             title: 'Phone'.tr,
             value: !ordersController.isMyOrderPage
@@ -335,7 +343,7 @@ class OrderDetails extends StatelessWidget {
                 !ordersController.isMyOrderPage ? null : phoneButtons(order),
           );
         }
-        if (index == 9) {
+        if (index == 10) {
           return OrderDetailsWidget(
             title: 'Email'.tr,
             value: !ordersController.isMyOrderPage
@@ -347,7 +355,7 @@ class OrderDetails extends StatelessWidget {
                         : order.shippingAddressData!.email.toString(),
           );
         }
-        if (index == 10) {
+        if (index == 11) {
           return OrderDetailsWidget(
             title: 'Order Amount'.tr,
             value: order.orderAmountFormatted == null
@@ -357,14 +365,14 @@ class OrderDetails extends StatelessWidget {
                     : order.orderAmountFormatted.toString(),
           );
         }
-        if (index == 11) {
+        if (index == 12) {
           return OrderDetailsWidget(
               title: 'Received Amount'.tr,
               value: order.receivedAmount == ''
                   ? 'No Data Now'.tr
                   : order.receivedAmount.toString());
         }
-        if (index == 12) {
+        if (index == 13) {
           return OrderDetailsWidget(
             title: 'COD Amount'.tr,
             color: AppColors.lightGray,

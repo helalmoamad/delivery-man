@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../providers/Orders_providers.dart/get_details_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_list_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_status_data.dart';
+import '../../providers/Orders_providers.dart/unassign_order_tome_provider.dart';
 import '../../repositories/order_repository.dart';
 import '../../services/networking/orders_api_service.dart';
 import '../Client/client_controller.dart';
@@ -54,6 +55,10 @@ class OrdersBinding implements Bindings {
 
     Get.lazyPut<GetOrderDetailsProvider>(
       () => GetOrderDetailsProvider(Get.find()),
+    );
+
+    Get.lazyPut<UnAssignOrderToMeProvider>(
+      () => UnAssignOrderToMeProvider(Get.find()),
     );
   }
 }

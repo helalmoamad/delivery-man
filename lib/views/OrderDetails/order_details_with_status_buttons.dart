@@ -66,7 +66,7 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
                     )),
               ),
             ////////////////////////////////////////////////////////
-            ordersController.isAssignOrderCircleShown ||
+            ordersController.isAssignUnAssignOrderCircleShown ||
                     ordersController.isChangeOrderStatusCircleShown
                 ? const CircleIndicatorWidget()
                 : Container(),

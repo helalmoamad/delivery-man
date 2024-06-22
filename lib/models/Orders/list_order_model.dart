@@ -51,10 +51,11 @@ class ListOrderDataModel {
 
 class OrderDataModel {
   final int? id;
+  final int? originalOrderId;
   final dynamic journeyId;
   final dynamic assignToUserId;
   final dynamic customerId;
-  final dynamic paymentStatus;
+  dynamic paymentStatus;
   final dynamic orderStatusId;
   final dynamic paymentMethod;
   final dynamic transactionRef;
@@ -76,6 +77,7 @@ class OrderDataModel {
 
   OrderDataModel({
     this.id,
+    this.originalOrderId,
     required this.journeyId,
     required this.assignToUserId,
     required this.customerId,
@@ -102,6 +104,7 @@ class OrderDataModel {
 
   factory OrderDataModel.fromJson(Map<String, dynamic> json) => OrderDataModel(
         id: json["id"],
+        originalOrderId: json["original_order_id"],
         journeyId: json["journey_id"] ?? '',
         assignToUserId: json["assign_to_user_id"] ?? '',
         customerId: json["customer_id"] ?? '',
