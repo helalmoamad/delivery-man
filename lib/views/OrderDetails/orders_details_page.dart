@@ -116,11 +116,19 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
                       titleSize: 13,
                       backgroundColor: AppColors.secondary,
                       onPress: () async {
-                        int orderId = ordersController.myOrderIdForDetails;
-                        String token = GlobalFunctions.getToken();
-                        await ordersController.unAssignOrderToMe(
-                          token: token,
-                          orderId: orderId,
+                        AppDialogs.showConfirmationDialog(
+                          context: context,
+                          title: 'Are you sure to unAssign the Order ?'.tr,
+                          onConfirm: () async {
+                            Get.back();
+                            ///////////////////
+                            int orderId = ordersController.myOrderIdForDetails;
+                            String token = GlobalFunctions.getToken();
+                            await ordersController.unAssignOrderToMe(
+                              token: token,
+                              orderId: orderId,
+                            );
+                          },
                         );
                       },
                     )

@@ -142,4 +142,7 @@ const Map<String, String> en = {
       'Are you sure to exit the application ?',
   'Original Order Id': 'Original Order Id',
   'UnAssign Order': 'UnAssign Order',
+  'Are you sure to unAssign the Order ?':
+      'Are you sure to unAssign the Order ?',
+  'Delivery Time': 'Delivery Time',
 };

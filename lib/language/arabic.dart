@@ -141,4 +141,6 @@ const Map<String, String> ar = {
       'هل أنت متأكد من الخروج من التطبيق ؟',
   'Original Order Id': 'معرّف الطلب في المتجر',
   'UnAssign Order': 'إلغاء إسناد الطلب',
+  'Are you sure to unAssign the Order ?': 'هل أنت متأكد من إلغاء إسناد الطلب ؟',
+  'Delivery Time': 'وقت التوصيل',
 };

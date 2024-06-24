@@ -241,7 +241,7 @@ class OrderDetails extends StatelessWidget {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: 14,
+      itemCount: 15,
       itemBuilder: (context, index) {
         if (index == 0) {
           return OrderDetailsWidget(
@@ -367,12 +367,21 @@ class OrderDetails extends StatelessWidget {
         }
         if (index == 12) {
           return OrderDetailsWidget(
-              title: 'Received Amount'.tr,
-              value: order.receivedAmount == ''
-                  ? 'No Data Now'.tr
-                  : order.receivedAmount.toString());
+            title: 'Received Amount'.tr,
+            value: order.receivedAmount == ''
+                ? 'No Data Now'.tr
+                : order.receivedAmount.toString(),
+          );
         }
         if (index == 13) {
+          return OrderDetailsWidget(
+            title: 'Delivery Time'.tr,
+            value: order.deliveryTime == ''
+                ? 'No Data Now'.tr
+                : order.deliveryTime.toString(),
+          );
+        }
+        if (index == 14) {
           return OrderDetailsWidget(
             title: 'COD Amount'.tr,
             color: AppColors.lightGray,

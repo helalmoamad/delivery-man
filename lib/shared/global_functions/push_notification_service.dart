@@ -133,7 +133,11 @@ class PushNotificationService {
     } else {
       debugPrint('//// handle Message Navigation ////');
       /////////////////////////////////////////////////////
-      if (message.data['notification_type'] == NotificationsTypes.newOrder) {
+      if (message.data['notification_type'] == NotificationsTypes.newOrder ||
+          message.data['notification_type'] ==
+              NotificationsTypes.orderRequiresAssingment ||
+          message.data['notification_type'] ==
+              NotificationsTypes.orderRequiresShipping) {
         debugPrint('//// Navigate to orderDetails page ////');
 
         if (ordersController.isRecording) {
@@ -171,7 +175,11 @@ class PushNotificationService {
     } else {
       debugPrint('////Terminate handle Message On Tap ////');
       ///////////////////////////////////////////////////////////////////
-      if (message.data['notification_type'] == NotificationsTypes.newOrder) {
+      if (message.data['notification_type'] == NotificationsTypes.newOrder ||
+          message.data['notification_type'] ==
+              NotificationsTypes.orderRequiresAssingment ||
+          message.data['notification_type'] ==
+              NotificationsTypes.orderRequiresShipping) {
         debugPrint('//// Navigate to order page from Terminate////');
         await prefs.setString('notifi_type', NotificationsTypes.newOrder);
         await prefs.setString('order_id', message.data['order_id'] ?? '-1');

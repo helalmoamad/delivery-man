@@ -27,12 +27,12 @@ class AppRoutes {
     GetPage(
       name: Routes.splashPage,
       page: () => const SplashPage(),
-      binding: AuthBinding(),
     ),
     /////////////////////////
     GetPage(
       name: Routes.loginPage,
       page: () => LoginPage(),
+      binding: AuthBinding(),
       transition: Transition.fade,
       transitionDuration: const Duration(milliseconds: 500),
     ),
@@ -41,7 +41,10 @@ class AppRoutes {
     GetPage(
       name: Routes.orderssPage,
       page: () => OrdersPage(),
-      binding: OrdersBinding(),
+      bindings: [
+        OrdersBinding(),
+        AuthBinding(),
+      ],
       transition: Transition.fade,
       transitionDuration: const Duration(milliseconds: 0),
     ),
@@ -49,7 +52,10 @@ class AppRoutes {
     GetPage(
       name: Routes.myOrdersPage,
       page: () => MyOrdersPage(),
-      binding: OrdersBinding(),
+      bindings: [
+        OrdersBinding(),
+        AuthBinding(),
+      ],
       transition: Transition.fade,
       transitionDuration: const Duration(milliseconds: 0),
     ),

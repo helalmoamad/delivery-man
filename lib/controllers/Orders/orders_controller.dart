@@ -120,7 +120,11 @@ class OrdersController extends GetxController {
   final TimerService timerService = Get.find<TimerService>();
 
   void onNotifiNavigation() async {
-    if (GlobalFunctions.getNotifiType() == NotificationsTypes.newOrder) {
+    if (GlobalFunctions.getNotifiType() == NotificationsTypes.newOrder ||
+        GlobalFunctions.getNotifiType() ==
+            NotificationsTypes.orderRequiresAssingment ||
+        GlobalFunctions.getNotifiType() ==
+            NotificationsTypes.orderRequiresShipping) {
       await const Duration(milliseconds: 100).delay();
       debugPrint('//// Navigate to orderDetails page////');
       await GlobalFunctions.setIsFromNotifiForNewOrder(
