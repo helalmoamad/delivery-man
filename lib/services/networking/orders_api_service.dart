@@ -217,7 +217,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
 
     debugPrint('1');
 
-    var response = await request.send().timeout(const Duration(seconds: 30));
+    var response = await request.send().timeout(const Duration(minutes: 5));
     debugPrint(response.statusCode.toString());
     final res = await response.stream.transform(utf8.decoder).first;
     /////////////////store request info//////////////////////////////////
