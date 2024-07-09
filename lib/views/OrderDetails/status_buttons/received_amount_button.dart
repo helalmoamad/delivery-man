@@ -36,6 +36,7 @@ class ReceivedAmountButton extends StatelessWidget {
             buildCashDialogAction(
               cashKey: cashKey,
               formKey: formKey,
+              cashAmount: '',
               onPress: () async {
                 if (formKey.currentState!.validate()) {
                   Get.back();

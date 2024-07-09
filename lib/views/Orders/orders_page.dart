@@ -14,7 +14,6 @@ import '../../shared/global_functions/global_functions.dart';
 import '../../shared/handling_errors.dart/handling_errors.dart';
 import '../../shared/widgets/custom_app_bar.dart';
 import '../../shared/widgets/custom_drawer.dart';
-import 'components/order_status_widget.dart';
 import 'components/orders_list_widget.dart';
 
 class OrdersPage extends StatelessWidget {
@@ -47,13 +46,15 @@ class OrdersPage extends StatelessWidget {
             drawer: CustomDrawer(),
             body: GetBuilder<OrdersController>(builder: (_) {
               return HandlingFailures.pageErrorHandling(
-                isCircleShown: ordersController.isGetOrderStatusCircleShown,
+                isCircleShown: ordersController.isGetOrdersCircleShown,
                 isNoInternetConnection:
-                    ordersController.isGetOrderStatusNoInternetConnection,
+                    ordersController.isGetOrdersNoInternetConnection,
                 onTapTry: () async {
                   String token = GlobalFunctions.getToken();
-                  await ordersController.getOrderStatusData(
-                      token: token, isForAllOrders: true);
+                  await ordersController.getListOrderData(
+                      token: token,
+                      status: ordersController.orderStatus,
+                      offset: 1);
                 },
                 page: Stack(
                   children: [
@@ -62,35 +63,15 @@ class OrdersPage extends StatelessWidget {
                       onRefresh: () async {
                         debugPrint('refresh');
                         String token = GlobalFunctions.getToken();
-                        await ordersController.getOrderStatusData(
-                            token: token, isForAllOrders: true);
+                        await ordersController.getListOrderData(
+                          token: token,
+                          status: ordersController.orderStatus,
+                          offset: 1,
+                        );
                       },
                       child: Padding(
-                        padding: const EdgeInsets.only(bottom: 55),
-                        child: Column(
-                          children: [
-                            OrderStatusWidget(
-                                ordersController: ordersController),
-                            ////////////////////////////////////
-                            Expanded(
-                              child: HandlingFailures.pageErrorHandling(
-                                isCircleShown:
-                                    ordersController.isGetOrdersCircleShown,
-                                isNoInternetConnection: ordersController
-                                    .isGetOrdersNoInternetConnection,
-                                onTapTry: () async {
-                                  String token = GlobalFunctions.getToken();
-                                  await ordersController.getListOrderData(
-                                      token: token,
-                                      status: ordersController.orderStatus,
-                                      offset: 1);
-                                },
-                                page: OrderList(
-                                    ordersController: ordersController),
-                              ),
-                            )
-                          ],
-                        ),
+                        padding: const EdgeInsets.only(bottom: 55, top: 5),
+                        child: OrderList(ordersController: ordersController),
                       ),
                     ),
                     //////////////////////////////

@@ -147,7 +147,9 @@ class OrdersController extends GetxController {
         httpClientController.closeSecondaryClient();
         timerService.stopTimer(isGlobalTimer: false);
       }
-      await getOrderStatusData(token: token, isForAllOrders: true);
+      // await getOrderStatusData(token: token, isForAllOrders: true);
+      orderStatus = OrderStatuses.readyToShipping;
+      await getListOrderData(token: token, status: orderStatus, offset: 1);
       orderScrollController.addListener(() async {
         if (orderScrollController.position.maxScrollExtent ==
             orderScrollController.offset) {
@@ -860,9 +862,9 @@ class OrdersController extends GetxController {
   }) async {
     showGetOrderDetailsCircleIndicator();
 
-    final failureOrGetOrderStatusData =
+    final failureOrGetOrderDetailsData =
         await getOrderDetailsProvider.call(token: token, orderId: orderId);
-    failureOrGetOrderStatusData.fold((failure) {
+    failureOrGetOrderDetailsData.fold((failure) {
       HandlingFailures.networkErrorrHandling(
         failure: failure,
         hideCircleIndicator: hideGetOrderDetailsCircleIndicator,

@@ -82,6 +82,7 @@ class OutForDeliveryButtons extends StatelessWidget {
                         buildCashDialogAction(
                           cashKey: cashKey,
                           formKey: formKey,
+                          cashAmount: order.codAmount,
                           onPress: () async {
                             if (formKey.currentState!.validate()) {
                               Get.back();
@@ -160,6 +161,7 @@ class OutForDeliveryButtons extends StatelessWidget {
                             buildCashDialogAction(
                                 cashKey: cashKey,
                                 formKey: formKey,
+                                cashAmount: order.codAmount,
                                 onPress: () async {
                                   if (formKey.currentState!.validate()) {
                                     Get.back();

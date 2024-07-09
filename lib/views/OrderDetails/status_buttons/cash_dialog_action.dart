@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 Widget buildCashDialogAction({
   required Key formKey,
   required TextEditingController cashKey,
+  required String cashAmount,
   void Function()? onPress,
 }) {
   return Padding(
@@ -18,7 +19,7 @@ Widget buildCashDialogAction({
           CustomTextField(
             textInputType: TextInputType.number,
             controller: cashKey,
-            hintText: '',
+            hintText: cashAmount,
             labelText: 'Cash Amount'.tr,
             validator: (value) {
               if (value.isEmpty) {
