@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/Auth/login_model.dart';
 import '../../models/Auth/user_data_model.dart';
+import '../../models/RequestInfo/request_info_model.dart';
 import '../../providers/Auth_providers/login_provider.dart';
 import '../../providers/Auth_providers/logout_provider.dart';
 import '../../providers/Auth_providers/set_fcm_token_provider.dart';
@@ -188,12 +189,16 @@ class AuthController extends GetxController {
   int moreDeveloperInfoIndex = 0;
 
   Future<void> removeRequestFromDeveloperInfo(int index) async {
-    await GlobalFunctions.deleteRequestInfo(index: index);
+    await GlobalFunctions.deleteLocalStorageData(
+      index: index,
+      fromJson: RequestInfoModel.fromJson,
+      key: 'requestsInfo',
+    );
     update();
   }
 
   Future<void> removeAllRequestsInfo() async {
-    await GlobalFunctions.deleteAllRequestsInfo();
+    await GlobalFunctions.deleteAllLocalStorageData(key: 'requestsInfo');
     update();
   }
 }

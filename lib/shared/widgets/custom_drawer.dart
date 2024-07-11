@@ -45,7 +45,9 @@ class CustomDrawer extends StatelessWidget {
                 textAlign: TextAlign.start,
                 maxline: 1),
             currentAccountPicture: InkWell(
-              onLongPress: () {
+              onLongPress: () async {
+                await GlobalFunctions.reloadPrefs();
+                ///////////////////////////////////////
                 Get.toNamed(Routes.infoForDeveloper);
               },
               child: const CircleAvatar(

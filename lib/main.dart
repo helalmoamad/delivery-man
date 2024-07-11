@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app_bindings.dart';
+import 'background_service/background_service.dart';
 import 'language/localization.dart';
 import 'shared/global_functions/push_notification_service.dart';
 
@@ -61,6 +62,7 @@ Future<void> main() async {
       await AppSettings.openAppSettings(type: AppSettingsType.notification);
     }
   });
+  await BackGroundServiceUtils.initializeService();
   // statusBarColor
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: AppColors.statusBarColor,

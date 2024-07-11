@@ -16,7 +16,10 @@ class InfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = GlobalFunctions.getRequestsInfo();
+    final data = GlobalFunctions.getLocalStorageData(
+      fromJson: RequestInfoModel.fromJson,
+      key: 'requestsInfo',
+    );
     return SizedBox(
       width: double.infinity,
       height: 360,

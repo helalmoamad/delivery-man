@@ -86,17 +86,13 @@ class OutForDeliveryButtons extends StatelessWidget {
                           onPress: () async {
                             if (formKey.currentState!.validate()) {
                               Get.back();
-                              await ordersController.stopRecording().then(
-                                (value) async {
-                                  await ordersController.changeOrderStatus(
-                                    token: GlobalFunctions.getToken(),
-                                    status: OrderStatuses.delivered,
-                                    orderId: order.id!,
-                                    returnedProducts: null,
-                                    amount: double.parse(cashKey.text),
-                                    file: ordersController.audioPath,
-                                  );
-                                },
+                              await ordersController.changeOrderStatus(
+                                token: GlobalFunctions.getToken(),
+                                status: OrderStatuses.delivered,
+                                orderId: order.id!,
+                                returnedProducts: null,
+                                amount: double.parse(cashKey.text),
+                                // file: ordersController.audioPath,
                               );
                             }
                           },
@@ -122,14 +118,10 @@ class OutForDeliveryButtons extends StatelessWidget {
                     title: 'The order status will be changed to "Returned"'.tr,
                     onConfirm: () async {
                       Get.back();
-                      await ordersController.stopRecording().then(
-                        (value) async {
-                          await ordersController.changeOrderStatus(
-                              token: GlobalFunctions.getToken(),
-                              status: OrderStatuses.returned,
-                              orderId: order.id!,
-                              file: ordersController.audioPath);
-                        },
+                      await ordersController.changeOrderStatus(
+                        token: GlobalFunctions.getToken(),
+                        status: OrderStatuses.returned,
+                        orderId: order.id!,
                       );
                     },
                   );
@@ -165,19 +157,13 @@ class OutForDeliveryButtons extends StatelessWidget {
                                 onPress: () async {
                                   if (formKey.currentState!.validate()) {
                                     Get.back();
-                                    await ordersController.stopRecording().then(
-                                      (value) async {
-                                        await ordersController
-                                            .changeOrderStatus(
-                                          token: GlobalFunctions.getToken(),
-                                          status: OrderStatuses.partialReturn,
-                                          orderId: order.id!,
-                                          returnedProducts: ordersController
-                                              .returnedProductsList,
-                                          amount: double.parse(cashKey.text),
-                                          file: ordersController.audioPath,
-                                        );
-                                      },
+                                    await ordersController.changeOrderStatus(
+                                      token: GlobalFunctions.getToken(),
+                                      status: OrderStatuses.partialReturn,
+                                      orderId: order.id!,
+                                      returnedProducts:
+                                          ordersController.returnedProductsList,
+                                      amount: double.parse(cashKey.text),
                                     );
                                   }
                                 })
@@ -192,28 +178,25 @@ class OutForDeliveryButtons extends StatelessWidget {
             /////////////////
             Expanded(
               child: AppButton.normalButton(
-                  title: 'Convert To Failed'.tr,
-                  height: 40,
-                  titleSize: 13,
-                  backgroundColor: const Color.fromARGB(255, 136, 25, 17),
-                  onPress: () {
-                    AppDialogs.showConfirmationDialog(
-                      context: context,
-                      title: 'The order status will be changed to "Failed"'.tr,
-                      onConfirm: () async {
-                        Get.back();
-                        await ordersController
-                            .stopRecording()
-                            .then((value) async {
-                          await ordersController.changeOrderStatus(
-                              token: GlobalFunctions.getToken(),
-                              status: OrderStatuses.failed,
-                              orderId: order.id!,
-                              file: ordersController.audioPath);
-                        });
-                      },
-                    );
-                  }),
+                title: 'Convert To Failed'.tr,
+                height: 40,
+                titleSize: 13,
+                backgroundColor: const Color.fromARGB(255, 136, 25, 17),
+                onPress: () {
+                  AppDialogs.showConfirmationDialog(
+                    context: context,
+                    title: 'The order status will be changed to "Failed"'.tr,
+                    onConfirm: () async {
+                      Get.back();
+                      await ordersController.changeOrderStatus(
+                        token: GlobalFunctions.getToken(),
+                        status: OrderStatuses.failed,
+                        orderId: order.id!,
+                      );
+                    },
+                  );
+                },
+              ),
             )
           ],
         ),

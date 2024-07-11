@@ -1,4 +1,6 @@
-class RequestInfoModel {
+import '../json_serializable.dart';
+
+class RequestInfoModel extends JsonSerializable {
   final String url, requestType, token, header, body, response;
 
   RequestInfoModel(
@@ -18,6 +20,7 @@ class RequestInfoModel {
           body: json["body"],
           response: json["response"]);
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'url': url,

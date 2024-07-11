@@ -106,7 +106,6 @@ class OrdersRepository {
     required int orderId,
     required double? amount,
     required List<ProductModel>? returnedProducts,
-    required String? file,
   }) async {
     return RepoNetworkRequest.makeNetworkRequestUnit(
       networkInfo: networkInfo,
@@ -114,7 +113,6 @@ class OrdersRepository {
       request: () => ordersApiService.postChangeStatusApi(
         token: token,
         orderId: orderId,
-        file: file,
         status: status,
         returnedProducts: returnedProducts,
         amount: amount,

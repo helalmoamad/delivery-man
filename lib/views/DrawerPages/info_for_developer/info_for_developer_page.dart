@@ -9,6 +9,8 @@ import 'package:delivery_man_app/views/DrawerPages/info_for_developer/components
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../models/RequestInfo/request_info_model.dart';
+
 class InfoForDeveloperPage extends StatelessWidget {
   InfoForDeveloperPage({super.key});
   final AuthController authController = Get.find<AuthController>();
@@ -36,7 +38,10 @@ class InfoForDeveloperPage extends StatelessWidget {
               ),
             ),
             body: GetBuilder<AuthController>(builder: (_) {
-              final data = GlobalFunctions.getRequestsInfo();
+              final data = GlobalFunctions.getLocalStorageData(
+                fromJson: RequestInfoModel.fromJson,
+                key: 'requestsInfo',
+              );
               return data.isEmpty
                   ? const Center(
                       child: TextWidget(

@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'package:delivery_man_app/models/RequestInfo/request_info_model.dart';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/out_for_delivery_buttons.dart';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/ready_toshipping_buttons.dart';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/shipped_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../models/json_serializable.dart';
 import '../../views/OrderDetails/status_buttons/canceled_archived_buttons.dart';
 import '../../views/OrderDetails/status_buttons/canceled_buttons.dart';
 import '../../views/OrderDetails/status_buttons/delivered_buttons.dart';
@@ -325,30 +325,38 @@ class GlobalFunctions {
     return text;
   }
 
-  static Future<void> setRequestInfo(
-      {required RequestInfoModel requestInfo}) async {
-    List<RequestInfoModel> data = getRequestsInfo();
+  static Future<void> setLocalStorageData<T extends JsonSerializable>({
+    required T infoData,
+    required T Function(Map<String, dynamic>)? fromJson,
+    required String key,
+    int maxNumberOfData = 40,
+  }) async {
+    List<T> data = getLocalStorageData(fromJson: fromJson!, key: key);
 
-    if (data.length >= 40) {
+    if (data.length >= maxNumberOfData) {
       data.removeAt(data.length - 1);
-      data.insert(0, requestInfo);
+      data.insert(0, infoData);
     } else {
-      data.insert(0, requestInfo);
+      data.insert(0, infoData);
     }
 
     var infoListToJson = data.map((e) => e.toJson()).toList();
 
     String encodedData = json.encode(infoListToJson);
 
-    await prefs.setString('requestsInfo', encodedData);
+    await prefs.setString(key, encodedData);
   }
 
-  static List<RequestInfoModel> getRequestsInfo() {
-    final data = prefs.getString('requestsInfo');
+  static List<T> getLocalStorageData<T extends JsonSerializable>({
+    required T Function(Map<String, dynamic>)? fromJson,
+    required String key,
+  }) {
+    final data = prefs.getString(key);
+
     if (data != null) {
       final decodedData = json.decode(data);
-      List<RequestInfoModel> infoListFromJson = List<RequestInfoModel>.from(
-          decodedData.map((e) => RequestInfoModel.fromJson(e)));
+      List<T> infoListFromJson =
+          List<T>.from(decodedData.map((e) => fromJson!(e)));
 
       return infoListFromJson;
     } else {
@@ -356,8 +364,12 @@ class GlobalFunctions {
     }
   }
 
-  static Future<void> deleteRequestInfo({required int index}) async {
-    List<RequestInfoModel> data = getRequestsInfo();
+  static Future<void> deleteLocalStorageData<T extends JsonSerializable>({
+    required int index,
+    required T Function(Map<String, dynamic>) fromJson,
+    required String key,
+  }) async {
+    List<T> data = getLocalStorageData(fromJson: fromJson, key: key);
 
     data.removeAt(index);
 
@@ -365,10 +377,12 @@ class GlobalFunctions {
 
     String encodedData = json.encode(infoListToJson);
 
-    await prefs.setString('requestsInfo', encodedData);
+    await prefs.setString(key, encodedData);
   }
 
-  static Future<void> deleteAllRequestsInfo() async {
-    await prefs.remove('requestsInfo');
+  static Future<void> deleteAllLocalStorageData({
+    required String key,
+  }) async {
+    await prefs.remove(key);
   }
 }

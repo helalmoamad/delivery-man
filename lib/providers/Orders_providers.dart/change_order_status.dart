@@ -14,12 +14,10 @@ class ChangeOrderStatusProvider {
     required int orderId,
     required double? amount,
     required List<ProductModel>? returnedProducts,
-    required String? file,
   }) async {
     return await ordersRepository.changeStatus(
         token: token,
         orderId: orderId,
-        file: file,
         status: status,
         returnedProducts: returnedProducts,
         amount: amount);

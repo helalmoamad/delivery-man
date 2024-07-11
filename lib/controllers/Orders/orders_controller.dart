@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
+import 'package:delivery_man_app/background_service/background_service.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import 'package:delivery_man_app/models/Orders/change_status_model.dart';
@@ -16,6 +19,7 @@ import 'package:record/record.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../../models/Orders/list_order_model.dart';
 import '../../models/Orders/unassign_order_tome_model.dart';
+import '../../models/Orders/upload_voice_model.dart';
 import '../../providers/Orders_providers.dart/get_details_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_list_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_status_data.dart';
@@ -59,7 +63,7 @@ class OrdersController extends GetxController {
 
   late ChangeOrderStatusProvider changeOrderStatusProvider =
       Get.find<ChangeOrderStatusProvider>();
-  late ChangeStatusModle changeStatusData;
+  late ChangeStatusModel changeStatusData;
 
   late ChangeOrderReceivedAmountProvider changeOrderReceivedAmountProvider =
       Get.find<ChangeOrderReceivedAmountProvider>();
@@ -397,7 +401,7 @@ class OrdersController extends GetxController {
         final dir = await getApplicationDocumentsDirectory();
         final filepath = p.join(
           dir.path,
-          'audio_${orderId}_${DateTime.now()}.m4a',
+          'audio_${orderId}_millisecond_date_${DateTime.now().millisecond}.m4a',
         );
         await record!.start(path: filepath);
         isRecording = true;
@@ -421,6 +425,18 @@ class OrdersController extends GetxController {
       }
     } catch (e) {
       debugPrint(e.toString());
+    }
+  }
+
+  Future<void> deleteRecording({required String filePath}) async {
+    final file = File(filePath);
+    try {
+      if (await file.exists()) {
+        await file.delete();
+        debugPrint('File deleted: $filePath');
+      }
+    } catch (e) {
+      debugPrint('Error deleting file: $e');
     }
   }
 
@@ -668,51 +684,76 @@ class OrdersController extends GetxController {
     required int orderId,
     double? amount,
     List<ProductModel>? returnedProducts,
-    String? file,
   }) async {
     showChangeOrderStatusCircleIndicator();
     final failureOrData = await changeOrderStatusProvider.call(
-        token: token,
-        orderId: orderId,
-        file: file,
-        status: status,
-        returnedProducts: returnedProducts,
-        amount: amount);
+      token: token,
+      orderId: orderId,
+      status: status,
+      returnedProducts: returnedProducts,
+      amount: amount,
+    );
 
-    failureOrData.fold((failure) {
-      HandlingFailures.networkErrorrHandling(
-          failure: failure,
-          hideCircleIndicator: hideChangeOrderStatusCircleIndicator,
-          showNoInternetPage: () {});
-    }, (data) async {
-      // changeStatusData = data;
-      hideChangeOrderStatusCircleIndicator();
-      SnackBarWidgets.showSuccessSnackBar(
-          'Changing Order Status Succeeded'.tr, '');
-      Get.close(1);
+    failureOrData.fold(
+      (failure) {
+        HandlingFailures.networkErrorrHandling(
+            failure: failure,
+            hideCircleIndicator: hideChangeOrderStatusCircleIndicator,
+            showNoInternetPage: () {});
+      },
+      (data) async {
+        hideChangeOrderStatusCircleIndicator();
+        SnackBarWidgets.showSuccessSnackBar(
+            'Changing Order Status Succeeded'.tr, '');
+        Get.close(1);
+        /////////////////////////////////////
+        if (status == OrderStatuses.delivered ||
+            status == OrderStatuses.partialReturn ||
+            status == OrderStatuses.returned ||
+            status == OrderStatuses.failed) {
+          /////////////////////////////////////
+          await stopRecording().then(
+            (value) async {
+              final data = UploadVoiceModel(
+                orderId: orderId,
+                filePath: audioPath ?? '',
+              );
+              await GlobalFunctions.setLocalStorageData(
+                infoData: data,
+                fromJson: UploadVoiceModel.fromJson,
+                key: 'upload_voice',
+                maxNumberOfData: 100,
+              );
+              /////////////////////////////////////
+              await BackGroundServiceUtils.service
+                  .isRunning()
+                  .then((value) async {
+                if (!value) {
+                  await BackGroundServiceUtils.service.startService();
+                }
+              });
+              /////////////////////////////////////
+              changeDeliveringButton(true);
+              audioPath = '';
+            },
+          );
+        }
 
-      if (status == OrderStatuses.delivered ||
-          status == OrderStatuses.partialReturn ||
-          status == OrderStatuses.returned ||
-          status == OrderStatuses.failed) {
-        changeDeliveringButton(true);
-        audioPath = '';
-      }
-
-      if (status == OrderStatuses.partialReturn) {
-        await chooseMyOrderStatus(
-            status: status, index: selectedMyOrderStatus + 2);
-      } else if (status == OrderStatuses.returned) {
-        await chooseMyOrderStatus(
-            status: status, index: selectedMyOrderStatus + 3);
-      } else if (status == OrderStatuses.failed) {
-        await chooseMyOrderStatus(
-            status: status, index: selectedMyOrderStatus + 4);
-      } else {
-        await chooseMyOrderStatus(
-            status: status, index: selectedMyOrderStatus + 1);
-      }
-    });
+        if (status == OrderStatuses.partialReturn) {
+          await chooseMyOrderStatus(
+              status: status, index: selectedMyOrderStatus + 2);
+        } else if (status == OrderStatuses.returned) {
+          await chooseMyOrderStatus(
+              status: status, index: selectedMyOrderStatus + 3);
+        } else if (status == OrderStatuses.failed) {
+          await chooseMyOrderStatus(
+              status: status, index: selectedMyOrderStatus + 4);
+        } else {
+          await chooseMyOrderStatus(
+              status: status, index: selectedMyOrderStatus + 1);
+        }
+      },
+    );
   }
 
   //// MyOrders /////////////////////

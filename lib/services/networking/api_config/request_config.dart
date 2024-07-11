@@ -26,7 +26,12 @@ class RequestConfig {
       response: jsonDecode(response.body).toString(),
     );
 
-    await GlobalFunctions.setRequestInfo(requestInfo: data);
+    await GlobalFunctions.setLocalStorageData(
+      infoData: data,
+      fromJson: RequestInfoModel.fromJson,
+      key: 'requestsInfo',
+      maxNumberOfData: 100,
+    );
   }
 
   static T processResponse<T>({

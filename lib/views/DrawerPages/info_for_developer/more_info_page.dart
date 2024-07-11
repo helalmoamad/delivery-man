@@ -12,7 +12,10 @@ class MoreInfoPage extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
-    final data = GlobalFunctions.getRequestsInfo();
+    final data = GlobalFunctions.getLocalStorageData(
+      fromJson: RequestInfoModel.fromJson,
+      key: 'requestsInfo',
+    );
     int index = authController.moreDeveloperInfoIndex;
     return SafeArea(
         child: Scaffold(
