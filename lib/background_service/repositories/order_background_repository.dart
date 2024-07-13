@@ -1,19 +1,18 @@
 import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart';
 import 'package:dartz/dartz.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import '../../shared/errors/exceptions.dart';
 import '../../shared/errors/failures.dart';
-import '../../shared/network_info/network_info.dart';
 import '../network/order_network.dart';
 
 class OrderBackGroundRepository {
   final OrderNetworkApi orderNetworkApi;
-  final InternetConnectionChecker internetConnectionChecker;
+  final Connectivity connectivity;
 
   OrderBackGroundRepository({
     required this.orderNetworkApi,
-    required this.internetConnectionChecker,
+    required this.connectivity,
   });
 
   Future<Either<Failure, Unit>> uploadFile({
@@ -21,7 +20,8 @@ class OrderBackGroundRepository {
     required int orderId,
     required String file,
   }) async {
-    if (await NetworkInfoImpl(internetConnectionChecker).isConnected) {
+    final check = await connectivity.checkConnectivity();
+    if (check != ConnectivityResult.none) {
       try {
         await orderNetworkApi.uploadFileApi(
           token: token,

@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/Orders/upload_voice_model.dart';
 import '../shared/constants/failure_messages.dart';
@@ -18,7 +18,7 @@ import 'repositories/order_background_repository.dart';
 
 class BackGroundServiceUtils {
   static final service = FlutterBackgroundService();
-  static late InternetConnectionChecker internetConnectionChecker;
+  static late Connectivity connectivity;
 
   ////
   static late OrderNetworkApi orderNetworkApi;
@@ -51,11 +51,12 @@ class BackGroundServiceUtils {
     WidgetsFlutterBinding.ensureInitialized();
     await dotenv.load(fileName: ".env");
 
-    internetConnectionChecker = InternetConnectionChecker();
+    connectivity = Connectivity();
     orderNetworkApi = OrderNetworkApi();
     orderBackGroundRepository = OrderBackGroundRepository(
-        orderNetworkApi: orderNetworkApi,
-        internetConnectionChecker: internetConnectionChecker);
+      orderNetworkApi: orderNetworkApi,
+      connectivity: connectivity,
+    );
     uploadFileProvider = UploadFileProvider(orderBackGroundRepository);
 
     DartPluginRegistrant.ensureInitialized();
@@ -112,11 +113,16 @@ class BackGroundServiceUtils {
         );
 
         bool isFailure = false;
+        Type? failureType;
 
         failureOrData.fold(
           (failure) {
             debugPrint(_mapFailureToMessage(failure));
             isFailure = true;
+            failureType = failure.runtimeType;
+            if (failureType != OfflineFailure) {
+              data[index].numberOfUploadTry += 1;
+            }
           },
           (res) async {
             isFailure = false;
@@ -125,17 +131,21 @@ class BackGroundServiceUtils {
           },
         );
         if (isFailure) {
-          break;
-        } else {
-          final file = File(data[index].filePath);
-          if (await file.exists()) {
-            await file.delete();
-            debugPrint('File deleted: ${data[index].filePath}');
+          if (failureType == OfflineFailure) {
+            break;
+          } else {
+            if (data[index].numberOfUploadTry >= 2) {
+              await deleteFile(
+                filePath: data[index].filePath,
+                index: index,
+              );
+            }
+            continue;
           }
-          await GlobalFunctions.deleteLocalStorageData(
+        } else {
+          await deleteFile(
+            filePath: data[index].filePath,
             index: index,
-            fromJson: UploadVoiceModel.fromJson,
-            key: 'upload_voice',
           );
         }
       } else {
@@ -156,5 +166,21 @@ class BackGroundServiceUtils {
       default:
         return " Unexpected error,Please try again later.";
     }
+  }
+
+  static Future<void> deleteFile({
+    required String filePath,
+    required int index,
+  }) async {
+    final file = File(filePath);
+    if (await file.exists()) {
+      await file.delete();
+      debugPrint('File deleted: $filePath');
+    }
+    await GlobalFunctions.deleteLocalStorageData(
+      index: index,
+      fromJson: UploadVoiceModel.fromJson,
+      key: 'upload_voice',
+    );
   }
 }

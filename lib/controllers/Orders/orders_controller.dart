@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:delivery_man_app/background_service/background_service.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
@@ -24,9 +25,12 @@ import '../../providers/Orders_providers.dart/get_details_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_list_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_status_data.dart';
 import '../../providers/Orders_providers.dart/unassign_order_tome_provider.dart';
+import '../../shared/constants/failure_messages.dart';
 import '../../shared/constants/notifications_types.dart';
 import '../../shared/constants/order_statuses.dart';
+import '../../shared/constants/success_messages.dart';
 import '../../shared/handling_errors.dart/handling_errors.dart';
+import '../../shared/network_info/network_info.dart';
 import '../../shared/widgets/snackbar_widgets.dart';
 import 'package:path/path.dart' as p;
 
@@ -123,6 +127,56 @@ class OrdersController extends GetxController {
   final HttpClientService httpClientController = Get.find<HttpClientService>();
   final TimerService timerService = Get.find<TimerService>();
 
+  final NetworkInfo networkInfo = Get.find<NetworkInfo>();
+
+  bool isNoConnectionMessageShown = false;
+  bool isBackConnectionMessageShown = true;
+  final Connectivity connectivity = Get.find<Connectivity>();
+
+  Future<void> autoCheckConnection() async {
+    connectivity.onConnectivityChanged
+        .listen((ConnectivityResult result) async {
+      debugPrint(result.toString());
+      ////////////////////////////////////////////
+      if (!await networkInfo.isConnected) {
+        if (!isNoConnectionMessageShown) {
+          SnackBarWidgets.showFailureSnackBar(
+            'No Connection'.tr,
+            AppFailureMessages.offlineFailureMessage,
+          );
+          isNoConnectionMessageShown = true;
+          isBackConnectionMessageShown = false;
+        }
+      } else {
+        if (!isBackConnectionMessageShown) {
+          SnackBarWidgets.showSuccessSnackBar(
+              AppSuccessMessages.connectionBackSucceededMessage, '');
+          isBackConnectionMessageShown = true;
+          isNoConnectionMessageShown = false;
+          ///////////////////////////
+          List<UploadVoiceModel> data = GlobalFunctions.getLocalStorageData(
+            fromJson: UploadVoiceModel.fromJson,
+            key: 'upload_voice',
+          );
+          if (data.isNotEmpty) {
+            startUploadFileService();
+          }
+        }
+      }
+    });
+    //////////////////////////
+    if (!await networkInfo.isConnected) {
+      if (!isNoConnectionMessageShown) {
+        SnackBarWidgets.showFailureSnackBar(
+          'No Connection'.tr,
+          AppFailureMessages.offlineFailureMessage,
+        );
+        isNoConnectionMessageShown = true;
+        isBackConnectionMessageShown = false;
+      }
+    }
+  }
+
   void onNotifiNavigation() async {
     if (GlobalFunctions.getNotifiType() == NotificationsTypes.newOrder ||
         GlobalFunctions.getNotifiType() ==
@@ -187,6 +241,9 @@ class OrdersController extends GetxController {
     }
 
     onNotifiNavigation();
+    ///////////////////
+    autoCheckConnection();
+    ////////////////////
   }
 
   @override
@@ -678,6 +735,14 @@ class OrdersController extends GetxController {
     );
   }
 
+  Future<void> startUploadFileService() async {
+    await BackGroundServiceUtils.service.isRunning().then((value) async {
+      if (!value) {
+        await BackGroundServiceUtils.service.startService();
+      }
+    });
+  }
+
   Future<void> changeOrderStatus({
     required String token,
     required String status,
@@ -717,6 +782,7 @@ class OrdersController extends GetxController {
               final data = UploadVoiceModel(
                 orderId: orderId,
                 filePath: audioPath ?? '',
+                numberOfUploadTry: 0,
               );
               await GlobalFunctions.setLocalStorageData(
                 infoData: data,
@@ -725,13 +791,7 @@ class OrdersController extends GetxController {
                 maxNumberOfData: 100,
               );
               /////////////////////////////////////
-              await BackGroundServiceUtils.service
-                  .isRunning()
-                  .then((value) async {
-                if (!value) {
-                  await BackGroundServiceUtils.service.startService();
-                }
-              });
+              await startUploadFileService();
               /////////////////////////////////////
               changeDeliveringButton(true);
               audioPath = '';
