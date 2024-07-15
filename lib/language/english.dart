@@ -146,4 +146,5 @@ const Map<String, String> en = {
       'Are you sure to unAssign the Order ?',
   'Delivery Time': 'Delivery Time',
   'Internet Connection Back': 'Internet Connection Back',
+  'Created At': 'Created At',
 };

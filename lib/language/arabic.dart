@@ -144,4 +144,5 @@ const Map<String, String> ar = {
   'Are you sure to unAssign the Order ?': 'هل أنت متأكد من إلغاء إسناد الطلب ؟',
   'Delivery Time': 'وقت التوصيل',
   'Internet Connection Back': 'تم الاتصال بالانترنت',
+  'Created At': 'تم الإنشاء',
 };

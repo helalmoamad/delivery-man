@@ -8,6 +8,7 @@ import 'package:delivery_man_app/views/OrderDetails/components/title_section_wid
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../models/Orders/list_order_model.dart';
@@ -241,7 +242,7 @@ class OrderDetails extends StatelessWidget {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: 15,
+      itemCount: 16,
       itemBuilder: (context, index) {
         if (index == 0) {
           return OrderDetailsWidget(
@@ -375,13 +376,22 @@ class OrderDetails extends StatelessWidget {
         }
         if (index == 13) {
           return OrderDetailsWidget(
+            title: 'Created At'.tr,
+            value: order.createdAt == ''
+                ? 'No Data Now'.tr
+                : DateFormat("yyyy-MM-dd HH:mm:ss").format(
+                    DateTime.parse(order.createdAt.toString()).toLocal()),
+          );
+        }
+        if (index == 14) {
+          return OrderDetailsWidget(
             title: 'Delivery Time'.tr,
             value: order.deliveryTime == ''
                 ? 'No Data Now'.tr
                 : order.deliveryTime.toString(),
           );
         }
-        if (index == 14) {
+        if (index == 15) {
           return OrderDetailsWidget(
             title: 'COD Amount'.tr,
             color: AppColors.lightGray,

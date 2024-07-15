@@ -4,6 +4,7 @@ import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class OrderWidget extends StatelessWidget {
   final List<OrderDataModel> orders;
@@ -114,6 +115,20 @@ class OrderWidget extends StatelessWidget {
               buildOrderFirstDetailsWidget(
                 title: '${'Order unique id'.tr} :',
                 value: orders[index].id.toString(),
+              ),
+
+              ///
+              const SizedBox(
+                height: 8,
+              ),
+              ////
+              buildOrderFirstDetailsWidget(
+                title: '${'Created At'.tr} :',
+                value: orders[index].createdAt.toString().isEmpty
+                    ? ''
+                    : DateFormat("yyyy-MM-dd HH:mm:ss").format(
+                        DateTime.parse(orders[index].createdAt.toString())
+                            .toLocal()),
               ),
 
               ///

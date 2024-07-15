@@ -75,6 +75,7 @@ class OrderDataModel {
   dynamic receivedAmount;
   final dynamic orderStatus;
   final String? deliveryTime;
+  final String? createdAt;
 
   OrderDataModel({
     this.id,
@@ -101,6 +102,7 @@ class OrderDataModel {
     required this.billingAddressData,
     required this.orderStatus,
     required this.receivedAmount,
+    required this.createdAt,
     this.deliveryTime,
   });
 
@@ -138,6 +140,7 @@ class OrderDataModel {
         orderStatus: json["order_status"] ?? '',
         receivedAmount: json["received_amount"] ?? '',
         deliveryTime: json["delivery_time"] ?? '',
+        createdAt: json["created_at"] ?? '',
       );
 }
 
