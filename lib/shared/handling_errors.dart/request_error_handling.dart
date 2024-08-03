@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import '../errors/exceptions.dart';
 import '../errors/failures.dart';
+import '../network_info/network_info.dart';
 
 class RequestErrorHandling {
-  static Either<Failure, T> handle<T>({
+  static Future<Either<Failure, T>> handle<T>({
     required Object exception,
     required bool isClientCloseFailure,
-  }) {
+    required NetworkInfo networkInfo,
+  }) async {
     if (exception is ServerException) {
       debugPrint('//// ServerException ///// \n $exception');
       return left(
@@ -17,13 +19,19 @@ class RequestErrorHandling {
       );
     } else if (exception is ClientException) {
       debugPrint('//// ClientException ///// \n $exception');
-      return isClientCloseFailure
-          ? left(
-              ClientCloseFailure(),
-            )
-          : left(
-              UnExpectedFailure(),
-            );
+      if (await networkInfo.isConnected) {
+        return isClientCloseFailure
+            ? left(
+                ClientCloseFailure(),
+              )
+            : left(
+                UnExpectedFailure(),
+              );
+      } else {
+        return left(
+          OfflineFailure(),
+        );
+      }
     } else if (exception is CantAssignToVehicleException) {
       debugPrint('//// CantAssignToVehicleException ///// \n $exception');
       return left(

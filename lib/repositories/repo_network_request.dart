@@ -14,8 +14,10 @@ class RepoNetworkRequest {
         final response = await request();
         return Right(response);
       } catch (e) {
-        return RequestErrorHandling.handle(
-            exception: e, isClientCloseFailure: isClientCloseFailure);
+        return await RequestErrorHandling.handle(
+            exception: e,
+            networkInfo: networkInfo,
+            isClientCloseFailure: isClientCloseFailure);
       }
     } else {
       return Left(OfflineFailure());
@@ -32,8 +34,10 @@ class RepoNetworkRequest {
         await request();
         return const Right(unit);
       } catch (e) {
-        return RequestErrorHandling.handle(
-            exception: e, isClientCloseFailure: isClientCloseFailure);
+        return await RequestErrorHandling.handle(
+            exception: e,
+            networkInfo: networkInfo,
+            isClientCloseFailure: isClientCloseFailure);
       }
     } else {
       return Left(OfflineFailure());

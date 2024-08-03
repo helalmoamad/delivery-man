@@ -8,7 +8,7 @@ import '../../../shared/global_functions/global_functions.dart';
 import 'package:http/http.dart';
 
 class RequestConfig {
-  static int timeoutSeconds = 30;
+  static int timeoutSeconds = 10;
 
   static Future<void> storeRequestInfo({
     required Uri uri,
