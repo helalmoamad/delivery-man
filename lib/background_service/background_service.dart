@@ -116,12 +116,18 @@ class BackGroundServiceUtils {
         Type? failureType;
 
         failureOrData.fold(
-          (failure) {
+          (failure) async {
             debugPrint(_mapFailureToMessage(failure));
             isFailure = true;
             failureType = failure.runtimeType;
             if (failureType != OfflineFailure) {
               data[index].numberOfUploadTry += 1;
+              await GlobalFunctions.updateLocalStorageData(
+                index: index,
+                updatedData: data[index],
+                key: 'upload_voice',
+                fromJson: UploadVoiceModel.fromJson,
+              );
             }
           },
           (res) async {

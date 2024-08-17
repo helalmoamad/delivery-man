@@ -380,6 +380,23 @@ class GlobalFunctions {
     await prefs.setString(key, encodedData);
   }
 
+  static Future<void> updateLocalStorageData<T extends JsonSerializable>({
+    required int index,
+    required T updatedData,
+    required T Function(Map<String, dynamic>) fromJson,
+    required String key,
+  }) async {
+    List<T> data = getLocalStorageData(fromJson: fromJson, key: key);
+
+    data[index] = updatedData;
+
+    var infoListToJson = data.map((e) => e.toJson()).toList();
+
+    String encodedData = json.encode(infoListToJson);
+
+    await prefs.setString(key, encodedData);
+  }
+
   static Future<void> deleteAllLocalStorageData({
     required String key,
   }) async {
