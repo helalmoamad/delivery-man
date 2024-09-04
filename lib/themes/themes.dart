@@ -7,6 +7,9 @@ import '../shared/constants/color_constants.dart';
 
 class Themes {
   static ThemeData lightTheme = ThemeData(
+    //////////////////////
+    useMaterial3: false,
+    /////////////////////
     primarySwatch: getMaterialColor(AppColors.primaryDark),
     brightness: Brightness.light,
     appBarTheme: AppBarTheme(

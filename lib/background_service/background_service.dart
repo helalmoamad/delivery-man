@@ -120,15 +120,16 @@ class BackGroundServiceUtils {
             debugPrint(_mapFailureToMessage(failure));
             isFailure = true;
             failureType = failure.runtimeType;
-            if (failureType != OfflineFailure) {
-              data[index].numberOfUploadTry += 1;
-              await GlobalFunctions.updateLocalStorageData(
-                index: index,
-                updatedData: data[index],
-                key: 'upload_voice',
-                fromJson: UploadVoiceModel.fromJson,
-              );
-            }
+            debugPrint('/// FailureType  ////// $failureType ///////////');
+            // if (failureType != OfflineFailure) {
+            //   data[index].numberOfUploadTry += 1;
+            //   await GlobalFunctions.updateLocalStorageData(
+            //     index: index,
+            //     updatedData: data[index],
+            //     key: 'upload_voice',
+            //     fromJson: UploadVoiceModel.fromJson,
+            //   );
+            // }
           },
           (res) async {
             isFailure = false;
@@ -137,15 +138,17 @@ class BackGroundServiceUtils {
           },
         );
         if (isFailure) {
-          if (failureType == OfflineFailure) {
+          final check = await connectivity.checkConnectivity();
+          if (failureType == OfflineFailure ||
+              check == ConnectivityResult.none) {
             break;
           } else {
-            if (data[index].numberOfUploadTry >= 2) {
-              await deleteFile(
-                filePath: data[index].filePath,
-                index: index,
-              );
-            }
+            // if (data[index].numberOfUploadTry >= 2) {
+            //   await deleteFile(
+            //     filePath: data[index].filePath,
+            //     index: index,
+            //   );
+            // }
             continue;
           }
         } else {

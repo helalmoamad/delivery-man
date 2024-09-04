@@ -782,7 +782,7 @@ class OrdersController extends GetxController {
               final data = UploadVoiceModel(
                 orderId: orderId,
                 filePath: audioPath ?? '',
-                numberOfUploadTry: 0,
+                // numberOfUploadTry: 0,
               );
               await GlobalFunctions.setLocalStorageData(
                 infoData: data,
@@ -959,7 +959,6 @@ class OrdersController extends GetxController {
     required String token,
     required int orderId,
     required bool isForMyOrder,
-    isFromNotifiOrder = false,
   }) async {
     showGetOrderDetailsCircleIndicator();
 
@@ -969,11 +968,12 @@ class OrdersController extends GetxController {
       HandlingFailures.networkErrorrHandling(
         failure: failure,
         hideCircleIndicator: hideGetOrderDetailsCircleIndicator,
-        showNoInternetPage:
-            isFromNotifiOrder ? showGetOrderDetailsNoInternetPage : () {},
+        showNoInternetPage: GlobalFunctions.getIsFromNotifiForNewOrder()
+            ? showGetOrderDetailsNoInternetPage
+            : () {},
       );
     }, (data) async {
-      if (!isFromNotifiOrder) {
+      if (!GlobalFunctions.getIsFromNotifiForNewOrder()) {
         if (isForMyOrder) {
           OrderDataModel item = myOrdersData!.data!.data!
               .firstWhere((element) => element.id == orderId);
@@ -992,7 +992,9 @@ class OrdersController extends GetxController {
       }
       ///////////////////////////////////////////////////
       hideGetOrderDetailsCircleIndicator();
-      isFromNotifiOrder ? hideGetOrderDetailsNoInternetPage() : null;
+      GlobalFunctions.getIsFromNotifiForNewOrder()
+          ? hideGetOrderDetailsNoInternetPage()
+          : null;
     });
   }
 }

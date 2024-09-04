@@ -37,7 +37,6 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
         token: token,
         orderId: int.parse(GlobalFunctions.getOrderId() ?? '-1'),
         isForMyOrder: false,
-        isFromNotifiOrder: true,
       );
     }
   }
