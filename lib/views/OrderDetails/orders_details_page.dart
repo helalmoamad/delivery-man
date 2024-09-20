@@ -44,6 +44,7 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      // ignore: deprecated_member_use
       child: WillPopScope(
         onWillPop: () async {
           stopRecordingCondition(context);

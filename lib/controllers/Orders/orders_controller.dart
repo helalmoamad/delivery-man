@@ -94,7 +94,7 @@ class OrdersController extends GetxController {
   int orderPaginationOffset = 2;
   bool orderNoMoreItems = false;
 
-  Record? record;
+  AudioRecorder? record;
   AudioPlayer? audioPlayer;
 
   bool isRecording = false;
@@ -135,7 +135,7 @@ class OrdersController extends GetxController {
 
   Future<void> autoCheckConnection() async {
     connectivity.onConnectivityChanged
-        .listen((ConnectivityResult result) async {
+        .listen((List<ConnectivityResult> result) async {
       debugPrint(result.toString());
       ////////////////////////////////////////////
       if (!await networkInfo.isConnected) {
@@ -236,7 +236,7 @@ class OrdersController extends GetxController {
         }
       });
 
-      record = Record();
+      record = AudioRecorder();
       audioPlayer = AudioPlayer();
     }
 
@@ -460,7 +460,7 @@ class OrdersController extends GetxController {
           dir.path,
           'audio_${orderId}_millisecond_date_${DateTime.now().millisecond}.m4a',
         );
-        await record!.start(path: filepath);
+        await record!.start(const RecordConfig(), path: filepath);
         isRecording = true;
         changeDeliveringButton(false);
         update();

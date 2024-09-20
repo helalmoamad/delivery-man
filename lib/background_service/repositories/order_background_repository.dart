@@ -21,7 +21,7 @@ class OrderBackGroundRepository {
     required String file,
   }) async {
     final check = await connectivity.checkConnectivity();
-    if (check != ConnectivityResult.none) {
+    if (!check.contains(ConnectivityResult.none)) {
       try {
         await orderNetworkApi.uploadFileApi(
           token: token,

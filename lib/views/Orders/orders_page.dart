@@ -23,6 +23,7 @@ class OrdersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      // ignore: deprecated_member_use
       child: WillPopScope(
         onWillPop: () async {
           bool test = false;

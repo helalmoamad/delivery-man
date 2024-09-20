@@ -25,13 +25,7 @@ class TimerService extends GetxService {
   void stopTimer({
     required bool isGlobalTimer,
   }) {
-    isGlobalTimer
-        ? _globalTimer == null
-            ? null
-            : _globalTimer!.cancel()
-        : _secondaryTimer == null
-            ? null
-            : _secondaryTimer!.cancel();
+    isGlobalTimer ? _globalTimer?.cancel() : _secondaryTimer?.cancel();
 
     debugPrint(
         'stopTimer ${isGlobalTimer ? '_globalTimer' : '_secondaryTimer'} Timer');
