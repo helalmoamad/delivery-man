@@ -36,7 +36,7 @@ class OrderDetails extends StatelessWidget {
       isForMyOrder = false;
       orderId = int.parse(GlobalFunctions.getOrderId() ?? '-1');
       order = ordersController.orderDetails!;
-      status = OrderStatuses.readyToShipping;
+      status = OrderStatuses.inDeliveryCenter;
     } else {
       if (ordersController.previousRoute == Routes.myOrdersPage) {
         isForMyOrder = true;
@@ -68,8 +68,8 @@ class OrderDetails extends StatelessWidget {
               right: 5,
               left: 5,
               top: 0,
-              bottom: (status == OrderStatuses.readyToShipping ||
-                      status == OrderStatuses.shipped ||
+              bottom: (status == OrderStatuses.inDeliveryCenter ||
+                      // status == OrderStatuses.shipped ||
                       status == OrderStatuses.outForDelivery)
                   ? 101
                   : 10),
@@ -101,21 +101,26 @@ class OrderDetails extends StatelessWidget {
                 ),
               ),
               //////////////////////////////////
-              TitleSectionWidget(
-                title: 'Order Products'.tr,
-                index: '',
-                widget: (status == OrderStatuses.outForDelivery &&
-                        !ordersController.isStartDeliveryButton)
-                    ? TextWidget(
-                        text:
-                            '${'Returned Products'.tr} : ${ordersController.returnedProductsList.length}',
-                        color: AppColors.primaryDark,
-                        fontSize: 13,
-                        fontWeight: FontWeight.normal,
-                        textAlign: TextAlign.center,
-                        maxline: 2)
-                    : Container(),
+              GetBuilder<OrdersController>(
+                builder: (_) {
+                  return TitleSectionWidget(
+                    title: 'Order Products'.tr,
+                    index: '',
+                    widget: (status == OrderStatuses.outForDelivery &&
+                            !ordersController.isStartDeliveryButton)
+                        ? TextWidget(
+                            text:
+                                '${'Returned Products'.tr} : ${ordersController.returnedProductsList.length}',
+                            color: AppColors.primaryDark,
+                            fontSize: 13,
+                            fontWeight: FontWeight.normal,
+                            textAlign: TextAlign.center,
+                            maxline: 2)
+                        : Container(),
+                  );
+                },
               ),
+
               // ////////////////////////////////
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
@@ -125,25 +130,31 @@ class OrderDetails extends StatelessWidget {
                   color: AppColors.primaryDark,
                 ),
               ),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: order.products!.length,
-                itemBuilder: (context, index) {
-                  return buildProductsSection(order.products, index, status);
-                },
-                separatorBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Container(
-                      height: 3,
-                      width: double.infinity,
-                      color: AppColors.primaryDark,
-                    ),
+              //////////////////////////////////
+              GetBuilder<OrdersController>(
+                builder: (_) {
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: order.products!.length,
+                    itemBuilder: (context, index) {
+                      return buildProductsSection(
+                          order.products, index, status);
+                    },
+                    separatorBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: Container(
+                          height: 3,
+                          width: double.infinity,
+                          color: AppColors.primaryDark,
+                        ),
+                      );
+                    },
                   );
                 },
               ),
-
+              ////////////////////////////////////////
               order.returnedProducts!.isEmpty
                   ? Container()
                   : Padding(

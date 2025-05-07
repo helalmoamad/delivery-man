@@ -206,7 +206,7 @@ class OrdersController extends GetxController {
         timerService.stopTimer(isGlobalTimer: false);
       }
       // await getOrderStatusData(token: token, isForAllOrders: true);
-      orderStatus = OrderStatuses.readyToShipping;
+      orderStatus = OrderStatuses.inDeliveryCenter;
       await getListOrderData(token: token, status: orderStatus, offset: 1);
       orderScrollController.addListener(() async {
         if (orderScrollController.position.maxScrollExtent ==
@@ -608,7 +608,7 @@ class OrdersController extends GetxController {
         selectedOrderStatus = 0;
       } else {
         ////
-        myOrderStatus = orderStatusData[2].toString();
+        myOrderStatus = orderStatusData[9].toString();
         selectedMyOrderStatus = 0;
       }
 

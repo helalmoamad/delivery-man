@@ -16,7 +16,7 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     String status;
     if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
-      status = OrderStatuses.readyToShipping;
+      status = OrderStatuses.inDeliveryCenter;
     } else {
       if (ordersController.previousRoute == Routes.myOrdersPage) {
         status = ordersController.myOrderStatus;
@@ -32,8 +32,8 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
           children: [
             OrderDetails(),
             //////////////////////
-            if (status == OrderStatuses.readyToShipping ||
-                status == OrderStatuses.shipped ||
+            if (status == OrderStatuses.inDeliveryCenter ||
+                // status == OrderStatuses.shipped ||
                 status == OrderStatuses.outForDelivery ||
                 status == OrderStatuses.delivered ||
                 status == OrderStatuses.partialReturn ||
@@ -58,12 +58,13 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
                   ],
                 ),
                 child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    child: Center(
-                      child: GlobalFunctions.chooseStatusButtons(
-                          inputText: status),
-                    )),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                  child: Center(
+                    child:
+                        GlobalFunctions.chooseStatusButtons(inputText: status),
+                  ),
+                ),
               ),
             ////////////////////////////////////////////////////////
             ordersController.isAssignUnAssignOrderCircleShown ||

@@ -43,9 +43,10 @@ class OrdersPage extends StatelessWidget {
           return test;
         },
         child: Scaffold(
-            appBar: buildAppBar(context),
-            drawer: CustomDrawer(),
-            body: GetBuilder<OrdersController>(builder: (_) {
+          appBar: buildAppBar(context),
+          drawer: CustomDrawer(),
+          body: GetBuilder<OrdersController>(
+            builder: (_) {
               return HandlingFailures.pageErrorHandling(
                 isCircleShown: ordersController.isGetOrdersCircleShown,
                 isNoInternetConnection:
@@ -125,7 +126,9 @@ class OrdersPage extends StatelessWidget {
                   ],
                 ),
               );
-            })),
+            },
+          ),
+        ),
       ),
     );
   }

@@ -15,6 +15,15 @@ import 'network/order_network.dart';
 import 'providers/upload_order_file.dart';
 import 'repositories/order_background_repository.dart';
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 class BackGroundServiceUtils {
   static final service = FlutterBackgroundService();
   static late Connectivity connectivity;
@@ -49,6 +58,8 @@ class BackGroundServiceUtils {
   static Future<void> onStart(ServiceInstance service) async {
     WidgetsFlutterBinding.ensureInitialized();
     await dotenv.load(fileName: ".env");
+
+    HttpOverrides.global = MyHttpOverrides();
 
     connectivity = Connectivity();
     orderNetworkApi = OrderNetworkApi();

@@ -147,4 +147,6 @@ const Map<String, String> en = {
   'Delivery Time': 'Delivery Time',
   'Internet Connection Back': 'Internet Connection Back',
   'Created At': 'Created At',
+  'In Delivery Center': 'In Delivery Center',
+  'On Hold': 'On Hold',
 };

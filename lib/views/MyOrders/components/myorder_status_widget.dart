@@ -27,7 +27,7 @@ class MyOrderStatusWidget extends StatelessWidget {
           child: ScrollablePositionedList.separated(
             itemScrollController:
                 ordersController.myOrderStatusScrollController,
-            itemCount: ordersController.orderStatusData.length - 2,
+            itemCount: ordersController.orderStatusData.length - 9,
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
               return InkWell(
@@ -37,7 +37,7 @@ class MyOrderStatusWidget extends StatelessWidget {
                   /////////////////////////////////////////////////////
                   await ordersController.chooseMyOrderStatus(
                     status:
-                        ordersController.orderStatusData[index + 2].toString(),
+                        ordersController.orderStatusData[index + 9].toString(),
                     index: index,
                   );
 
@@ -54,7 +54,7 @@ class MyOrderStatusWidget extends StatelessWidget {
                       TextWidget(
                           text: GlobalFunctions.orderStatusText(
                               inputText: ordersController
-                                  .orderStatusData[index + 2]
+                                  .orderStatusData[index + 9]
                                   .toString()),
                           color: AppColors.blackDark,
                           fontSize: 15,

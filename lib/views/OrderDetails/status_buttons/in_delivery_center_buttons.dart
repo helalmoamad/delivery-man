@@ -7,15 +7,13 @@ import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
 import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../shared/constants/order_statuses.dart';
-import 'received_amount_button.dart';
 
-class ReadyToShippingButtons extends StatelessWidget {
+class InDeliveryCenterButtons extends StatelessWidget {
   final OrdersController ordersController = Get.find<OrdersController>();
   final formKey = GlobalKey<FormState>();
   final TextEditingController cashKey = TextEditingController();
-  ReadyToShippingButtons({super.key});
+  InDeliveryCenterButtons({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +39,7 @@ class ReadyToShippingButtons extends StatelessWidget {
         AppButton.normalButton(
           title: GlobalFunctions.getUserId() != order.assignToUserId
               ? 'Assign To Me'.tr
-              : 'Convert To Shipped'.tr,
+              : 'Convert To Out For Delivery'.tr,
           height: 40,
           titleSize: 15,
           backgroundColor: GlobalFunctions.getUserId() != order.assignToUserId
@@ -61,12 +59,15 @@ class ReadyToShippingButtons extends StatelessWidget {
             } else {
               AppDialogs.showConfirmationDialog(
                 context: context,
-                title: 'The order status will be changed to "shipped"'.tr,
+                title:
+                    'The order status will be changed to "Out For Delivery"'.tr,
+                // 'The order status will be changed to "shipped"'.tr,
                 onConfirm: () async {
                   Get.back();
                   await ordersController.changeOrderStatus(
                     token: GlobalFunctions.getToken(),
-                    status: OrderStatuses.shipped,
+                    status: OrderStatuses.outForDelivery,
+                    // OrderStatuses.outForDelivery,
                     orderId: order.id!,
                   );
                 },
@@ -75,20 +76,20 @@ class ReadyToShippingButtons extends StatelessWidget {
           },
         ),
         ////////////////////////
-        GlobalFunctions.getUserId() == order.assignToUserId
-            ? const SizedBox(
-                height: 10,
-              )
-            : Container(),
-        ////////////////////////
-        GlobalFunctions.getUserId() == order.assignToUserId
-            ? ReceivedAmountButton(
-                ordersController: ordersController,
-                formKey: formKey,
-                cashKey: cashKey,
-                orderId: order.id!,
-              )
-            : Container(),
+        // GlobalFunctions.getUserId() == order.assignToUserId
+        //     ? const SizedBox(
+        //         height: 10,
+        //       )
+        //     : Container(),
+        // ////////////////////////
+        // GlobalFunctions.getUserId() == order.assignToUserId
+        //     ? ReceivedAmountButton(
+        //         ordersController: ordersController,
+        //         formKey: formKey,
+        //         cashKey: cashKey,
+        //         orderId: order.id!,
+        //       )
+        //     : Container(),
       ],
     );
   }

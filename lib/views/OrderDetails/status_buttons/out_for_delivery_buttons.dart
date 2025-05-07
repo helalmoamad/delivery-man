@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../shared/constants/color_constants.dart';
 import '../../../shared/constants/order_statuses.dart';
-import 'received_amount_button.dart';
 
 class OutForDeliveryButtons extends StatelessWidget {
   final OrdersController ordersController = Get.find<OrdersController>();
@@ -22,44 +21,46 @@ class OutForDeliveryButtons extends StatelessWidget {
     int orderId = ordersController.myOrderIdForDetails;
     OrderDataModel order = ordersController.myOrdersData!.data!.data!
         .firstWhere((element) => element.id! == orderId);
-    return GetBuilder<OrdersController>(builder: (_) {
-      return ordersController.isStartDeliveryButton
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AppButton.normalButton(
-                  title: 'Start Delivering'.tr,
-                  height: 40,
-                  titleSize: 15,
-                  backgroundColor: AppColors.secondary,
-                  onPress: () async {
-                    AppDialogs.showConfirmationDialog(
-                      context: context,
-                      title: 'Audio recording will start'.tr,
-                      onConfirm: () async {
-                        Get.back();
-                        await ordersController.startRecording(
-                          orderId: order.id.toString(),
-                        );
-                      },
-                    );
-                  },
-                ),
-                ///////////
-                const SizedBox(
-                  height: 10,
-                ),
-                ///////////
-                ReceivedAmountButton(
-                  ordersController: ordersController,
-                  formKey: formKey,
-                  cashKey: cashKey,
-                  orderId: order.id!,
-                )
-              ],
-            )
-          : buildConvertButtons(context, order);
-    });
+    return GetBuilder<OrdersController>(
+      builder: (_) {
+        return ordersController.isStartDeliveryButton
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AppButton.normalButton(
+                    title: 'Start Delivering'.tr,
+                    height: 40,
+                    titleSize: 15,
+                    backgroundColor: AppColors.secondary,
+                    onPress: () async {
+                      AppDialogs.showConfirmationDialog(
+                        context: context,
+                        title: 'Audio recording will start'.tr,
+                        onConfirm: () async {
+                          Get.back();
+                          await ordersController.startRecording(
+                            orderId: order.id.toString(),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  ///////////
+                  // const SizedBox(
+                  //   height: 10,
+                  // ),
+                  // ///////////
+                  // ReceivedAmountButton(
+                  //   ordersController: ordersController,
+                  //   formKey: formKey,
+                  //   cashKey: cashKey,
+                  //   orderId: order.id!,
+                  // )
+                ],
+              )
+            : buildConvertButtons(context, order);
+      },
+    );
   }
 
   Widget buildConvertButtons(BuildContext context, OrderDataModel order) {
@@ -133,48 +134,55 @@ class OutForDeliveryButtons extends StatelessWidget {
         ///////////////////
         Row(
           children: [
-            Expanded(
-              child: AppButton.normalButton(
-                  title: 'Convert To Partial Returned'.tr,
-                  height: 40,
-                  titleSize: 13,
-                  backgroundColor: AppColors.secondary,
-                  onPress: () {
-                    if (ordersController.returnedProductsList.isEmpty) {
-                      SnackBarWidgets.showFailureSnackBar(
-                          'Add the returned products'.tr,
-                          'You have to add the returned products first'.tr,
-                          seconds: 4);
-                    } else {
-                      AppDialogs.showAppDialogWidget(
-                          context: context,
-                          title: 'Enter The Cash Amount'.tr,
-                          actions: [
-                            buildCashDialogAction(
-                                cashKey: cashKey,
-                                formKey: formKey,
-                                cashAmount: order.codAmount,
-                                onPress: () async {
-                                  if (formKey.currentState!.validate()) {
-                                    Get.back();
-                                    await ordersController.changeOrderStatus(
-                                      token: GlobalFunctions.getToken(),
-                                      status: OrderStatuses.partialReturn,
-                                      orderId: order.id!,
-                                      returnedProducts:
-                                          ordersController.returnedProductsList,
-                                      amount: double.parse(cashKey.text),
-                                    );
-                                  }
-                                })
-                          ]);
-                    }
-                  }),
-            ),
+            (order.products!.length <= 1)
+                ? const SizedBox.shrink()
+                : Expanded(
+                    child: AppButton.normalButton(
+                        title: 'Convert To Partial Returned'.tr,
+                        height: 40,
+                        titleSize: 13,
+                        backgroundColor: AppColors.secondary,
+                        onPress: () {
+                          if (ordersController.returnedProductsList.isEmpty) {
+                            SnackBarWidgets.showFailureSnackBar(
+                                'Add the returned products'.tr,
+                                'You have to add the returned products first'
+                                    .tr,
+                                seconds: 4);
+                          } else {
+                            AppDialogs.showAppDialogWidget(
+                                context: context,
+                                title: 'Enter The Cash Amount'.tr,
+                                actions: [
+                                  buildCashDialogAction(
+                                      cashKey: cashKey,
+                                      formKey: formKey,
+                                      cashAmount: order.codAmount,
+                                      onPress: () async {
+                                        if (formKey.currentState!.validate()) {
+                                          Get.back();
+                                          await ordersController
+                                              .changeOrderStatus(
+                                            token: GlobalFunctions.getToken(),
+                                            status: OrderStatuses.partialReturn,
+                                            orderId: order.id!,
+                                            returnedProducts: ordersController
+                                                .returnedProductsList,
+                                            amount: double.parse(cashKey.text),
+                                          );
+                                        }
+                                      })
+                                ]);
+                          }
+                        }),
+                  ),
+
             /////////////////
-            const SizedBox(
-              width: 5,
-            ),
+            (order.products!.length <= 1)
+                ? const SizedBox.shrink()
+                : const SizedBox(
+                    width: 5,
+                  ),
             /////////////////
             Expanded(
               child: AppButton.normalButton(

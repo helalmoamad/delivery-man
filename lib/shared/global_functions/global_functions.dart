@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/out_for_delivery_buttons.dart';
-import 'package:delivery_man_app/views/OrderDetails/status_buttons/ready_toshipping_buttons.dart';
-import 'package:delivery_man_app/views/OrderDetails/status_buttons/shipped_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +9,7 @@ import '../../views/OrderDetails/status_buttons/canceled_buttons.dart';
 import '../../views/OrderDetails/status_buttons/delivered_buttons.dart';
 import '../../views/OrderDetails/status_buttons/failed_buttons.dart';
 import '../../views/OrderDetails/status_buttons/partial_return_buttons.dart';
+import '../../views/OrderDetails/status_buttons/in_delivery_center_buttons.dart';
 import '../../views/OrderDetails/status_buttons/return_buttons.dart';
 import '../constants/lang_constants.dart';
 import '../constants/order_statuses.dart';
@@ -165,27 +164,32 @@ class GlobalFunctions {
     String text = '';
 
     switch (inputText) {
-      case OrderStatuses.pending:
-        {
-          text = 'Pending'.tr;
-          break;
-        }
+      // case OrderStatuses.pending:
+      //   {
+      //     text = 'Pending'.tr;
+      //     break;
+      //   }
 
-      case OrderStatuses.processing:
-        {
-          text = 'Processing'.tr;
-          break;
-        }
+      // case OrderStatuses.processing:
+      //   {
+      //     text = 'Processing'.tr;
+      //     break;
+      //   }
 
-      case OrderStatuses.readyToShipping:
-        {
-          text = 'Ready To Shipping'.tr;
-          break;
-        }
+      // case OrderStatuses.readyToShipping:
+      //   {
+      //     text = 'Ready To Shipping'.tr;
+      //     break;
+      //   }
 
-      case OrderStatuses.shipped:
+      // case OrderStatuses.shipped:
+      //   {
+      //     text = 'Shipped'.tr;
+      //     break;
+      //   }
+      case OrderStatuses.inDeliveryCenter:
         {
-          text = 'Shipped'.tr;
+          text = 'In Delivery Center'.tr;
           break;
         }
 
@@ -198,6 +202,12 @@ class GlobalFunctions {
       case OrderStatuses.delivered:
         {
           text = 'Delivered'.tr;
+          break;
+        }
+
+      case OrderStatuses.onHold:
+        {
+          text = 'On Hold'.tr;
           break;
         }
 
@@ -243,15 +253,15 @@ class GlobalFunctions {
 
   static Widget chooseStatusButtons({required String inputText}) {
     switch (inputText) {
-      case OrderStatuses.readyToShipping:
+      case OrderStatuses.inDeliveryCenter:
         {
-          return ReadyToShippingButtons();
+          return InDeliveryCenterButtons();
         }
 
-      case OrderStatuses.shipped:
-        {
-          return ShippedButtons();
-        }
+      // case OrderStatuses.shipped:
+      //   {
+      //     return ShippedButtons();
+      //   }
 
       case OrderStatuses.outForDelivery:
         {

@@ -145,4 +145,6 @@ const Map<String, String> ar = {
   'Delivery Time': 'وقت التوصيل',
   'Internet Connection Back': 'تم الاتصال بالانترنت',
   'Created At': 'تم الإنشاء',
+  'In Delivery Center': 'في مركز التوصيل',
+  'On Hold': 'قيد الانتظار',
 };
