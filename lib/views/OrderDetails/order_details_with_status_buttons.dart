@@ -33,14 +33,15 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
             OrderDetails(),
             //////////////////////
             if (status == OrderStatuses.inDeliveryCenter ||
-                // status == OrderStatuses.shipped ||
-                status == OrderStatuses.outForDelivery ||
-                status == OrderStatuses.delivered ||
-                status == OrderStatuses.partialReturn ||
-                status == OrderStatuses.returned ||
-                status == OrderStatuses.failed ||
-                status == OrderStatuses.canceled ||
-                status == OrderStatuses.canceledArchived)
+                    // status == OrderStatuses.shipped ||
+                    status == OrderStatuses.outForDelivery
+                // status == OrderStatuses.delivered||
+                // status == OrderStatuses.partialReturn||
+                // status == OrderStatuses.returned ||
+                // status == OrderStatuses.failed ||
+                // status == OrderStatuses.canceled ||
+                // status == OrderStatuses.canceledArchived
+                )
               Container(
                 width: double.infinity,
                 height: 100,

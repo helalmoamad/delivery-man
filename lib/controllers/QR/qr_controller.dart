@@ -3,8 +3,7 @@ import 'package:delivery_man_app/models/AssignToVehicle/assign_to_vehicle_model.
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
-
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import '../../providers/AssignToVehicle_providers/assign_to_vehicle_provider.dart';
 import '../../shared/handling_errors.dart/handling_errors.dart';
 import '../../shared/widgets/snackbar_widgets.dart';

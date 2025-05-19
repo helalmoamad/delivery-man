@@ -2,83 +2,53 @@ class AssignOrderToMeDataModel {
   final bool? isSuccessful;
   final bool? hasContent;
   final int? code;
-  final dynamic message;
-  final dynamic detailedError;
+  final String? message;
+  final String? detailedError;
   final AssignUnAssignOrderDataModel? data;
 
   AssignOrderToMeDataModel({
-    this.isSuccessful,
-    this.hasContent,
-    this.code,
+    required this.isSuccessful,
+    required this.hasContent,
+    required this.code,
     this.message,
     this.detailedError,
     this.data,
   });
 
-  factory AssignOrderToMeDataModel.fromJson(Map<String, dynamic> json) =>
-      AssignOrderToMeDataModel(
-        isSuccessful: json["isSuccessful"],
-        hasContent: json["hasContent"],
-        code: json["code"],
-        message: json["message"],
-        detailedError: json["detailed_error"],
-        data: json["data"] == null
-            ? null
-            : AssignUnAssignOrderDataModel.fromJson(json["data"]),
-      );
+  factory AssignOrderToMeDataModel.fromJson(Map<String, dynamic> json) {
+    return AssignOrderToMeDataModel(
+      isSuccessful: json['isSuccessful'],
+      hasContent: json['hasContent'],
+      code: json['code'],
+      message: json['message'] ?? '',
+      detailedError: json['detailed_error'],
+      data: json['data'] != null
+          ? AssignUnAssignOrderDataModel.fromJson(json['data'])
+          : null,
+    );
+  }
 }
 
 class AssignUnAssignOrderDataModel {
-  final int? id;
-  final int? journeyId;
-  final int? assignToUserId;
-  final int? customerId;
-  final String? paymentStatus;
-  final int? orderStatusId;
-  final String? paymentMethod;
-  final String? transactionRef;
-  final int? orderAmount;
-  final String? orderAmountFormatted;
-  final int? shippingAddressId;
-  final String? orderGroupId;
-  final String? verificationCode;
-  final String? sellerId;
-  final String? orderStatus;
+  final bool? requiresConfirmation;
+  final int? otherUnassignedCount;
+  final List<int>? otherUnassignedOrderIds;
+  final String? notificationMessage;
 
   AssignUnAssignOrderDataModel({
-    this.id,
-    this.journeyId,
-    this.assignToUserId,
-    this.customerId,
-    this.paymentStatus,
-    this.orderStatusId,
-    this.paymentMethod,
-    this.transactionRef,
-    this.orderAmount,
-    this.orderAmountFormatted,
-    this.shippingAddressId,
-    this.orderGroupId,
-    this.verificationCode,
-    this.sellerId,
-    this.orderStatus,
+    required this.requiresConfirmation,
+    required this.otherUnassignedCount,
+    required this.otherUnassignedOrderIds,
+    required this.notificationMessage,
   });
 
-  factory AssignUnAssignOrderDataModel.fromJson(Map<String, dynamic> json) =>
-      AssignUnAssignOrderDataModel(
-        id: json["id"],
-        journeyId: json["journey_id"],
-        assignToUserId: json["assign_to_user_id"],
-        customerId: json["customer_id"],
-        paymentStatus: json["payment_status"],
-        orderStatusId: json["order_status_id"],
-        paymentMethod: json["payment_method"],
-        transactionRef: json["transaction_ref"],
-        orderAmount: json["order_amount"],
-        orderAmountFormatted: json["order_amount_formatted"],
-        shippingAddressId: json["shipping_address_id"],
-        orderGroupId: json["order_group_id"],
-        verificationCode: json["verification_code"],
-        sellerId: json["seller_id"],
-        orderStatus: json["order_status"],
-      );
+  factory AssignUnAssignOrderDataModel.fromJson(Map<String, dynamic> json) {
+    return AssignUnAssignOrderDataModel(
+      requiresConfirmation: json['requires_confirmation'],
+      otherUnassignedCount: json['other_unassigned_count'] ?? 0,
+      otherUnassignedOrderIds:
+          List<int>.from(json['other_unassigned_order_ids'] ?? []),
+      notificationMessage: json['notification_message'] ?? '',
+    );
+  }
 }

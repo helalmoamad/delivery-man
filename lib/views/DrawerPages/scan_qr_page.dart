@@ -5,7 +5,8 @@ import 'package:delivery_man_app/shared/widgets/circle_indecator_widget.dart';
 import 'package:delivery_man_app/shared/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart'
+    show QRView, QrScannerOverlayShape;
 
 class ScanQRPage extends StatelessWidget {
   final QRController qrController = Get.find<QRController>();

@@ -253,7 +253,7 @@ class OrderDetails extends StatelessWidget {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: 16,
+      itemCount: order.note!.isEmpty ? 16 : 17,
       itemBuilder: (context, index) {
         if (index == 0) {
           return OrderDetailsWidget(
@@ -402,17 +402,39 @@ class OrderDetails extends StatelessWidget {
                 : order.deliveryTime.toString(),
           );
         }
-        if (index == 15) {
+        if (index == 15 && order.note!.isNotEmpty) {
           return OrderDetailsWidget(
-            title: 'COD Amount'.tr,
-            color: AppColors.lightGray,
-            isBold: true,
-            value: order.codAmount == null
-                ? 'No Data Now'.tr
-                : order.codAmount.toString() == ''
-                    ? 'No Data Now'.tr
-                    : order.codAmount.toString(),
+            title: 'Note'.tr,
+            value: order.note == '' ? 'No Data Now'.tr : order.note.toString(),
+            height: 70,
           );
+        }
+        if (order.note!.isNotEmpty) {
+          if (index == 16) {
+            return OrderDetailsWidget(
+              title: 'COD Amount'.tr,
+              color: AppColors.lightGray,
+              isBold: true,
+              value: order.codAmount == null
+                  ? 'No Data Now'.tr
+                  : order.codAmount.toString() == ''
+                      ? 'No Data Now'.tr
+                      : order.codAmount.toString(),
+            );
+          }
+        } else {
+          if (index == 15) {
+            return OrderDetailsWidget(
+              title: 'COD Amount'.tr,
+              color: AppColors.lightGray,
+              isBold: true,
+              value: order.codAmount == null
+                  ? 'No Data Now'.tr
+                  : order.codAmount.toString() == ''
+                      ? 'No Data Now'.tr
+                      : order.codAmount.toString(),
+            );
+          }
         }
 
         return null;

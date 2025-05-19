@@ -668,10 +668,11 @@ class OrdersController extends GetxController {
   Future<void> assignOrderToMe({
     required String token,
     required int orderId,
+    required bool? confirm,
   }) async {
     showAssignUnAssignOrderCircleIndicator();
-    final failureOrAssignToVehicle =
-        await assignOrderToMeProvider.call(token: token, orderId: orderId);
+    final failureOrAssignToVehicle = await assignOrderToMeProvider.call(
+        token: token, orderId: orderId, confirm: confirm);
 
     failureOrAssignToVehicle.fold(
       (failure) {
@@ -684,15 +685,43 @@ class OrdersController extends GetxController {
       (data) async {
         assignOrderToMeData = data;
         hideAssignUnAssignOrderCircleIndicator();
-        SnackBarWidgets.showSuccessSnackBar('Assign Order Succeeded'.tr, '');
-        Get.close(1);
-        await const Duration(milliseconds: 500).delay().then(
-          (value) async {
-            // await GlobalFunctions.setisForAssignOrderToMe(
-            //     isForAssignOrderToMe: true);
-            Get.offAllNamed(Routes.myOrdersPage);
-          },
-        );
+        ///////////////////////////////////
+        if (confirm == null) {
+          if (data.data!.otherUnassignedCount == 0) {
+            SnackBarWidgets.showSuccessSnackBar(
+              'Assign Order Succeeded'.tr,
+              '',
+            );
+            Get.close(1);
+            await const Duration(milliseconds: 500).delay().then(
+              (value) async {
+                // await GlobalFunctions.setisForAssignOrderToMe(
+                //     isForAssignOrderToMe: true);
+                Get.offAllNamed(Routes.myOrdersPage);
+              },
+            );
+          }
+        } else {
+          if (data.data!.otherUnassignedCount! > 0) {
+            SnackBarWidgets.showSuccessSnackBar(
+              data.data!.notificationMessage ?? '',
+              '',
+            );
+            Get.close(1);
+            await const Duration(milliseconds: 500).delay().then(
+              (value) async {
+                // await GlobalFunctions.setisForAssignOrderToMe(
+                //     isForAssignOrderToMe: true);
+                Get.offAllNamed(Routes.myOrdersPage);
+              },
+            );
+          } else {
+            SnackBarWidgets.showFailureSnackBar(
+              data.data!.notificationMessage ?? '',
+              '',
+            );
+          }
+        }
       },
     );
   }
@@ -748,6 +777,7 @@ class OrdersController extends GetxController {
     required String status,
     required int orderId,
     double? amount,
+    String? note,
     List<ProductModel>? returnedProducts,
   }) async {
     showChangeOrderStatusCircleIndicator();
@@ -757,6 +787,7 @@ class OrdersController extends GetxController {
       status: status,
       returnedProducts: returnedProducts,
       amount: amount,
+      note: note,
     );
 
     failureOrData.fold(
@@ -798,16 +829,18 @@ class OrdersController extends GetxController {
             },
           );
         }
-
-        if (status == OrderStatuses.partialReturn) {
+        if (status == OrderStatuses.onHold) {
           await chooseMyOrderStatus(
               status: status, index: selectedMyOrderStatus + 2);
-        } else if (status == OrderStatuses.returned) {
-          await chooseMyOrderStatus(
-              status: status, index: selectedMyOrderStatus + 3);
         } else if (status == OrderStatuses.failed) {
           await chooseMyOrderStatus(
+              status: status, index: selectedMyOrderStatus + 3);
+        } else if (status == OrderStatuses.returned) {
+          await chooseMyOrderStatus(
               status: status, index: selectedMyOrderStatus + 4);
+        } else if (status == OrderStatuses.partialReturn) {
+          await chooseMyOrderStatus(
+              status: status, index: selectedMyOrderStatus + 5);
         } else {
           await chooseMyOrderStatus(
               status: status, index: selectedMyOrderStatus + 1);

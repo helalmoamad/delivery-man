@@ -75,6 +75,7 @@ class OrderDataModel {
   dynamic receivedAmount;
   final dynamic orderStatus;
   final String? deliveryTime;
+  final String? note;
   final String? createdAt;
 
   OrderDataModel({
@@ -104,6 +105,7 @@ class OrderDataModel {
     required this.receivedAmount,
     required this.createdAt,
     this.deliveryTime,
+    this.note,
   });
 
   factory OrderDataModel.fromJson(Map<String, dynamic> json) => OrderDataModel(
@@ -140,6 +142,7 @@ class OrderDataModel {
         orderStatus: json["order_status"] ?? '',
         receivedAmount: json["received_amount"] ?? '',
         deliveryTime: json["delivery_time"] ?? '',
+        note: json["note"] ?? '',
         createdAt: json["created_at"] ?? '',
       );
 }

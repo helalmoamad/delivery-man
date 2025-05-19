@@ -30,6 +30,7 @@ abstract class OrdersApiService {
   Future<AssignOrderToMeDataModel> postAssignOrderToMeApi({
     required String token,
     required int orderId,
+    required bool? confirm,
   });
 
   Future<UnAssignOrderToMeDataModel> postUnAssignOrderToMeApi({
@@ -42,6 +43,7 @@ abstract class OrdersApiService {
     required String status,
     required int orderId,
     required double? amount,
+    required String? note,
     required List<ProductModel>? returnedProducts,
   });
 
@@ -153,9 +155,21 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   }
 
   @override
-  Future<AssignOrderToMeDataModel> postAssignOrderToMeApi(
-      {required String token, required int orderId}) async {
+  Future<AssignOrderToMeDataModel> postAssignOrderToMeApi({
+    required String token,
+    required int orderId,
+    required bool? confirm,
+  }) async {
     clientController.reOpenClient();
+
+    Map<String, dynamic> body = {
+      'order_id': orderId,
+      'confirm': confirm,
+    };
+
+    if (confirm == null) {
+      body.remove('confirm');
+    }
 
     final response = await ApiMethods.postRequest<AssignOrderToMeDataModel>(
         urlPath: 'orders/assign_to_me',
@@ -163,9 +177,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
         client: clientController.client,
         timerService: timerService,
         isGlobalTimer: true,
-        body: {
-          'order_id': orderId,
-        },
+        body: body,
         fromJson: AssignOrderToMeDataModel.fromJson);
 
     return response;
@@ -177,6 +189,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     required String status,
     required int orderId,
     required double? amount,
+    required String? note,
     required List<ProductModel>? returnedProducts,
   }) async {
     clientController.reOpenClient();
@@ -185,6 +198,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       'order_id': orderId,
       'status': status,
       'received_amount': amount,
+      'note': note,
       'returned_products': returnedProducts == null
           ? null
           : json.encode(
@@ -197,6 +211,10 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
 
     if (amount == null) {
       changeStatusJson.remove('received_amount');
+    }
+
+    if (note == null) {
+      changeStatusJson.remove('note');
     }
     final response = await ApiMethods.postRequest<ChangeStatusModel>(
       urlPath: 'orders/change_status',

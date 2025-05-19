@@ -13,13 +13,16 @@ class ChangeOrderStatusProvider {
     required String status,
     required int orderId,
     required double? amount,
+    required String? note,
     required List<ProductModel>? returnedProducts,
   }) async {
     return await ordersRepository.changeStatus(
-        token: token,
-        orderId: orderId,
-        status: status,
-        returnedProducts: returnedProducts,
-        amount: amount);
+      token: token,
+      orderId: orderId,
+      status: status,
+      returnedProducts: returnedProducts,
+      amount: amount,
+      note: note,
+    );
   }
 }

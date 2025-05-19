@@ -52,8 +52,36 @@ class InDeliveryCenterButtons extends StatelessWidget {
                 title: 'The order  will be assigned to you'.tr,
                 onConfirm: () async {
                   Get.back();
-                  await ordersController.assignOrderToMe(
-                      token: GlobalFunctions.getToken(), orderId: order.id!);
+                  await ordersController
+                      .assignOrderToMe(
+                    token: GlobalFunctions.getToken(),
+                    orderId: order.id!,
+                    confirm: null,
+                  )
+                      .then(
+                    (value) {
+                      if (ordersController
+                              .assignOrderToMeData.data!.otherUnassignedCount! >
+                          0) {
+                        AppDialogs.showConfirmationDialog(
+                          // ignore: use_build_context_synchronously
+                          context: context,
+                          title: ordersController.assignOrderToMeData.data!
+                                  .notificationMessage ??
+                              '',
+                          onConfirm: () async {
+                            Get.back();
+                            /////////////////////
+                            ordersController.assignOrderToMe(
+                              token: GlobalFunctions.getToken(),
+                              orderId: order.id!,
+                              confirm: true,
+                            );
+                          },
+                        );
+                      }
+                    },
+                  );
                 },
               );
             } else {

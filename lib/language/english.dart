@@ -149,4 +149,8 @@ const Map<String, String> en = {
   'Created At': 'Created At',
   'In Delivery Center': 'In Delivery Center',
   'On Hold': 'On Hold',
+  'Convert To On Hold': 'Convert To On Hold',
+  'Enter The Note': 'Enter The Note',
+  'Note': 'Note',
+  'note should not be empty': 'note should not be empty',
 };

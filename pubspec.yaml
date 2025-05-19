@@ -23,13 +23,13 @@ dependencies:
   cached_network_image: ^3.4.1
   record: ^5.1.2
   audioplayers: ^6.0.0
-  qr_code_scanner: ^1.0.1
+  qr_code_scanner_plus: ^2.0.10+1
   share_plus: ^10.0.2
   scrollable_positioned_list: ^0.3.8
   url_launcher:
   geolocator: ^10.1.0
   permission_handler:
-  app_settings:
+  app_settings: ^6.1.1
   path_provider: ^2.1.1
   path:
   flutter_dotenv: ^5.1.0

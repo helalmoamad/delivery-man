@@ -1,0 +1,2 @@
+C:/Users/Ali/Desktop/delivery/delivery-man/android/app/.cxx/RelWithDebInfo/3h21y19g/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Ali/Desktop/delivery/delivery-man/android/app/.cxx/RelWithDebInfo/3h21y19g/armeabi-v7a/CMakeFiles/rebuild_cache.dir

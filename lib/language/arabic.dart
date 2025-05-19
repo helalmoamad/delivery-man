@@ -147,4 +147,8 @@ const Map<String, String> ar = {
   'Created At': 'تم الإنشاء',
   'In Delivery Center': 'في مركز التوصيل',
   'On Hold': 'قيد الانتظار',
+  'Convert To On Hold': 'تحويل الى قيد الانتظار',
+  'Enter The Note': 'ادخل الملاحظة',
+  'Note': 'ملاحظة',
+  'note should not be empty': 'الملاحظة لا يجب ان تكون فارغة',
 };

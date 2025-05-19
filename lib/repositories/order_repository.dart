@@ -79,11 +79,15 @@ class OrdersRepository {
   Future<Either<Failure, AssignOrderToMeDataModel>> assignOrderToMe({
     required String token,
     required int orderId,
+    required bool? confirm,
   }) async {
     return RepoNetworkRequest.makeNetworkRequest<AssignOrderToMeDataModel>(
       networkInfo: networkInfo,
       request: () => ordersApiService.postAssignOrderToMeApi(
-          token: token, orderId: orderId),
+        token: token,
+        orderId: orderId,
+        confirm: confirm,
+      ),
     );
   }
 
@@ -105,6 +109,7 @@ class OrdersRepository {
     required String status,
     required int orderId,
     required double? amount,
+    required String? note,
     required List<ProductModel>? returnedProducts,
   }) async {
     return RepoNetworkRequest.makeNetworkRequestUnit(
@@ -115,6 +120,7 @@ class OrdersRepository {
         orderId: orderId,
         status: status,
         returnedProducts: returnedProducts,
+        note: note,
         amount: amount,
       ),
     );

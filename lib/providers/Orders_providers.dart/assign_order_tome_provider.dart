@@ -9,8 +9,13 @@ class AssignOrderToMeProvider {
   AssignOrderToMeProvider(this.ordersRepository);
 
   Future<Either<Failure, AssignOrderToMeDataModel>> call(
-      {required String token, required int orderId}) async {
+      {required String token,
+      required int orderId,
+      required bool? confirm}) async {
     return await ordersRepository.assignOrderToMe(
-        token: token, orderId: orderId);
+      token: token,
+      orderId: orderId,
+      confirm: confirm,
+    );
   }
 }
