@@ -124,6 +124,35 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
+          ListTile(
+            leading: GetBuilder<AuthController>(
+              id: 'logout',
+              builder: (_) {
+                return authController.isLogoutCircleShown
+                    ? const SizedBox(
+                        height: 25,
+                        width: 25,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Icon(
+                        Icons.logout,
+                        color: AppColors.primaryDark,
+                      );
+              },
+            ),
+            title: TextWidget(
+                text: 'chat'.tr,
+                color: AppColors.blackDark,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                textAlign: TextAlign.start,
+                maxline: 1),
+            onTap: () {
+              Get.toNamed(Routes.chatPage);
+            },
+          ),
         ],
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:delivery_man_app/controllers/Orders/orders_bindings.dart';
 import 'package:delivery_man_app/controllers/QR/qr_binding.dart';
+import 'package:delivery_man_app/views/Chat/chat_page.dart' show ChatPage;
 import 'package:delivery_man_app/views/DrawerPages/info_for_developer/info_for_developer_page.dart';
 import 'package:delivery_man_app/views/DrawerPages/info_for_developer/more_info_page.dart';
 import 'package:delivery_man_app/views/DrawerPages/scan_qr_page.dart';
@@ -20,6 +21,7 @@ class Routes {
   static const scanQRPage = '/scanQRPage';
   static const infoForDeveloper = '/infoForDeveloper';
   static const moreInfoPage = '/moreInfoPage';
+  static const chatPage = '/chatPage';
 }
 
 class AppRoutes {
@@ -86,6 +88,13 @@ class AppRoutes {
       name: Routes.moreInfoPage,
       page: () => MoreInfoPage(),
       transition: Transition.fade,
+      transitionDuration: const Duration(milliseconds: 500),
+    ),
+
+    GetPage(
+      name: Routes.chatPage,
+      page: () => const ChatPage(),
+      transition: Transition.cupertino,
       transitionDuration: const Duration(milliseconds: 500),
     ),
   ];

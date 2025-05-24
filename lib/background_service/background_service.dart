@@ -24,6 +24,7 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
+@pragma('vm:entry-point')
 class BackGroundServiceUtils {
   static final service = FlutterBackgroundService();
   static late Connectivity connectivity;

@@ -764,6 +764,7 @@ class OrdersController extends GetxController {
     );
   }
 
+  @pragma('vm:entry-point')
   Future<void> startUploadFileService() async {
     await BackGroundServiceUtils.service.isRunning().then((value) async {
       if (!value) {
