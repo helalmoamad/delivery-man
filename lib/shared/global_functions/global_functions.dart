@@ -30,6 +30,7 @@ class GlobalFunctions {
 
     return lanLocal;
   }
+  // verificationId
 
   static Future<void> setToken({required String token}) async {
     await prefs.setString('token', token);
@@ -39,6 +40,31 @@ class GlobalFunctions {
     String? token = prefs.getString('token') ?? '';
 
     return token;
+  }
+
+  static Future<void> setChatToken({required String chatToken}) async {
+    await prefs.setString('chat_token', chatToken);
+  }
+
+  static String getChatToken() {
+    String? chatToken = prefs.getString('chat_token') ?? '';
+
+    return chatToken;
+  }
+
+  static Future<void> setVerificationId(
+      {required String verificationId}) async {
+    await prefs.setString('verificationId', verificationId);
+  }
+
+  static String? getVerificationId() {
+    String? verificationId = prefs.getString('verificationId');
+
+    return verificationId;
+  }
+
+  static Future<void> removeVerificationId() async {
+    await prefs.remove('verificationId');
   }
 
   static Future<void> setIsLoggedIn({required bool isLoggedIn}) async {

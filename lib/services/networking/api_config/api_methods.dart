@@ -14,10 +14,13 @@ class ApiMethods {
     required Client client,
     required TimerService timerService,
     required bool isGlobalTimer,
+    bool isMarketUrl = false,
+    bool isChatUrl = false,
+    bool isForOtp = false,
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
     final uri = Uri.parse(
-        '${ApiConstants.baseUrl}/api/${ApiConstants.version}/$urlPath');
+        '${isChatUrl ? ApiConstants.chatUrl : isMarketUrl ? ApiConstants.marketUrl : ApiConstants.deliveryUrl}/api/${ApiConstants.version}/$urlPath');
 
     final Completer<Response> completer = Completer<Response>();
 
@@ -76,6 +79,7 @@ class ApiMethods {
         timerService: timerService,
         isGlobalTimer: isGlobalTimer,
         urlPath: urlPath,
+        isForOtp: isForOtp,
         isGet: true,
       );
     } finally {
@@ -94,9 +98,11 @@ class ApiMethods {
     required bool isGlobalTimer,
     required Map<String, dynamic> body,
     T Function(Map<String, dynamic>)? fromJson,
+    bool isMarketUrl = false,
+    bool isChatUrl = false,
   }) async {
     final uri = Uri.parse(
-        '${ApiConstants.baseUrl}/api/${ApiConstants.version}/$urlPath');
+        '${isChatUrl ? ApiConstants.chatUrl : isMarketUrl ? ApiConstants.marketUrl : ApiConstants.deliveryUrl}/api/${ApiConstants.version}/$urlPath');
 
     Map<String, String>? headers = {
       'Content-type': 'application/json',

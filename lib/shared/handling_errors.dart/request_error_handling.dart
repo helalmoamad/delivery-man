@@ -45,6 +45,11 @@ class RequestErrorHandling {
       return left(
         WrongDataFailure(),
       );
+    } else if (exception is OtpTryAgainException) {
+      debugPrint('//// OtpTryAgainException ///// \n $exception');
+      return left(
+        OtpTryAgainFailure(),
+      );
     } else {
       debugPrint('//// UnExpected ///// \n $exception');
       return Left(

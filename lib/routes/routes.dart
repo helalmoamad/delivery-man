@@ -1,5 +1,7 @@
+import 'package:delivery_man_app/controllers/OTP/otp_binding.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_bindings.dart';
 import 'package:delivery_man_app/controllers/QR/qr_binding.dart';
+import 'package:delivery_man_app/views/Auth/otp_verification_page.dart';
 import 'package:delivery_man_app/views/Chat/chat_page.dart' show ChatPage;
 import 'package:delivery_man_app/views/DrawerPages/info_for_developer/info_for_developer_page.dart';
 import 'package:delivery_man_app/views/DrawerPages/info_for_developer/more_info_page.dart';
@@ -22,6 +24,7 @@ class Routes {
   static const infoForDeveloper = '/infoForDeveloper';
   static const moreInfoPage = '/moreInfoPage';
   static const chatPage = '/chatPage';
+  static const otpVerificationPage = '/OtpVerificationPage';
 }
 
 class AppRoutes {
@@ -95,6 +98,14 @@ class AppRoutes {
       name: Routes.chatPage,
       page: () => const ChatPage(),
       transition: Transition.cupertino,
+      transitionDuration: const Duration(milliseconds: 500),
+    ),
+
+    GetPage(
+      name: Routes.otpVerificationPage,
+      page: () => const OtpVerificationPage(),
+      transition: Transition.cupertino,
+      binding: OtpBinding(),
       transitionDuration: const Duration(milliseconds: 500),
     ),
   ];

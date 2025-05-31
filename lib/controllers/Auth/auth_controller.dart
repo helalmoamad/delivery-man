@@ -1,3 +1,16 @@
+import 'dart:async';
+
+import 'package:delivery_man_app/models/Auth/chat_login_model.dart';
+import 'package:delivery_man_app/models/Auth/send_otp_model.dart'
+    show SendOtpResponseModel;
+import 'package:delivery_man_app/models/Auth/verify_otp_model.dart'
+    show VerifyOtpResponseModel;
+import 'package:delivery_man_app/providers/Auth_providers/chat_login_provider.dart'
+    show ChatLoginProvider;
+import 'package:delivery_man_app/providers/Auth_providers/send_otp_provider.dart'
+    show SendOtpProvider;
+import 'package:delivery_man_app/providers/Auth_providers/verify_otp_provider.dart'
+    show VerifyOtpProvider;
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,7 +37,14 @@ class AuthController extends GetxController {
   late LoginProvider loginProvider = Get.find<LoginProvider>();
   late SetFcmTokenProvider setFcmTokenProvider =
       Get.find<SetFcmTokenProvider>();
+
   late LogOutProvider logOutProvider = Get.find();
+
+  late SendOtpProvider sendOtpProvider = Get.find<SendOtpProvider>();
+
+  late VerifyOtpProvider verifyOtpProvider = Get.find<VerifyOtpProvider>();
+
+  late ChatLoginProvider chatLoginProvider = Get.find<ChatLoginProvider>();
 
   late UserDataModel userData;
 
@@ -48,7 +68,9 @@ class AuthController extends GetxController {
 
 /////////////////////////////
 
-  Future<void> login({required LoginModel loginModel}) async {
+  Future<void> login({
+    required LoginModel loginModel,
+  }) async {
     showCircleIndicator();
     final failureOrLogin = await loginProvider.call(loginModel);
     failureOrLogin.fold(
@@ -163,6 +185,145 @@ class AuthController extends GetxController {
         ]);
         Get.offAllNamed(Routes.loginPage);
         hideLogoutCircleIndicator();
+      },
+    );
+  }
+
+  bool isSendOtpCircleShown = false;
+
+/////////////////////////
+  void showSendOtpCircleIndicator() {
+    isSendOtpCircleShown = true;
+    update();
+  }
+
+////////////////////////////
+  void hideSendOtpCircleIndicator() {
+    isSendOtpCircleShown = false;
+    update();
+  }
+
+  SendOtpResponseModel? sendOtpData;
+
+  Future<void> sendOtp({
+    required String phone,
+    required int isViaWhatsapp,
+  }) async {
+    showSendOtpCircleIndicator();
+    await GlobalFunctions.removeVerificationId();
+
+    final failureOrData =
+        await sendOtpProvider.call(phone: phone, isViaWhatsapp: isViaWhatsapp);
+    failureOrData.fold(
+      (failure) {
+        HandlingFailures.networkErrorrHandling(
+            failure: failure,
+            hideCircleIndicator: hideSendOtpCircleIndicator,
+            showNoInternetPage: () {});
+      },
+      (data) async {
+        sendOtpData = data;
+        GlobalFunctions.setVerificationId(
+          verificationId: sendOtpData!.data!.verificationId,
+        );
+        hideSendOtpCircleIndicator();
+      },
+    );
+  }
+
+  ///////////////////////////
+  bool isVerifyOtpCircleShown = false;
+
+/////////////////////////
+  void showVerifyOtpCircleIndicator() {
+    isVerifyOtpCircleShown = true;
+    update();
+  }
+
+////////////////////////////
+  void hideVerifyOtpCircleIndicator() {
+    isVerifyOtpCircleShown = false;
+    update();
+  }
+
+  VerifyOtpResponseModel? verifyOtpData;
+
+  Future<void> verifyOtp({
+    required String verificationId,
+    required String otp,
+  }) async {
+    showVerifyOtpCircleIndicator();
+    final failureOrData =
+        await verifyOtpProvider.call(verificationId: verificationId, otp: otp);
+    failureOrData.fold(
+      (failure) {
+        HandlingFailures.networkErrorrHandling(
+          failure: failure,
+          hideCircleIndicator: hideVerifyOtpCircleIndicator,
+          showNoInternetPage: () {},
+        );
+      },
+      (data) async {
+        verifyOtpData = data;
+        hideVerifyOtpCircleIndicator();
+        ////////////////////
+        await chatLogin(
+          mobilePhone: GlobalFunctions.getMobilePhone(),
+          otpIdToken: verifyOtpData!.data!.idToken,
+          name: GlobalFunctions.getName(),
+          originalUserId: GlobalFunctions.getUserId(),
+        );
+      },
+    );
+  }
+
+  ///////////////////////////
+  bool isChatLoginCircleShown = false;
+
+/////////////////////////
+  void showChatLoginCircleIndicator() {
+    isChatLoginCircleShown = true;
+    update();
+  }
+
+////////////////////////////
+  void hideChatLoginCircleIndicator() {
+    isChatLoginCircleShown = false;
+    update();
+  }
+
+  ChatLoginModel? chatLoginData;
+
+  Future<void> chatLogin({
+    required String mobilePhone,
+    required String otpIdToken,
+    required String name,
+    required int originalUserId,
+  }) async {
+    showChatLoginCircleIndicator();
+    final failureOrData = await chatLoginProvider.call(
+      mobilePhone: mobilePhone,
+      otpIdToken: otpIdToken,
+      name: name,
+      originalUserId: originalUserId,
+    );
+    failureOrData.fold(
+      (failure) {
+        HandlingFailures.networkErrorrHandling(
+          failure: failure,
+          hideCircleIndicator: hideChatLoginCircleIndicator,
+          showNoInternetPage: () {},
+        );
+      },
+      (data) async {
+        chatLoginData = data;
+
+        await GlobalFunctions.setChatToken(
+            chatToken: chatLoginData!.data!.accessToken ?? '');
+
+        Get.offNamed(Routes.chatPage);
+
+        hideChatLoginCircleIndicator();
       },
     );
   }

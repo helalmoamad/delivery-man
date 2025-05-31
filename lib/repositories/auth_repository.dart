@@ -1,5 +1,11 @@
 import 'dart:async';
 import 'package:dartz/dartz.dart';
+import 'package:delivery_man_app/models/Auth/chat_login_model.dart'
+    show ChatLoginModel;
+import 'package:delivery_man_app/models/Auth/send_otp_model.dart'
+    show SendOtpResponseModel;
+import 'package:delivery_man_app/models/Auth/verify_otp_model.dart'
+    show VerifyOtpResponseModel;
 import 'package:delivery_man_app/repositories/repo_network_request.dart';
 import '../models/Auth/fcm_token_model.dart';
 import '../models/Auth/login_model.dart';
@@ -39,6 +45,49 @@ class AuthRepository {
       networkInfo: networkInfo,
       request: () => authApiService.postLogoutApi(
         token: token,
+      ),
+    );
+  }
+
+  Future<Either<Failure, SendOtpResponseModel>> postsendOtp({
+    required String phone,
+    required int isViaWhatsapp,
+  }) async {
+    return RepoNetworkRequest.makeNetworkRequest(
+      networkInfo: networkInfo,
+      request: () => authApiService.sendOtpApi(
+        phone: phone,
+        isViaWhatsapp: isViaWhatsapp,
+      ),
+    );
+  }
+
+  Future<Either<Failure, VerifyOtpResponseModel>> postVerifyOtp({
+    required String verificationId,
+    required String otp,
+  }) async {
+    return RepoNetworkRequest.makeNetworkRequest(
+      networkInfo: networkInfo,
+      request: () => authApiService.verifyOtpApi(
+        verificationId: verificationId,
+        otp: otp,
+      ),
+    );
+  }
+
+  Future<Either<Failure, ChatLoginModel>> chatLoginApi({
+    required String mobilePhone,
+    required String otpIdToken,
+    required String name,
+    required int originalUserId,
+  }) async {
+    return RepoNetworkRequest.makeNetworkRequest(
+      networkInfo: networkInfo,
+      request: () => authApiService.chatLoginApi(
+        mobilePhone: mobilePhone,
+        name: name,
+        originalUserId: originalUserId,
+        otpIdToken: otpIdToken,
       ),
     );
   }

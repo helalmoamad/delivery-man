@@ -35,10 +35,20 @@ class HandlingFailures {
         hideCircleIndicator();
         showNoInternetPage();
         SnackBarWidgets.showFailureSnackBar(
-            AppFailureMessages.cantAssignToVehicleMessage, '');
+          AppFailureMessages.cantAssignToVehicleMessage,
+          '',
+        );
         break;
       case ClientCloseFailure:
         break;
+      case OtpTryAgainFailure:
+        hideCircleIndicator();
+        showNoInternetPage();
+        SnackBarWidgets.showFailureSnackBar(
+          AppFailureMessages.unExpectedFailureMessage,
+          seconds: 4,
+          '',
+        );
       default:
         hideCircleIndicator();
         showNoInternetPage();

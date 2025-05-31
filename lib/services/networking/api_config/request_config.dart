@@ -41,6 +41,7 @@ class RequestConfig {
     required bool isGlobalTimer,
     required bool isGet,
     required String urlPath,
+    bool isForOtp = false,
   }) {
     //////////////////////////////////////////////////////////////////
     if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -71,6 +72,8 @@ class RequestConfig {
           }
         }
       }
+    } else if (response.statusCode == 422 && isForOtp) {
+      throw OtpTryAgainException();
     } else {
       debugPrint('3');
       throw ServerException();

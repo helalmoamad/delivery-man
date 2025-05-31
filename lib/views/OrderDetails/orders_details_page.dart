@@ -4,6 +4,7 @@ import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/handling_errors.dart/handling_errors.dart';
 import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
+import 'package:delivery_man_app/shared/widgets/snackbar_widgets.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,6 +43,16 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    String status;
+    if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
+      status = OrderStatuses.inDeliveryCenter;
+    } else {
+      if (ordersController.previousRoute == Routes.myOrdersPage) {
+        status = ordersController.myOrderStatus;
+      } else {
+        status = ordersController.orderStatus;
+      }
+    }
     return SafeArea(
       // ignore: deprecated_member_use
       child: WillPopScope(
@@ -60,6 +71,26 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
         },
         child: Scaffold(
           appBar: buildAppBar(),
+          floatingActionButton: status == OrderStatuses.outForDelivery
+              ? FloatingActionButton(
+                  onPressed: () {
+                    if (GlobalFunctions.getMobilePhone().isNotEmpty) {
+                      if (GlobalFunctions.getChatToken().isNotEmpty) {
+                        Get.toNamed(Routes.chatPage);
+                      } else {
+                        Get.toNamed(Routes.otpVerificationPage);
+                      }
+                    } else {
+                      SnackBarWidgets.showSuccessSnackBar(
+                          'Please enter the phone number', '');
+                    }
+                  },
+                  tooltip: 'Chat',
+                  child: const Icon(Icons.chat),
+                )
+              : null,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.miniEndFloat,
           body: GetBuilder<OrdersController>(
             id: 'all_order_details_page',
             builder: (_) {
