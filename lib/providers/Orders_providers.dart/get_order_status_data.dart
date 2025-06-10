@@ -7,7 +7,7 @@ class GetOrderStatusDataProvider {
 
   GetOrderStatusDataProvider(this.ordersRepository);
 
-  Future<Either<Failure, List<dynamic>>> call({
+  Future<Either<FailureDelivery, List<dynamic>>> call({
     required String token,
   }) async {
     return await ordersRepository.getOrderStatusData(token: token);

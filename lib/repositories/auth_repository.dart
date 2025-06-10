@@ -20,14 +20,15 @@ class AuthRepository {
 
   AuthRepository({required this.authApiService, required this.networkInfo});
 
-  Future<Either<Failure, UserModel>> postLogin(LoginModel loginModel) async {
+  Future<Either<FailureDelivery, UserModel>> postLogin(
+      LoginModel loginModel) async {
     return RepoNetworkRequest.makeNetworkRequest<UserModel>(
       networkInfo: networkInfo,
       request: () => authApiService.postLoginApi(loginModel),
     );
   }
 
-  Future<Either<Failure, SetFcmTokenModel>> setFcmToken({
+  Future<Either<FailureDelivery, SetFcmTokenModel>> setFcmToken({
     required String token,
     required String fcmToken,
   }) async {
@@ -38,7 +39,7 @@ class AuthRepository {
     );
   }
 
-  Future<Either<Failure, Unit>> postLogout({
+  Future<Either<FailureDelivery, Unit>> postLogout({
     required String token,
   }) async {
     return RepoNetworkRequest.makeNetworkRequestUnit(
@@ -49,7 +50,7 @@ class AuthRepository {
     );
   }
 
-  Future<Either<Failure, SendOtpResponseModel>> postsendOtp({
+  Future<Either<FailureDelivery, SendOtpResponseModel>> postsendOtp({
     required String phone,
     required int isViaWhatsapp,
   }) async {
@@ -62,7 +63,7 @@ class AuthRepository {
     );
   }
 
-  Future<Either<Failure, VerifyOtpResponseModel>> postVerifyOtp({
+  Future<Either<FailureDelivery, VerifyOtpResponseModel>> postVerifyOtp({
     required String verificationId,
     required String otp,
   }) async {
@@ -75,7 +76,7 @@ class AuthRepository {
     );
   }
 
-  Future<Either<Failure, ChatLoginModel>> chatLoginApi({
+  Future<Either<FailureDelivery, ChatLoginModel>> chatLoginApi({
     required String mobilePhone,
     required String otpIdToken,
     required String name,

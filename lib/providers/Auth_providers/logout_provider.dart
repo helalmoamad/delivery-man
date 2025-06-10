@@ -7,7 +7,7 @@ class LogOutProvider {
 
   LogOutProvider(this.authRepository);
 
-  Future<Either<Failure, Unit>> call({required String token}) async {
+  Future<Either<FailureDelivery, Unit>> call({required String token}) async {
     return await authRepository.postLogout(token: token);
   }
 }

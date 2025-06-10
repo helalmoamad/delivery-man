@@ -151,4 +151,6 @@ const Map<String, String> ar = {
   'Enter The Note': 'ادخل الملاحظة',
   'Note': 'ملاحظة',
   'note should not be empty': 'الملاحظة لا يجب ان تكون فارغة',
+  'uk': "غ م",
+  'invite': 'دعوة',
 };

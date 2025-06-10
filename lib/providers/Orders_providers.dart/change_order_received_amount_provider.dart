@@ -8,7 +8,7 @@ class ChangeOrderReceivedAmountProvider {
 
   ChangeOrderReceivedAmountProvider(this.ordersRepository);
 
-  Future<Either<Failure, OrderDataModel>> call({
+  Future<Either<FailureDelivery, OrderDataModel>> call({
     required String token,
     required int orderId,
     required double receivedAmount,

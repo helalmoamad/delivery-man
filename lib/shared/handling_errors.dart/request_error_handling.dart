@@ -7,7 +7,7 @@ import '../errors/failures.dart';
 import '../network_info/network_info.dart';
 
 class RequestErrorHandling {
-  static Future<Either<Failure, T>> handle<T>({
+  static Future<Either<FailureDelivery, T>> handle<T>({
     required Object exception,
     required bool isClientCloseFailure,
     required NetworkInfo networkInfo,

@@ -16,7 +16,7 @@ class OrdersRepository {
 
   OrdersRepository({required this.ordersApiService, required this.networkInfo});
 
-  Future<Either<Failure, ListOrderModel>> getListOrderData(
+  Future<Either<FailureDelivery, ListOrderModel>> getListOrderData(
       {required String token,
       required String status,
       required int offset}) async {
@@ -31,7 +31,7 @@ class OrdersRepository {
     );
   }
 
-  Future<Either<Failure, ListOrderModel>> getMyOrdersData(
+  Future<Either<FailureDelivery, ListOrderModel>> getMyOrdersData(
       {required String token,
       required String status,
       required int offset}) async {
@@ -43,7 +43,7 @@ class OrdersRepository {
     );
   }
 
-  Future<Either<Failure, List<dynamic>>> getOrderStatusData({
+  Future<Either<FailureDelivery, List<dynamic>>> getOrderStatusData({
     required String token,
   }) async {
     return RepoNetworkRequest.makeNetworkRequest<List<dynamic>>(
@@ -53,7 +53,7 @@ class OrdersRepository {
     );
   }
 
-  Future<Either<Failure, UpdateOrderResponseModel>> getOrderDetails({
+  Future<Either<FailureDelivery, UpdateOrderResponseModel>> getOrderDetails({
     required String token,
     required int orderId,
   }) async {
@@ -67,7 +67,7 @@ class OrdersRepository {
     );
   }
 
-  Future<Either<Failure, UnAssignToVehicleModel>> unAssignToVehicle(
+  Future<Either<FailureDelivery, UnAssignToVehicleModel>> unAssignToVehicle(
       {required String token, required int vehicleId}) async {
     return RepoNetworkRequest.makeNetworkRequest<UnAssignToVehicleModel>(
       networkInfo: networkInfo,
@@ -76,7 +76,7 @@ class OrdersRepository {
     );
   }
 
-  Future<Either<Failure, AssignOrderToMeDataModel>> assignOrderToMe({
+  Future<Either<FailureDelivery, AssignOrderToMeDataModel>> assignOrderToMe({
     required String token,
     required int orderId,
     required bool? confirm,
@@ -91,7 +91,8 @@ class OrdersRepository {
     );
   }
 
-  Future<Either<Failure, UnAssignOrderToMeDataModel>> unAssignOrderToMe({
+  Future<Either<FailureDelivery, UnAssignOrderToMeDataModel>>
+      unAssignOrderToMe({
     required String token,
     required int orderId,
   }) async {
@@ -104,7 +105,7 @@ class OrdersRepository {
     );
   }
 
-  Future<Either<Failure, Unit>> changeStatus({
+  Future<Either<FailureDelivery, Unit>> changeStatus({
     required String token,
     required String status,
     required int orderId,
@@ -126,7 +127,7 @@ class OrdersRepository {
     );
   }
 
-  Future<Either<Failure, OrderDataModel>> changeOrderReceivedAmount({
+  Future<Either<FailureDelivery, OrderDataModel>> changeOrderReceivedAmount({
     required String token,
     required int orderId,
     required double receivedAmount,

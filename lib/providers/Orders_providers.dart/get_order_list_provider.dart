@@ -8,7 +8,7 @@ class GetListOrderDataProvider {
 
   GetListOrderDataProvider(this.ordersRepository);
 
-  Future<Either<Failure, ListOrderModel>> call(
+  Future<Either<FailureDelivery, ListOrderModel>> call(
       {required String token,
       required String status,
       required int offset}) async {

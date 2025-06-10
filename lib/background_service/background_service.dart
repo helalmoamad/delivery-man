@@ -177,7 +177,7 @@ class BackGroundServiceUtils {
     service.stopSelf();
   }
 
-  static String _mapFailureToMessage(Failure failure) {
+  static String _mapFailureToMessage(FailureDelivery failure) {
     switch (failure.runtimeType) {
       case ServerFailure:
         return AppFailureMessages.serverFailureMessage;

@@ -8,7 +8,7 @@ class ChangeOrderStatusProvider {
 
   ChangeOrderStatusProvider(this.ordersRepository);
 
-  Future<Either<Failure, Unit>> call({
+  Future<Either<FailureDelivery, Unit>> call({
     required String token,
     required String status,
     required int orderId,

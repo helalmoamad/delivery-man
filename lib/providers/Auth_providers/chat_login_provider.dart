@@ -8,7 +8,7 @@ class ChatLoginProvider {
 
   ChatLoginProvider(this.authRepository);
 
-  Future<Either<Failure, ChatLoginModel>> call({
+  Future<Either<FailureDelivery, ChatLoginModel>> call({
     required String mobilePhone,
     required String otpIdToken,
     required String name,

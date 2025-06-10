@@ -8,7 +8,7 @@ class UnAssignToVehicleProvider {
 
   UnAssignToVehicleProvider(this.ordersRepository);
 
-  Future<Either<Failure, UnAssignToVehicleModel>> call(
+  Future<Either<FailureDelivery, UnAssignToVehicleModel>> call(
       {required String token, required int vehicleId}) async {
     return await ordersRepository.unAssignToVehicle(
         token: token, vehicleId: vehicleId);

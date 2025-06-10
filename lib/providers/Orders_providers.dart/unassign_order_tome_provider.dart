@@ -8,7 +8,7 @@ class UnAssignOrderToMeProvider {
 
   UnAssignOrderToMeProvider(this.ordersRepository);
 
-  Future<Either<Failure, UnAssignOrderToMeDataModel>> call(
+  Future<Either<FailureDelivery, UnAssignOrderToMeDataModel>> call(
       {required String token, required int orderId}) async {
     return await ordersRepository.unAssignOrderToMe(
         token: token, orderId: orderId);

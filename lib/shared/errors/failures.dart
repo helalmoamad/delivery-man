@@ -1,18 +1,18 @@
-abstract class Failure {}
+abstract class FailureDelivery {}
 
 //if no internet
-class OfflineFailure extends Failure {}
+class OfflineFailure extends FailureDelivery {}
 
 //if data error from server
-class ServerFailure extends Failure {}
+class ServerFailure extends FailureDelivery {}
 
 // user insert wrong data in auth methods login or signup
-class WrongDataFailure extends Failure {}
+class WrongDataFailure extends FailureDelivery {}
 
-class CantAssignToVehicleFailure extends Failure {}
+class CantAssignToVehicleFailure extends FailureDelivery {}
 
-class ClientCloseFailure extends Failure {}
+class ClientCloseFailure extends FailureDelivery {}
 
-class UnExpectedFailure extends Failure {}
+class UnExpectedFailure extends FailureDelivery {}
 
-class OtpTryAgainFailure extends Failure {}
+class OtpTryAgainFailure extends FailureDelivery {}

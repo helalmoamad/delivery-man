@@ -89,8 +89,7 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
                   child: const Icon(Icons.chat),
                 )
               : null,
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.miniEndFloat,
+          floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
           body: GetBuilder<OrdersController>(
             id: 'all_order_details_page',
             builder: (_) {

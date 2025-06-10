@@ -8,7 +8,7 @@ class GetOrderDetailsProvider {
 
   GetOrderDetailsProvider(this.orderRepository);
 
-  Future<Either<Failure, UpdateOrderResponseModel>> call({
+  Future<Either<FailureDelivery, UpdateOrderResponseModel>> call({
     required String token,
     required int orderId,
   }) async {

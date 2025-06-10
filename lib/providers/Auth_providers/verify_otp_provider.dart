@@ -9,7 +9,7 @@ class VerifyOtpProvider {
 
   VerifyOtpProvider(this.authRepository);
 
-  Future<Either<Failure, VerifyOtpResponseModel>> call({
+  Future<Either<FailureDelivery, VerifyOtpResponseModel>> call({
     required String verificationId,
     required String otp,
   }) async {

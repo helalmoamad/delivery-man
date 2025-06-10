@@ -9,7 +9,7 @@ class LoginProvider {
 
   LoginProvider(this.authRepository);
 
-  Future<Either<Failure, UserModel>> call(LoginModel loginModel) async {
+  Future<Either<FailureDelivery, UserModel>> call(LoginModel loginModel) async {
     return await authRepository.postLogin(loginModel);
   }
 }

@@ -4,7 +4,7 @@ import '../shared/handling_errors.dart/request_error_handling.dart';
 import '../shared/network_info/network_info.dart';
 
 class RepoNetworkRequest {
-  static Future<Either<Failure, T>> makeNetworkRequest<T>({
+  static Future<Either<FailureDelivery, T>> makeNetworkRequest<T>({
     required Future<T> Function() request,
     required NetworkInfo networkInfo,
     bool isClientCloseFailure = false,
@@ -24,7 +24,7 @@ class RepoNetworkRequest {
     }
   }
 
-  static Future<Either<Failure, Unit>> makeNetworkRequestUnit({
+  static Future<Either<FailureDelivery, Unit>> makeNetworkRequestUnit({
     required Future<void> Function() request,
     required NetworkInfo networkInfo,
     bool isClientCloseFailure = false,

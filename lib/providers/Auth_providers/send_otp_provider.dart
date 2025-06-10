@@ -9,7 +9,7 @@ class SendOtpProvider {
 
   SendOtpProvider(this.authRepository);
 
-  Future<Either<Failure, SendOtpResponseModel>> call({
+  Future<Either<FailureDelivery, SendOtpResponseModel>> call({
     required String phone,
     required int isViaWhatsapp,
   }) async {

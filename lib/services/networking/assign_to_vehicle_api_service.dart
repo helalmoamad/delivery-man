@@ -22,7 +22,7 @@ class AssignToVehicleServiceImpWithHttp implements AssignToVehicleService {
       {required String token, required int vehicleId}) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethods.postRequest<AssignToVehicleModel>(
+    final response = await ApiMethodsDelivery.postRequest<AssignToVehicleModel>(
         urlPath: 'vehicle/assign_to_user',
         token: token,
         client: clientController.client,

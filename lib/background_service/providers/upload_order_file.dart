@@ -8,7 +8,7 @@ class UploadFileProvider {
 
   UploadFileProvider(this.orderBackGroundRepository);
 
-  Future<Either<Failure, Unit>> call({
+  Future<Either<FailureDelivery, Unit>> call({
     required String token,
     required int orderId,
     required String file,

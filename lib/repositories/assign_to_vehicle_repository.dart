@@ -13,7 +13,7 @@ class AssignToVehicleRepository {
   AssignToVehicleRepository(
       {required this.assignToVehicleService, required this.networkInfo});
 
-  Future<Either<Failure, AssignToVehicleModel>> assignToVehicle(
+  Future<Either<FailureDelivery, AssignToVehicleModel>> assignToVehicle(
       {required String token, required int vehicleId}) async {
     return RepoNetworkRequest.makeNetworkRequest<AssignToVehicleModel>(
       networkInfo: networkInfo,

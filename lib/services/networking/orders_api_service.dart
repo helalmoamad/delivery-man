@@ -70,7 +70,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       required int offset}) async {
     clientController.reOpenSecondaryClient();
 
-    final response = await ApiMethods.getRequest<ListOrderModel>(
+    final response = await ApiMethodsDelivery.getRequest<ListOrderModel>(
         urlPath: 'orders?order_status=$status&limit=5&page=$offset',
         token: token,
         client: clientController.secondaryClient,
@@ -89,7 +89,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   }) async {
     clientController.reOpenSecondaryClient();
 
-    final response = await ApiMethods.getRequest<ListOrderModel>(
+    final response = await ApiMethodsDelivery.getRequest<ListOrderModel>(
         urlPath: 'orders/my_orders?order_status=$status&limit=5&page=$offset',
         token: token,
         client: clientController.secondaryClient,
@@ -104,7 +104,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   Future<List<dynamic>> getOrderStatusDataApi(String token) async {
     clientController.reOpenSecondaryClient();
 
-    final response = await ApiMethods.getRequest<List<dynamic>>(
+    final response = await ApiMethodsDelivery.getRequest<List<dynamic>>(
       urlPath: 'orders/order_statuses',
       token: token,
       client: clientController.secondaryClient,
@@ -123,7 +123,8 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   }) async {
     clientController.reOpenSecondaryClient();
 
-    final response = await ApiMethods.getRequest<UpdateOrderResponseModel>(
+    final response =
+        await ApiMethodsDelivery.getRequest<UpdateOrderResponseModel>(
       urlPath: 'orders/order_details/$orderId',
       token: token,
       client: clientController.secondaryClient,
@@ -140,16 +141,17 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       {required String token, required int vehicleId}) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethods.postRequest<UnAssignToVehicleModel>(
-        urlPath: 'vehicle/unassign_user',
-        token: token,
-        client: clientController.client,
-        timerService: timerService,
-        isGlobalTimer: true,
-        body: {
-          'vehicle_id': vehicleId,
-        },
-        fromJson: UnAssignToVehicleModel.fromJson);
+    final response =
+        await ApiMethodsDelivery.postRequest<UnAssignToVehicleModel>(
+            urlPath: 'vehicle/unassign_user',
+            token: token,
+            client: clientController.client,
+            timerService: timerService,
+            isGlobalTimer: true,
+            body: {
+              'vehicle_id': vehicleId,
+            },
+            fromJson: UnAssignToVehicleModel.fromJson);
 
     return response;
   }
@@ -171,14 +173,15 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       body.remove('confirm');
     }
 
-    final response = await ApiMethods.postRequest<AssignOrderToMeDataModel>(
-        urlPath: 'orders/assign_to_me',
-        token: token,
-        client: clientController.client,
-        timerService: timerService,
-        isGlobalTimer: true,
-        body: body,
-        fromJson: AssignOrderToMeDataModel.fromJson);
+    final response =
+        await ApiMethodsDelivery.postRequest<AssignOrderToMeDataModel>(
+            urlPath: 'orders/assign_to_me',
+            token: token,
+            client: clientController.client,
+            timerService: timerService,
+            isGlobalTimer: true,
+            body: body,
+            fromJson: AssignOrderToMeDataModel.fromJson);
 
     return response;
   }
@@ -216,7 +219,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     if (note == null) {
       changeStatusJson.remove('note');
     }
-    final response = await ApiMethods.postRequest<ChangeStatusModel>(
+    final response = await ApiMethodsDelivery.postRequest<ChangeStatusModel>(
       urlPath: 'orders/change_status',
       token: token,
       client: clientController.client,
@@ -237,7 +240,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   }) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethods.postRequest<OrderDataModel>(
+    final response = await ApiMethodsDelivery.postRequest<OrderDataModel>(
         urlPath: 'orders/receive_amount',
         token: token,
         client: clientController.client,
@@ -259,16 +262,17 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   }) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethods.postRequest<UnAssignOrderToMeDataModel>(
-        urlPath: 'orders/unassign_from_me',
-        token: token,
-        client: clientController.client,
-        timerService: timerService,
-        isGlobalTimer: true,
-        body: {
-          'order_id': orderId,
-        },
-        fromJson: UnAssignOrderToMeDataModel.fromJson);
+    final response =
+        await ApiMethodsDelivery.postRequest<UnAssignOrderToMeDataModel>(
+            urlPath: 'orders/unassign_from_me',
+            token: token,
+            client: clientController.client,
+            timerService: timerService,
+            isGlobalTimer: true,
+            body: {
+              'order_id': orderId,
+            },
+            fromJson: UnAssignOrderToMeDataModel.fromJson);
 
     return response;
   }

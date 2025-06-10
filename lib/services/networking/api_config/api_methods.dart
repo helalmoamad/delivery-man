@@ -7,7 +7,7 @@ import 'package:http/http.dart';
 import '../../../controllers/Client/timer_service.dart';
 import 'request_config.dart';
 
-class ApiMethods {
+class ApiMethodsDelivery {
   static Future<T> getRequest<T>({
     required String urlPath,
     required String token,
@@ -20,19 +20,19 @@ class ApiMethods {
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
     final uri = Uri.parse(
-        '${isChatUrl ? ApiConstants.chatUrl : isMarketUrl ? ApiConstants.marketUrl : ApiConstants.deliveryUrl}/api/${ApiConstants.version}/$urlPath');
+        '${isChatUrl ? ApiConstantsDelivery.chatUrl : isMarketUrl ? ApiConstantsDelivery.marketUrl : ApiConstantsDelivery.deliveryUrl}/api/${ApiConstantsDelivery.version}/$urlPath');
 
     final Completer<Response> completer = Completer<Response>();
 
     try {
       timerService.startTimer(
         isGlobalTimer: isGlobalTimer,
-        duration: Duration(seconds: RequestConfig.timeoutSeconds),
+        duration: Duration(seconds: RequestConfigDelivery.timeoutSeconds),
         callback: () {
           if (!completer.isCompleted) {
             client.close();
             completer.completeError(TimeoutException(
-                'The connection has timed out! after ${RequestConfig.timeoutSeconds} seconds'));
+                'The connection has timed out! after ${RequestConfigDelivery.timeoutSeconds} seconds'));
           }
         },
       );
@@ -65,7 +65,7 @@ class ApiMethods {
       final response = await completer.future;
       debugPrint('/////1///////');
       /////////////////store request info//////////////////////////////////
-      await RequestConfig.storeRequestInfo(
+      await RequestConfigDelivery.storeRequestInfo(
         uri: uri,
         token: token,
         requestType: 'GET',
@@ -73,7 +73,7 @@ class ApiMethods {
         response: response,
       );
       //////////////////////////////////////////////////////////////////
-      return RequestConfig.processResponse<T>(
+      return RequestConfigDelivery.processResponse<T>(
         response: response,
         fromJson: fromJson,
         timerService: timerService,
@@ -102,7 +102,7 @@ class ApiMethods {
     bool isChatUrl = false,
   }) async {
     final uri = Uri.parse(
-        '${isChatUrl ? ApiConstants.chatUrl : isMarketUrl ? ApiConstants.marketUrl : ApiConstants.deliveryUrl}/api/${ApiConstants.version}/$urlPath');
+        '${isChatUrl ? ApiConstantsDelivery.chatUrl : isMarketUrl ? ApiConstantsDelivery.marketUrl : ApiConstantsDelivery.deliveryUrl}/api/${ApiConstantsDelivery.version}/$urlPath');
 
     Map<String, String>? headers = {
       'Content-type': 'application/json',
@@ -120,12 +120,12 @@ class ApiMethods {
     try {
       timerService.startTimer(
         isGlobalTimer: isGlobalTimer,
-        duration: Duration(seconds: RequestConfig.timeoutSeconds),
+        duration: Duration(seconds: RequestConfigDelivery.timeoutSeconds),
         callback: () {
           if (!completer.isCompleted) {
             client.close();
             completer.completeError(TimeoutException(
-                'The connection has timed out! after ${RequestConfig.timeoutSeconds} seconds'));
+                'The connection has timed out! after ${RequestConfigDelivery.timeoutSeconds} seconds'));
           }
         },
       );
@@ -153,7 +153,7 @@ class ApiMethods {
       final response = await completer.future;
       debugPrint('/////1///////');
       /////////////////store request info//////////////////////////////////
-      await RequestConfig.storeRequestInfo(
+      await RequestConfigDelivery.storeRequestInfo(
         uri: uri,
         token: token ?? '',
         requestType: 'POST',
@@ -161,7 +161,7 @@ class ApiMethods {
         response: response,
       );
       //////////////////////////////////////////////////////////////////
-      return RequestConfig.processResponse<T>(
+      return RequestConfigDelivery.processResponse<T>(
         response: response,
         fromJson: fromJson,
         timerService: timerService,

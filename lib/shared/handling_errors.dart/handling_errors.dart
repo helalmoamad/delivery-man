@@ -8,7 +8,7 @@ import '../widgets/snackbar_widgets.dart';
 
 class HandlingFailures {
   static void networkErrorrHandling(
-      {required Failure failure,
+      {required FailureDelivery failure,
       required Function() hideCircleIndicator,
       required Function() showNoInternetPage,
       int seconds = 2}) {

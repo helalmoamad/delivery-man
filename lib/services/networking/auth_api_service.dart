@@ -49,7 +49,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
   Future<UserModel> postLoginApi(LoginModel loginModel) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethods.postRequest<UserModel>(
+    final response = await ApiMethodsDelivery.postRequest<UserModel>(
       urlPath: 'users/login',
       token: '',
       client: clientController.client,
@@ -68,7 +68,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
   }) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethods.postRequest<SetFcmTokenModel>(
+    final response = await ApiMethodsDelivery.postRequest<SetFcmTokenModel>(
       urlPath: 'users/set_fcm_token',
       token: token,
       client: clientController.client,
@@ -86,7 +86,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
   }) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethods.postRequest<LogOutModel>(
+    final response = await ApiMethodsDelivery.postRequest<LogOutModel>(
       urlPath: 'users/logout',
       token: token,
       client: clientController.client,
@@ -106,7 +106,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
   }) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethods.getRequest<SendOtpResponseModel>(
+    final response = await ApiMethodsDelivery.getRequest<SendOtpResponseModel>(
       urlPath:
           'auth/phone/send_otp?phone=$phone&is_via_whatsapp=$isViaWhatsapp',
       isMarketUrl: true,
@@ -128,7 +128,8 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
   }) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethods.getRequest<VerifyOtpResponseModel>(
+    final response =
+        await ApiMethodsDelivery.getRequest<VerifyOtpResponseModel>(
       urlPath: 'auth/phone/verify_otp?verificationId=$verificationId&otp=$otp',
       isMarketUrl: true,
       token: '',
@@ -151,7 +152,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
   }) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethods.postRequest<ChatLoginModel>(
+    final response = await ApiMethodsDelivery.postRequest<ChatLoginModel>(
       urlPath: 'users/login',
       token: '',
       client: clientController.client,
@@ -162,7 +163,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
         'mobile_phone': mobilePhone,
         'otp_id_token': otpIdToken,
         'name': name,
-        'original_user_id': originalUserId,
+        'delivery_user_id': originalUserId,
       },
       fromJson: ChatLoginModel.fromJson,
     );

@@ -1,0 +1,6 @@
+{
+    "dart.enableSdkFormatter": true,
+    "dart.analysisExcludedFolders": [],
+    "dart.completeFunctionCalls": true,
+    "dart.showTodos": true
+}

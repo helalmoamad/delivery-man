@@ -15,7 +15,7 @@ class OrderBackGroundRepository {
     required this.connectivity,
   });
 
-  Future<Either<Failure, Unit>> uploadFile({
+  Future<Either<FailureDelivery, Unit>> uploadFile({
     required String token,
     required int orderId,
     required String file,

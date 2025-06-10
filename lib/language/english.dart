@@ -153,4 +153,6 @@ const Map<String, String> en = {
   'Enter The Note': 'Enter The Note',
   'Note': 'Note',
   'note should not be empty': 'note should not be empty',
+  'uk': 'uk',
+  'invite': 'invite',
 };

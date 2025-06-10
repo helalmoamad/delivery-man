@@ -8,7 +8,7 @@ class SetFcmTokenProvider {
 
   SetFcmTokenProvider(this.authRepository);
 
-  Future<Either<Failure, SetFcmTokenModel>> call({
+  Future<Either<FailureDelivery, SetFcmTokenModel>> call({
     required String token,
     required String fcmToken,
   }) async {
