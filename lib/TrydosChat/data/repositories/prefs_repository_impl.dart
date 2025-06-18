@@ -166,11 +166,12 @@ class PrefsRepositoryImpl extends PrefsRepository {
   String? get verificationId => _preferences.getString(PrefsKey.verificationId);
 
   @override
-  int? get myStoriesId => _preferences.getInt(PrefsKey.userStoriesId);
+  String? get myOrderIdForChat =>
+      _preferences.getString(PrefsKey.userStoriesId);
 
   @override
-  Future<bool> setMyStoriesId(int id) =>
-      _preferences.setInt(PrefsKey.userStoriesId, id);
+  Future<bool> setMyOrderIdForChat(String id) =>
+      _preferences.setString(PrefsKey.userStoriesId, id);
 
   @override
   String? get otpCode => _preferences.getString(PrefsKey.otpCode);
@@ -297,9 +298,9 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.getStringList(PrefsKey.fcmToken) ?? [];
 
   @override
-  List<Message>? get getTheMessageFromBackground => _preferences
+  List<ChatMessage>? get getTheMessageFromBackground => _preferences
       .getStringList('message')
-      ?.map((e) => Message.fromJson(convert.jsonDecode(e)))
+      ?.map((e) => ChatMessage.fromJson(convert.jsonDecode(e)))
       .toList();
 
   @override
@@ -504,7 +505,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
   String? get getChatUrl => _preferences.getString(PrefsKey.chatUrl);
 
   @override
-  String? get getMarketUrl => _preferences.getString(PrefsKey.marketUrl);
+  String? get getFcmToken => _preferences.getString(PrefsKey.marketUrl);
 
   @override
   String? get getStoryUrl => _preferences.getString(PrefsKey.storyUrl);
@@ -514,7 +515,7 @@ class PrefsRepositoryImpl extends PrefsRepository {
       _preferences.setString(PrefsKey.chatUrl, url);
 
   @override
-  Future<bool> setMarketUrl(String url) =>
+  Future<bool> setFcmToken(String url) =>
       _preferences.setString(PrefsKey.marketUrl, url);
 
   @override
@@ -816,10 +817,10 @@ class PrefsRepositoryImpl extends PrefsRepository {
 
   @override
   // TODO: implement idToken
-  String? get idToken => _preferences.getString(PrefsKey.idToken);
+  String? get orderDetailsId => _preferences.getString(PrefsKey.idToken);
 
   @override
-  Future<bool> setIdToken(String idToken) {
+  Future<bool> setOrderDetailsId(String idToken) {
     return _preferences.setString(PrefsKey.idToken, idToken);
   }
 

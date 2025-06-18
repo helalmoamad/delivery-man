@@ -398,7 +398,7 @@ class ChatState {
   final Chat? chatToNavigateFromTerminated;
   final GetSharedProductCountStatus? getSharedProductCountStatus;
   final bool createAnewChat;
-  Map<String, List<Message>>? newSortedChatsByDate;
+  Map<String, List<ChatMessage>>? newSortedChatsByDate;
   final bool firstRequestForGetChats;
   ChatState({
     this.userConnectedStatuse = " ",
@@ -466,7 +466,7 @@ class ChatState {
     final int? fileCountInEachChat,
     final int? videoCountInEachChat,
     LoadImageWidthAndHeight? loadImageWidthAndHeight,
-    Map<String, List<Message>>? newSortedChatsByDate,
+    Map<String, List<ChatMessage>>? newSortedChatsByDate,
     final GetChatsStatus? getChatsStatus,
     final Duration? duration,
     final GetOrderRecipientIdStatus? getOrderRecipientIdStatus,

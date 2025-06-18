@@ -1,4 +1,5 @@
 import 'package:app_settings/app_settings.dart';
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
@@ -8,6 +9,7 @@ import 'package:delivery_man_app/views/OrderDetails/components/title_section_wid
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -36,7 +38,10 @@ class OrderDetails extends StatelessWidget {
       isForMyOrder = false;
       orderId = int.parse(GlobalFunctions.getOrderId() ?? '-1');
       order = ordersController.orderDetails!;
-      status = OrderStatuses.inDeliveryCenter;
+      status = (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
+              GetIt.I<PrefsRepository>().myOrderIdForChat != null)
+          ? OrderStatuses.outForDelivery
+          : OrderStatuses.inDeliveryCenter;
     } else {
       if (ordersController.previousRoute == Routes.myOrdersPage) {
         isForMyOrder = true;

@@ -15,6 +15,8 @@ abstract class OrdersApiService {
   Future<ListOrderModel> getMyOrdersDataApi(
       {required String token, required String status, required int offset});
 
+  Future<GetOrderForChat> getMyOrderDataForChatApi(
+      {required String token, required String id, required int offset});
   Future<List<dynamic>> getOrderStatusDataApi(
     String token,
   );
@@ -96,6 +98,25 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
         timerService: timerService,
         isGlobalTimer: false,
         fromJson: ListOrderModel.fromJson);
+
+    return response;
+  }
+
+  @override
+  Future<GetOrderForChat> getMyOrderDataForChatApi({
+    required String token,
+    required String id,
+    required int offset,
+  }) async {
+    clientController.reOpenSecondaryClient();
+
+    final response = await ApiMethodsDelivery.getRequest<GetOrderForChat>(
+        urlPath: 'orders/original_order_details/$id',
+        token: token,
+        client: clientController.secondaryClient,
+        timerService: timerService,
+        isGlobalTimer: false,
+        fromJson: GetOrderForChat.fromJson);
 
     return response;
   }

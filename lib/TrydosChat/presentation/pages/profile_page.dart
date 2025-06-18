@@ -1,5 +1,21 @@
 import 'dart:io';
-import 'package:easy_localization/easy_localization.dart';
+
+import 'package:delivery_man_app/TrydosChat/chat_utils/assets_provider.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/build_context.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/theme_state.dart';
+import 'package:delivery_man_app/TrydosChat/config/theme/typography.dart';
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/TrydosChat/helper/show_message.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_state.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/pages/media_in_profile.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/pages/single_page_chat.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/utils/responsive_padding.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/chat_widgets/vedio_player.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_cached_network_image.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_text_widget.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/trydos_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,28 +24,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:trydos/common/test_utils/test_var.dart';
-import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/extensions/state_ext.dart';
-import 'package:trydos/features/app/vedio_player.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_state.dart';
-import 'package:trydos/features/chat/presentation/pages/media_in_profile.dart';
-import 'package:trydos/features/chat/presentation/pages/single_page_chat.dart';
-import 'package:trydos/generated/locale_keys.g.dart';
 
-import '../../../../common/constant/configuration/chat_url_routes.dart';
-import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../common/test_utils/widgets_keys.dart';
-import '../../../../common/helper/show_message.dart';
-import '../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../../core/utils/responsive_padding.dart';
-import '../../../../service/language_service.dart';
-import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
-import '../../../app/my_cached_network_image.dart';
-import '../../../app/my_text_widget.dart';
 import '../../../calls/presentation/bloc/calls_bloc.dart';
 import '../../../calls/presentation/utils/caller_info.dart';
 import '../widgets/chat_widgets/no_image_widget.dart';
@@ -59,7 +54,7 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends ThemeState<ProfilePage> {
   late ChatBloc chatBloc;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   List<String>? images = [];
@@ -110,9 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: const Color(0xffF8F8F8),
       body: SafeArea(
         child: Stack(
-          alignment: LanguageService.languageCode == 'ar'
-              ? AlignmentDirectional.topEnd
-              : AlignmentDirectional.topStart,
+          alignment: AlignmentDirectional.topEnd,
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -219,7 +212,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               }
                             } else if (microphone.isDenied ||
                                 status2.isDenied) {
-                              showMessage(LocaleKeys.permission_denied.tr());
+                              showMessage("permission_denied");
                               openAppSettings();
                             }
                           } catch (e, st) {
@@ -238,7 +231,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             10.verticalSpace,
                             MyTextWidget(
-                              LocaleKeys.call.tr(),
+                              "call",
                               style: textTheme.titleMedium?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
                             ),
@@ -276,7 +269,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           } else if (microphone.isDenied ||
                               status2.isDenied ||
                               camera.isDenied) {
-                            showMessage(LocaleKeys.permission_denied.tr());
+                            showMessage("permission_denied");
                             openAppSettings();
                           }
                         },
@@ -290,7 +283,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             10.verticalSpace,
                             MyTextWidget(
-                              LocaleKeys.video.tr(),
+                              "video",
                               style: textTheme.titleMedium?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
                             ),
@@ -325,7 +318,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             10.verticalSpace,
                             MyTextWidget(
-                              LocaleKeys.search.tr(),
+                              "search",
                               style: textTheme.titleMedium?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
                             ),
@@ -357,7 +350,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             MyTextWidget(
-                              LocaleKeys.media_files.tr(),
+                              "media_files",
                               style: textTheme.displayMedium?.rr
                                   .copyWith(color: const Color(0xff5D5C5D)),
                             ),
@@ -383,10 +376,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
-                                            key: TestVariables.kTestMode
-                                                ? Key(WidgetsKeys
-                                                    .imageCountInEachChatKey)
-                                                : null,
+                                            key: null,
                                             state.imageCountInEachChat
                                                 .toString(),
                                             style: textTheme.titleMedium?.lr
@@ -406,10 +396,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
-                                            key: TestVariables.kTestMode
-                                                ? Key(WidgetsKeys
-                                                    .videoCountInEachChatKey)
-                                                : null,
+                                            key: null,
                                             state.videoCountInEachChat
                                                 .toString(),
                                             style: textTheme.titleMedium?.lr
@@ -429,10 +416,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           5.horizontalSpace,
                                           MyTextWidget(
-                                            key: TestVariables.kTestMode
-                                                ? Key(WidgetsKeys
-                                                    .fileCountInEachChatKey)
-                                                : null,
+                                            key: null,
                                             state.fileCountInEachChat
                                                 .toString(),
                                             style: textTheme.titleMedium?.lr
@@ -458,7 +442,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              LocaleKeys.see_all.tr(),
+                              "see_all",
                             ),
                             SizedBox(
                               width: 2.w,
@@ -547,24 +531,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       20.horizontalSpace,
                       MyTextWidget(
-                        LocaleKeys.save_to_gallery.tr(),
+                        "save_to_gallery",
                         style: textTheme.displayMedium?.rr
                             .copyWith(color: const Color(0xff5D5C5D)),
                       ),
                       const Spacer(),
                       MyTextWidget(
-                        LocaleKeys.never.tr(),
+                        "never",
                         style: textTheme.displayMedium?.lr
                             .copyWith(color: const Color(0xff5D5C5D)),
                       ),
                       36.horizontalSpace,
                       Transform(
                         alignment: Alignment.center,
-                        transform: (Matrix4.identity()
-                          ..scale(
-                              LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
-                              1.0,
-                              1.0)),
+                        transform: (Matrix4.identity()..scale(-1.0, 1.0, 1.0)),
                         child: SvgPicture.asset(
                           AppAssets.forwardArrowRight,
                           width: 3.w,
@@ -579,11 +559,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
               padding: EdgeInsetsDirectional.fromSTEB(20.w, 15.h, 20.w, 0),
               child: InkWell(
-                key: TestVariables.kTestMode
-                    ? Key(
-                        WidgetsKeys.backFromProfileKey,
-                      )
-                    : null,
+                key: null,
                 onTap: () {
                   Navigator.pop(context);
                 },

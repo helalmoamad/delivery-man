@@ -11,13 +11,13 @@ abstract class PrefsRepository {
   String? get serverTime;
   int? get myChatId;
 
-  int? get myStoriesId;
+  String? get myOrderIdForChat;
   int? get userCountryIsAvailable;
 
   String? get myMarketId;
   bool? get isLogInToChat;
 
-  List<Message>? get getTheMessageFromBackground;
+  List<ChatMessage>? get getTheMessageFromBackground;
   List<String>? get getTheChatsIdsToRemoveFromBackground;
   List<String>? get getNotificationIdsToRemoveAfterplaceOrder;
   List<String>? get getImageUrlHasPrefeched;
@@ -45,7 +45,7 @@ abstract class PrefsRepository {
   String? get myProfilePhoto;
   String? get myMarketName;
 
-  String? get getMarketUrl;
+  String? get getFcmToken;
   String? get getStoryUrl;
   String? get getChatUrl;
 
@@ -57,7 +57,7 @@ abstract class PrefsRepository {
   String? get verificationId;
   String? get sessionId;
   String? get otpCode;
-  String? get idToken;
+  String? get orderDetailsId;
   int? get getdurtion;
 
   String? getPrefechOfMainCategoryInHomePage();
@@ -123,7 +123,7 @@ abstract class PrefsRepository {
   Future<bool> setMyChatPhoto(String? photo);
 
   Future<bool> setPhoneNumber(String phoneNumber);
-  Future<bool> setIdToken(String idToken);
+  Future<bool> setOrderDetailsId(String idToken);
   Future<void> setFcmTokenId(int fcmTokenId);
 
   Future<bool> setMyChatId(int id);
@@ -136,9 +136,9 @@ abstract class PrefsRepository {
 
   Future<bool> setChatToEditFromBackground(String chat);
 
-  Future<bool> setMyStoriesId(int id);
+  Future<bool> setMyOrderIdForChat(String id);
 
-  Future<bool> setMarketUrl(String url);
+  Future<bool> setFcmToken(String url);
   Future<bool> setStoryUrl(String url);
   Future<bool> setChatUrl(String url);
 

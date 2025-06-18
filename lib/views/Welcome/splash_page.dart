@@ -1,8 +1,15 @@
 import 'dart:async';
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart'
+    show ChatBloc;
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
+import 'package:delivery_man_app/controllers/Auth/auth_controller.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
+import 'package:delivery_man_app/shared/global_functions/push_notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import '../../routes/routes.dart';
 import '../../shared/constants/color_constants.dart';
 import '../../shared/helpers/screen_size_utils.dart';
@@ -18,7 +25,6 @@ class _SplashPageState extends State<SplashPage> {
   bool selected = false;
   @override
   void initState() {
-    super.initState();
     Timer(const Duration(seconds: 3), () {
       goToHomeScreen();
     });

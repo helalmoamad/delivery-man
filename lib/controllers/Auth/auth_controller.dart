@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
+import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/models/Auth/chat_login_model.dart';
 import 'package:delivery_man_app/models/Auth/send_otp_model.dart'
     show SendOtpResponseModel;
@@ -14,6 +18,7 @@ import 'package:delivery_man_app/providers/Auth_providers/verify_otp_provider.da
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/Auth/login_model.dart';
 import '../../models/Auth/user_data_model.dart';
@@ -37,7 +42,7 @@ class AuthController extends GetxController {
   late LoginProvider loginProvider = Get.find<LoginProvider>();
   late SetFcmTokenProvider setFcmTokenProvider =
       Get.find<SetFcmTokenProvider>();
-
+  final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   late LogOutProvider logOutProvider = Get.find();
 
   late SendOtpProvider sendOtpProvider = Get.find<SendOtpProvider>();
@@ -82,8 +87,11 @@ class AuthController extends GetxController {
       },
       (getUserData) async {
         userData = getUserData.data!;
+
         await PushNotificationService.getToken().then(
           (fcmToken) async {
+            GetIt.I<PrefsRepository>().setFcmToken(fcmToken ?? "");
+
             if (fcmToken != null) {
               ////////////////////////
               await sendFcmTokenApi(fcmToken: fcmToken);
@@ -113,6 +121,9 @@ class AuthController extends GetxController {
             showNoInternetPage: () {});
       },
       (data) async {
+        print(
+            "SDDDDDDDDDDDDDDDDDDDDDDDDDSSSSSSSSSSSSSSSS33333333333333333333333.");
+
         isLogin = true;
         Future.wait([
           GlobalFunctions.setToken(token: userData.accessToken!),
@@ -316,12 +327,24 @@ class AuthController extends GetxController {
         );
       },
       (data) async {
+        GetIt.I<ChatBloc>().add(StoreFcmTokenEvent(
+            userId: GlobalFunctions.getUserId(),
+            fcmToken: GetIt.I<PrefsRepository>().getFcmToken ?? ""));
         chatLoginData = data;
+        await _prefsRepository
+            .setChatToken(chatLoginData!.data!.accessToken ?? '');
 
+        await _prefsRepository.setMyChatId(chatLoginData!.data!.id ?? 0);
+        await _prefsRepository
+            .setMyChatName(chatLoginData!.data!.name ?? 'No Name');
+        await _prefsRepository
+            .setMyChatPhoto(chatLoginData!.data!.photoPath ?? '');
         await GlobalFunctions.setChatToken(
             chatToken: chatLoginData!.data!.accessToken ?? '');
-
-        Get.offNamed(Routes.chatPage);
+        GetIt.I<ChatBloc>().add(GetOrderRecipientIdEvent(
+            originalUserId: GlobalFunctions.getUserId().toString(),
+            orderId: GetIt.I<PrefsRepository>().orderDetailsId.toString()));
+        Get.back();
 
         hideChatLoginCircleIndicator();
       },

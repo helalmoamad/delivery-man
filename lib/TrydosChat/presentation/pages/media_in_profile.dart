@@ -1,6 +1,16 @@
 import 'dart:io';
 
-import 'package:easy_localization/easy_localization.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/assets_provider.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/theme_state.dart';
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/app_bloc/app_bloc.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/app_bloc/app_event.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/app_bloc/app_state.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/utils/responsive_padding.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/app_bar_params.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/chat_widgets/vedio_player.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/trydos_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,31 +22,10 @@ import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mime/mime.dart';
+
 import 'package:open_file/open_file.dart';
 
-import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/common/helper/file_saving.dart';
-
-import 'package:trydos/config/theme/my_color_scheme.dart';
-
-import 'package:trydos/core/utils/form_state_mixin.dart';
-
-import 'package:trydos/core/utils/responsive_padding.dart';
-import 'package:trydos/core/utils/theme_state.dart';
-
-import 'package:trydos/features/app/blocs/app_bloc/app_bloc.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_event.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
-import 'package:trydos/features/app/vedio_player.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-import 'package:trydos/generated/locale_keys.g.dart';
 import 'package:video_player/video_player.dart';
-
-import '../../../../core/domin/repositories/prefs_repository.dart';
-
-import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
-import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
 
 import '../manager/chat_bloc.dart';
 
@@ -127,17 +116,17 @@ class _MediaInProfileState extends ThemeState<MediaInProfile> {
                                 p.unReadMessagesFromAllChats !=
                                 c.unReadMessagesFromAllChats,
                             builder: (context, state) {
-                              return ChatTabItem(
-                                  index: 0, text: LocaleKeys.images.tr());
+                              return const ChatTabItem(
+                                  index: 0, text: "images");
                             },
                           ),
-                          ChatTabItem(
+                          const ChatTabItem(
                             index: 1,
-                            text: LocaleKeys.videos.tr(),
+                            text: "videos",
                           ),
-                          ChatTabItem(
+                          const ChatTabItem(
                             index: 2,
-                            text: LocaleKeys.files.tr(),
+                            text: "files",
                           ),
                         ],
                       ),

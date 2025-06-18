@@ -12,6 +12,7 @@ import 'package:delivery_man_app/TrydosChat/data/models/get_order_recipient_id_m
 import 'package:delivery_man_app/TrydosChat/data/models/my_contacts_response_model.dart';
 import 'package:delivery_man_app/TrydosChat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:delivery_man_app/TrydosChat/data/models/shared_product_count_model.dart';
+import 'package:delivery_man_app/TrydosChat/data/models/store_fcm_token_response_model.dart';
 import 'package:delivery_man_app/TrydosChat/data/models/upload_file_response_model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:injectable/injectable.dart';
@@ -43,6 +44,22 @@ class ChatRemoteDataSource {
       ),
     );
     return readAllMessages();
+  }
+
+  Future<StoreFcmTokenResponseModel> storeFcmToken(
+      Map<String, dynamic> params) {
+    PostClient<StoreFcmTokenResponseModel> storeFcmToken =
+        PostClient<StoreFcmTokenResponseModel>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<StoreFcmTokenResponseModel>(
+        endpoint: ChatEndPoints.storeFcmEP,
+        data: params['data'],
+        response: ResponseValue<StoreFcmTokenResponseModel>(
+            fromJson: (response) =>
+                StoreFcmTokenResponseModel.fromJson(response)),
+      ),
+    );
+    return storeFcmToken();
   }
 
   Future<bool> updateProfileInChat(Map<String, dynamic> params) {
@@ -130,31 +147,33 @@ class ChatRemoteDataSource {
     return changeChatProperty();
   }
 
-  Future<List<Message>> getMessagesForChat(Map<String, dynamic> params) {
-    PostClient<List<Message>> getMessagesForChat = PostClient<List<Message>>(
+  Future<List<ChatMessage>> getMessagesForChat(Map<String, dynamic> params) {
+    PostClient<List<ChatMessage>> getMessagesForChat =
+        PostClient<List<ChatMessage>>(
       serverName: ServerName.chat,
-      requestPrams: RequestConfig<List<Message>>(
+      requestPrams: RequestConfig<List<ChatMessage>>(
         endpoint: ChatEndPoints.getMessagesForChatEP(params['params']),
         data: params['data'],
-        response: ResponseValue<List<Message>>(
-            fromJson: (response) => List<Message>.from(
-                response["data"]!.map((x) => Message.fromJson(x)))),
+        response: ResponseValue<List<ChatMessage>>(
+            fromJson: (response) => List<ChatMessage>.from(
+                response["data"]!.map((x) => ChatMessage.fromJson(x)))),
       ),
     );
     return getMessagesForChat();
   }
 
-  Future<List<Message>> getMessagesBetween(Map<String, dynamic> params) {
-    PostClient<List<Message>> getMessagesBetween = PostClient<List<Message>>(
+  Future<List<ChatMessage>> getMessagesBetween(Map<String, dynamic> params) {
+    PostClient<List<ChatMessage>> getMessagesBetween =
+        PostClient<List<ChatMessage>>(
       serverName: ServerName.chat,
-      requestPrams: RequestConfig<List<Message>>(
+      requestPrams: RequestConfig<List<ChatMessage>>(
         endpoint: ChatEndPoints.getMessagesBetweenEP,
         data: params,
         receiveTimeout: const Duration(minutes: 2),
         sendTimeout: const Duration(minutes: 2),
-        response: ResponseValue<List<Message>>(
-            fromJson: (response) => List<Message>.from(
-                response["data"]!.map((x) => Message.fromJson(x)))),
+        response: ResponseValue<List<ChatMessage>>(
+            fromJson: (response) => List<ChatMessage>.from(
+                response["data"]!.map((x) => ChatMessage.fromJson(x)))),
       ),
     );
     return getMessagesBetween();
@@ -200,33 +219,33 @@ class ChatRemoteDataSource {
     return deleteChat();
   }
 
-  Future<Message> sendMessage(Map<String, dynamic> params) {
-    PostClient<Message> sendMessage = PostClient<Message>(
+  Future<ChatMessage> sendMessage(Map<String, dynamic> params) {
+    PostClient<ChatMessage> sendMessage = PostClient<ChatMessage>(
       serverName: ServerName.chat,
-      requestPrams: RequestConfig<Message>(
+      requestPrams: RequestConfig<ChatMessage>(
         receiveTimeout: const Duration(minutes: 1),
         sendTimeout: const Duration(minutes: 1),
         endpoint: ChatEndPoints.sendMessageEP,
         data: params,
-        response: ResponseValue<Message>(
-            fromJson: (response) => Message.fromJson(response['data'])),
+        response: ResponseValue<ChatMessage>(
+            fromJson: (response) => ChatMessage.fromJson(response['data'])),
       ),
     );
     return sendMessage();
   }
 
-  Future<Message> shareProductWithContactsOrChannels(
+  Future<ChatMessage> shareProductWithContactsOrChannels(
       Map<String, dynamic> params) {
-    PostClient<Message> shareProductWithContactsOrChannels =
-        PostClient<Message>(
+    PostClient<ChatMessage> shareProductWithContactsOrChannels =
+        PostClient<ChatMessage>(
       serverName: ServerName.chat,
-      requestPrams: RequestConfig<Message>(
+      requestPrams: RequestConfig<ChatMessage>(
         receiveTimeout: const Duration(minutes: 1),
         sendTimeout: const Duration(minutes: 1),
         endpoint: ChatEndPoints.shareProductWithChannelsOrContacts,
         data: params,
-        response: ResponseValue<Message>(
-            fromJson: (response) => Message.fromJson(response['data'])),
+        response: ResponseValue<ChatMessage>(
+            fromJson: (response) => ChatMessage.fromJson(response['data'])),
       ),
     );
     return shareProductWithContactsOrChannels();

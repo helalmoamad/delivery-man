@@ -7,13 +7,13 @@ import 'package:injectable/injectable.dart';
 
 @injectable
 class ShareProductWithContactsOrChannelsUsecase
-    extends UseCase<Message, ShareProductWithContactsOrChannelsParams> {
+    extends UseCase<ChatMessage, ShareProductWithContactsOrChannelsParams> {
   final ChatRepository repository;
 
   ShareProductWithContactsOrChannelsUsecase(this.repository);
 
   @override
-  Future<Either<Failure, Message>> call(
+  Future<Either<Failure, ChatMessage>> call(
       ShareProductWithContactsOrChannelsParams params) {
     return repository.shareProductWithContactsOrChannels(params.map);
   }

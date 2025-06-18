@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:app_settings/app_settings.dart';
+import 'package:delivery_man_app/TrydosChat/di/di_container.dart';
 import 'package:delivery_man_app/routes/routes.dart';
+import 'package:delivery_man_app/services/service_provider.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
@@ -47,14 +49,17 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
+bool isDependencyInitialized = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp();
   /////////////////////////////////////
   final sharedPreferences = await SharedPreferences.getInstance();
   Get.put<SharedPreferences>(sharedPreferences);
   ///////////////// Notification /////////////////////
+
   await PushNotificationService.initializeNotification();
   /////////////////////////////////////
   await Permission.notification.isDenied.then((value) async {
@@ -62,6 +67,8 @@ Future<void> main() async {
       await AppSettings.openAppSettings(type: AppSettingsType.notification);
     }
   });
+  await configureDependencies();
+  isDependencyInitialized = true;
   await BackGroundServiceUtils.initializeService();
   // statusBarColor
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -82,18 +89,20 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
 
-    return GetMaterialApp(
-      title: 'Delivery Man',
-      debugShowCheckedModeBanner: false,
-      theme: Themes.lightTheme,
-      //for language
-      locale: Locale(GlobalFunctions.getLanLocal()),
-      fallbackLocale: const Locale(LangConstants.ene),
-      translations: LocalizationApp(),
-      ////
-      getPages: AppRoutes.routes,
-      initialRoute: Routes.splashPage,
-      initialBinding: AppBinding(),
+    return ServiceProvider(
+      child: GetMaterialApp(
+        title: 'Delivery Man',
+        debugShowCheckedModeBanner: false,
+        theme: Themes.lightTheme,
+        //for language
+        locale: Locale(GlobalFunctions.getLanLocal()),
+        fallbackLocale: const Locale(LangConstants.ene),
+        translations: LocalizationApp(),
+        ////
+        getPages: AppRoutes.routes,
+        initialRoute: Routes.splashPage,
+        initialBinding: AppBinding(),
+      ),
     );
   }
 }

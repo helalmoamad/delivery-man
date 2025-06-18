@@ -21,8 +21,14 @@ class OutForDeliveryButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int orderId = ordersController.myOrderIdForDetails;
-    OrderDataModel order = ordersController.myOrdersData!.data!.data!
-        .firstWhere((element) => element.id! == orderId);
+    OrderDataModel order;
+    if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
+      order = ordersController.orderDetails!;
+    } else {
+      order = ordersController.myOrdersData!.data!.data!
+          .firstWhere((element) => element.id! == orderId);
+    }
+
     return GetBuilder<OrdersController>(
       builder: (_) {
         return ordersController.isStartDeliveryButton

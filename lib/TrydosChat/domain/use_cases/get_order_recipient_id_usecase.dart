@@ -26,6 +26,6 @@ class GetOrderRecipientIdParams {
 
   Map<String, dynamic> get map => {
         'order_id': orderId,
-        'original_user_id': originalUserId,
+        'delivery_user_id': originalUserId,
       };
 }

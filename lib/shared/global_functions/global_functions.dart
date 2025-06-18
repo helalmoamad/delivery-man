@@ -83,8 +83,8 @@ class GlobalFunctions {
   }
 
   static int getUserId() {
-    int? mobilePhone = prefs.getInt('userId');
-    return mobilePhone!;
+    int? userId = prefs.getInt('userId');
+    return userId!;
   }
 
   static Future<void> setMobilePhone({required String mobilePhone}) async {

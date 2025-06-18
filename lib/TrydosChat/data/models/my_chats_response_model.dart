@@ -94,7 +94,7 @@ class SenderInfo {
       };
 }
 
-class Message {
+class ChatMessage {
   final String? id;
   final String? localId;
   final String? localParentMessageId;
@@ -111,7 +111,7 @@ class Message {
   final List<MediaMessageContent>? mediaMessageContent;
   final List<MessageStatus>? messageStatus;
   final Chat? channel;
-  final Message? parentMessage;
+  final ChatMessage? parentMessage;
   final int? deletedByUserId;
   final File? file;
   bool? isFirstMessageForThisDay;
@@ -119,7 +119,7 @@ class Message {
   bool? isDateMessage;
   String? dateValue;
 
-  Message({
+  ChatMessage({
     this.isFirstMessageForThisDay = false,
     this.isDateMessage = false,
     this.dateValue = '',
@@ -145,7 +145,7 @@ class Message {
     this.parentMessage,
   });
 
-  Message copyWith({
+  ChatMessage copyWith({
     final bool? isFirstMessageForThisDay,
     final bool? isFirstMessage,
     final String? id,
@@ -165,10 +165,10 @@ class Message {
     final List<MediaMessageContent>? mediaMessageContent,
     final List<MessageStatus>? messageStatus,
     final Chat? channel,
-    final Message? parentMessage,
+    final ChatMessage? parentMessage,
     final File? file,
   }) {
-    return Message(
+    return ChatMessage(
       id: id ?? this.id,
       localId: localId ?? this.localId,
       localParentMessageId: localParentMessageId ?? this.localParentMessageId,
@@ -194,8 +194,8 @@ class Message {
     );
   }
 
-  factory Message.fromJson(Map<String, dynamic> json) {
-    return Message(
+  factory ChatMessage.fromJson(Map<String, dynamic> json) {
+    return ChatMessage(
       id: json["id"].toString(),
       localId: json["localId"].toString(),
       localParentMessageId: json["localParentMessageId"].toString(),
@@ -266,7 +266,7 @@ class Message {
               json["message_status"]!.map((x) => MessageStatus.fromJson(x))),
       channel: json["channel"] == null ? null : Chat.fromJson(json["channel"]),
       parentMessage: json["parent_message"] != null
-          ? Message.fromJson(json["parent_message"])
+          ? ChatMessage.fromJson(json["parent_message"])
           : null,
     );
   }
@@ -311,7 +311,7 @@ class Chat {
   final String? localId;
   final int? totalUnreadMessageCount;
   final List<ChannelMember>? channelMembers;
-  final List<Message>? messages;
+  final List<ChatMessage>? messages;
   final PaginationStatus paginationStatus;
   final DateTime? updatedAt;
   final bool hasReachedMax;
@@ -339,7 +339,7 @@ class Chat {
     int? totalUnreadMessageCount,
     final DateTime? updatedAt,
     List<ChannelMember>? channelMembers,
-    List<Message>? messages,
+    List<ChatMessage>? messages,
   }) =>
       Chat(
         id: id ?? this.id,
@@ -373,8 +373,8 @@ class Chat {
                 json["channel_members"]!.map((x) => ChannelMember.fromJson(x))),
         messages: json["messages"] == null
             ? []
-            : List<Message>.from(
-                json["messages"]!.map((x) => Message.fromJson(x))),
+            : List<ChatMessage>.from(
+                json["messages"]!.map((x) => ChatMessage.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {

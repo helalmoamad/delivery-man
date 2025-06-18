@@ -1,0 +1,41 @@
+import 'package:delivery_man_app/TrydosChat/api/cloudinary_url_routes.dart';
+import 'package:delivery_man_app/TrydosChat/data/models/upload_file_cloudinary_response.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../api/client_config.dart';
+import '../../api/methods/detect_server.dart';
+import '../../api/methods/post.dart';
+
+@injectable
+class CommonUseRemoteDataSource {
+  Future<UploadFileCloudinaryResponseModel> uploadCloudinaryFile(
+      Map<String, dynamic> params) {
+    PostClient<UploadFileCloudinaryResponseModel> uploadCloudinaryFile =
+        PostClient<UploadFileCloudinaryResponseModel>(
+      onUploadingFinished: params['usingOnUploadingFinishedFunction']
+          ? ((bool isUploadingSuccess) {
+              //   LocalNotificationService()
+              //        .uploadingNotification(0, 0, false, isUploadingSuccess);
+            })
+          : null,
+      onSendProgress: params['usingSendProgressFunction']
+          ? (count, total) {
+              //  LocalNotificationService()
+              //       .uploadingNotification(total, count, true, false);
+            }
+          : null,
+      requestPrams: RequestConfig<UploadFileCloudinaryResponseModel>(
+        receiveTimeout: const Duration(hours: 1),
+        sendTimeout: const Duration(hours: 1),
+        endpoint: CloudinaryEndPoints.uploadEP,
+        data: params['data'],
+        response: ResponseValue<UploadFileCloudinaryResponseModel>(
+            fromJson: (response) =>
+                UploadFileCloudinaryResponseModel.fromJson(response)),
+      ),
+      serverName: ServerName.cloudinary,
+    );
+    // uploadStory.call();
+    return uploadCloudinaryFile();
+  }
+}

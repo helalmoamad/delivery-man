@@ -1,3 +1,4 @@
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
@@ -5,6 +6,7 @@ import 'package:delivery_man_app/shared/widgets/empty_data_widget.dart';
 import 'package:delivery_man_app/shared/widgets/order_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
 class OrderList extends StatelessWidget {
   final OrdersController ordersController;
@@ -37,6 +39,8 @@ class OrderList extends StatelessWidget {
                       ordersController.orderIdForDetails = orders[index].id!;
                       await GlobalFunctions.setIsFromNotifiForNewOrder(
                           isFromNotifiForNewOrder: false);
+                      GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
+
                       ordersController.previousRoute = Get.currentRoute;
                       Get.toNamed(Routes.ordersDetailsPage);
                     });

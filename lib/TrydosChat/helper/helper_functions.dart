@@ -216,10 +216,10 @@ class HelperFunctions {
     }
   }
 
-  // static String getDatesInFormat(DateTime date) {
-  //   String formattedDate = DateFormat('MMMMd').format(date.toLocal());
-  //   return formattedDate;
-  // }
+  static String getDatesInFormat(DateTime date) {
+    String formattedDate = DateFormat('MMMMd').format(date.toLocal());
+    return formattedDate;
+  }
 
   // static String getDateInFormatForShippingDays(int shippingDays) {
   //   DateTime date = DateTime.now().add(Duration(days: shippingDays));
@@ -228,10 +228,10 @@ class HelperFunctions {
   //   return formattedDate;
   // }
 
-  // static String gettimesInFormat(DateTime time) {
-  //   String formattedDate = DateFormat("jm").format(time.toLocal());
-  //   return formattedDate;
-  // }
+  static String gettimesInFormat(DateTime time) {
+    String formattedDate = DateFormat("jm").format(time.toLocal());
+    return formattedDate;
+  }
 
   static String replaceArabicNumber(String input) {
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];

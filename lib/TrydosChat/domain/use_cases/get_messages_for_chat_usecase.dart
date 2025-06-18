@@ -7,13 +7,14 @@ import '../../data/models/my_chats_response_model.dart';
 
 @injectable
 class GetMessagesForChatUseCase
-    extends UseCase<List<Message>, GetMessagesForChatParams> {
+    extends UseCase<List<ChatMessage>, GetMessagesForChatParams> {
   final ChatRepository repository;
 
   GetMessagesForChatUseCase(this.repository);
 
   @override
-  Future<Either<Failure, List<Message>>> call(GetMessagesForChatParams params) {
+  Future<Either<Failure, List<ChatMessage>>> call(
+      GetMessagesForChatParams params) {
     return repository.getMessagesForChat(params.map);
   }
 }

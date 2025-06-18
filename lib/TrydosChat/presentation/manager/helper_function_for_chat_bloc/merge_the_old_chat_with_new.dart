@@ -5,9 +5,9 @@ MergeOldMessageWithNew({
   required List<Chat> newChats,
   required List<Chat> previousChats,
 }) {
-  List<Message> currMessages;
-  List<Message> prevMessages;
-  List<Message> resultMessages = [];
+  List<ChatMessage> currMessages;
+  List<ChatMessage> prevMessages;
+  List<ChatMessage> resultMessages = [];
   List<Chat> emptyChats = [];
   for (var chat in previousChats) {
     if (chat.messages.isNullOrEmpty &&

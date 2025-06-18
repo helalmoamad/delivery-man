@@ -484,7 +484,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                       .senderUserId ==
                                                                   _prefsRepository
                                                                       .myChatId) {
-                                                                Message lastMessage = [
+                                                                ChatMessage lastMessage = [
                                                                   ...state
                                                                       .chats,
                                                                   ...state
@@ -506,7 +506,7 @@ class _ChatCardState extends ThemeState<ChatCard> {
                                                                             element
                                                                                 .authMessageStatus!.deleteForAll!,
                                                                         orElse: () =>
-                                                                            Message(id: '-1'));
+                                                                            ChatMessage(id: '-1'));
                                                                 if (lastMessage
                                                                         .id ==
                                                                     '-1') {

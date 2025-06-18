@@ -1,26 +1,22 @@
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/list_ex.dart';
+import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart';
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/app_bloc/app_bloc.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/app_bloc/app_state.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/chat_card.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_text_widget.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/sliver_list_seprated.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/trydos_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
-import 'package:trydos/common/test_utils/test_var.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/core/utils/extensions/state_ext.dart';
-import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
-import 'package:trydos/features/chat/data/models/my_chats_response_model.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_card.dart';
-import 'package:trydos/generated/locale_keys.g.dart';
-import '../../../../common/test_utils/widgets_keys.dart';
-import '../../../app/blocs/app_bloc/app_bloc.dart';
-import '../../../app/my_text_widget.dart';
-import '../../../home/presentation/widgets/sliver_list_seprated.dart';
+import 'package:delivery_man_app/TrydosChat/config/theme/my_color_scheme.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/theme_state.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_state.dart';
 import '../utils/firebase_presence.dart';
@@ -34,7 +30,7 @@ class ChatPageContent extends StatefulWidget {
   State<ChatPageContent> createState() => ChatPageContentState();
 }
 
-class ChatPageContentState extends State<ChatPageContent> {
+class ChatPageContentState extends ThemeState<ChatPageContent> {
   late Timer timers;
   late ChatBloc chatBloc;
   int differencetime = 0;
@@ -83,10 +79,10 @@ class ChatPageContentState extends State<ChatPageContent> {
       for (Chat chat in initialChats) {
         ChannelMember member = chat.channelMembers!.firstWhere(
             (element) => element.userId != GetIt.I<PrefsRepository>().myChatId);
-        if ((chat.channelName ?? LocaleKeys.unknown_user.tr())
+        if ((chat.channelName ?? "un known")
                 .toLowerCase()
                 .contains(text?.toLowerCase() ?? '') ||
-            (member.user?.mobilePhone ?? LocaleKeys.no_num.tr())
+            (member.user?.mobilePhone ?? "no_num")
                 .toLowerCase()
                 .contains(text?.toLowerCase() ?? '')) {
           search.add(chat);
@@ -139,9 +135,9 @@ class ChatPageContentState extends State<ChatPageContent> {
             child: Center(
               child: ElevatedButton(
                   onPressed: () {
-                    GetIt.I<ChatBloc>().add(GetChatsEvent(limit: 10));
+                    GetIt.I<ChatBloc>().add(const GetChatsEvent(limit: 10));
                   },
-                  child: MyTextWidget(LocaleKeys.try_again.tr())),
+                  child: MyTextWidget("try_again")),
             ),
           );
         }
@@ -193,11 +189,7 @@ class ChatPageContentState extends State<ChatPageContent> {
                                           searchedChats[index].id.toString()))
                                   : false;
                               return ChatCard(
-                                key: TestVariables.kTestMode
-                                    ? Key(
-                                        '${WidgetsKeys.chatConversationCardKey}$index',
-                                      )
-                                    : null,
+                                key: null,
                                 onSendForwardMessage:
                                     widget.onSendForwardMessage,
                                 chat: searchedChats[index],

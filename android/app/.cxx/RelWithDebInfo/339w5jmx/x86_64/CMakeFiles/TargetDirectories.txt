@@ -1,0 +1,2 @@
+D:/deleivaryApp/delivery-man/android/app/.cxx/RelWithDebInfo/339w5jmx/x86_64/CMakeFiles/edit_cache.dir
+D:/deleivaryApp/delivery-man/android/app/.cxx/RelWithDebInfo/339w5jmx/x86_64/CMakeFiles/rebuild_cache.dir

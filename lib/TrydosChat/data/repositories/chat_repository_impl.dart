@@ -9,6 +9,7 @@ import 'package:delivery_man_app/TrydosChat/data/models/get_order_recipient_id_m
 import 'package:delivery_man_app/TrydosChat/data/models/my_contacts_response_model.dart';
 import 'package:delivery_man_app/TrydosChat/data/models/result_of_search_text_in_chat_model.dart';
 import 'package:delivery_man_app/TrydosChat/data/models/shared_product_count_model.dart';
+import 'package:delivery_man_app/TrydosChat/data/models/store_fcm_token_response_model.dart';
 import 'package:delivery_man_app/TrydosChat/data/models/upload_file_response_model.dart';
 import 'package:delivery_man_app/TrydosChat/domain/repositories/chat_repository.dart';
 import 'package:injectable/injectable.dart';
@@ -59,6 +60,13 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, StoreFcmTokenResponseModel>> storeFcmToken(
+      Map<String, dynamic> params) {
+    return handlingExceptionRequest(
+        tryCall: () => dataSource.storeFcmToken(params));
+  }
+
+  @override
   Future<Either<Failure, GetOrderRecipientIdModel>> getOrderRecipientId(
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
@@ -96,7 +104,8 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, Message>> sendMessage(Map<String, dynamic> params) {
+  Future<Either<Failure, ChatMessage>> sendMessage(
+      Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.sendMessage(params));
   }
@@ -134,14 +143,14 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, List<Message>>> getMessagesForChat(
+  Future<Either<Failure, List<ChatMessage>>> getMessagesForChat(
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getMessagesForChat(params));
   }
 
   @override
-  Future<Either<Failure, List<Message>>> getMessagesBetween(
+  Future<Either<Failure, List<ChatMessage>>> getMessagesBetween(
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.getMessagesBetween(params));
@@ -162,7 +171,7 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
-  Future<Either<Failure, Message>> shareProductWithContactsOrChannels(
+  Future<Either<Failure, ChatMessage>> shareProductWithContactsOrChannels(
       Map<String, dynamic> params) {
     return handlingExceptionRequest(
         tryCall: () => dataSource.shareProductWithContactsOrChannels(params));

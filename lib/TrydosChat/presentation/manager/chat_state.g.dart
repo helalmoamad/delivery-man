@@ -52,15 +52,16 @@ ChatState _$ChatStateFromJson(Map<String, dynamic> json) => ChatState(
               _$LoadImageWidthAndHeightEnumMap,
               json['loadImageWidthAndHeight']) ??
           LoadImageWidthAndHeight.init,
-      newSortedChatsByDate:
-          (json['newSortedChatsByDate'] as Map<String, dynamic>?)?.map(
-                (k, e) => MapEntry(
-                    k,
-                    (e as List<dynamic>)
-                        .map((e) => Message.fromJson(e as Map<String, dynamic>))
-                        .toList()),
-              ) ??
-              const {},
+      newSortedChatsByDate: (json['newSortedChatsByDate']
+                  as Map<String, dynamic>?)
+              ?.map(
+            (k, e) => MapEntry(
+                k,
+                (e as List<dynamic>)
+                    .map((e) => ChatMessage.fromJson(e as Map<String, dynamic>))
+                    .toList()),
+          ) ??
+          const {},
       currentOpenedChatId: json['currentOpenedChatId'] as String?,
       getContactsStatus: $enumDecodeNullable(
               _$GetContactsStatusEnumMap, json['getContactsStatus']) ??

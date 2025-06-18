@@ -65,52 +65,6 @@ class GRouter {
           );
         },
       ),
-
-      GoRoute(
-        path: _config.applicationRoutes.kBasePage,
-        pageBuilder: (BuildContext context, GoRouterState state) {
-          return _builderPage(
-            child: const BasePage(),
-            state: state,
-          );
-        },
-        routes: [
-          GoRoute(
-            path: _config.applicationRoutes.kSinglePageChatPageName,
-            pageBuilder: (BuildContext context, GoRouterState state) {
-              debugPrint(state.uri.queryParameters.toString());
-              return _builderPage(
-                child: SinglePageChat(
-                  chatId: state.uri.queryParameters['chatId']!,
-                  fullReceiverName:
-                      state.uri.queryParameters['fullReceiverName']!,
-                  receiverName: state.uri.queryParameters['receiverName']!,
-                  receiverPhone: state.uri.queryParameters['receiverPhone']!,
-                  senderName: state.uri.queryParameters['senderName']!,
-                  receiverPhoto:
-                      state.uri.queryParameters['receiverPhoto'] == 'null'
-                          ? null
-                          : state.uri.queryParameters['receiverPhoto'],
-                  senderPhoto:
-                      state.uri.queryParameters['senderPhoto'] == 'null'
-                          ? null
-                          : state.uri.queryParameters['senderPhoto'],
-                ),
-                state: state,
-              );
-            },
-          ),
-          GoRoute(
-            path: _config.applicationRoutes.kMyContactsPageName,
-            pageBuilder: (BuildContext context, GoRouterState state) {
-              return _builderPage(
-                child: const MyContactsPage(),
-                state: state,
-              );
-            },
-          ),
-        ],
-      ),
     ],
     errorBuilder: (context, state) => Container(
       color: Colors.red,

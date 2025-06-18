@@ -3,15 +3,15 @@ import 'package:intl/intl.dart';
 import '../../../data/models/my_chats_response_model.dart';
 import 'package:delivery_man_app/TrydosChat/chat_utils/list_ex.dart';
 
-Map<String, List<Message>> groupReceivedMessageOnDays(
+Map<String, List<ChatMessage>> groupReceivedMessageOnDays(
     {required List<Chat> chats}) {
   //todo map for store all chats after we group every messages chat depending on it's day sent
-  Map<String, Map<String, List<Message>>> newSortedChatsByDate = {};
+  Map<String, Map<String, List<ChatMessage>>> newSortedChatsByDate = {};
   for (var chat in chats) {
     chat.messages?.removeWhere((element) =>
         element.localId == null && int.tryParse(element.id.toString()) == null);
     //todo here bring all the days that have messages send on it and put the date as key in the messages in this day as value
-    Map<String, List<Message>> newMessagesByDate = {};
+    Map<String, List<ChatMessage>> newMessagesByDate = {};
     for (int i = chat.messages!.length - 1; i >= 0; i--) {
       final zonedDate = HelperFunctions.replaceArabicNumber(
           DateFormat("yyyy-MM-dd").format(
@@ -49,12 +49,13 @@ Map<String, List<Message>> groupReceivedMessageOnDays(
     newSortedChatsByDate['${chat.id}'] = newMessagesByDate;
   }
 
-  Map<String, List<Message>> result = {};
+  Map<String, List<ChatMessage>> result = {};
   newSortedChatsByDate.forEach((channelId, value) {
     result[channelId] = [];
     for (var date in value.keys) {
       if (!value[date].isNullOrEmpty) {
-        result[channelId]!.add(Message(isDateMessage: true, dateValue: date));
+        result[channelId]!
+            .add(ChatMessage(isDateMessage: true, dateValue: date));
         result[channelId]!.addAll(value[date]!);
       }
     }

@@ -1,19 +1,19 @@
+import 'package:delivery_man_app/TrydosChat/chat_utils/theme_state.dart';
+import 'package:delivery_man_app/TrydosChat/config/theme/my_color_scheme.dart';
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/sliver_list_seprated.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/trydos_loader.dart';
+import 'package:delivery_man_app/calls/presentation/bloc/calls_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
-import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/calls/data/models/my_calls.dart';
-import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_bloc.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-import '../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../../core/utils/theme_state.dart';
+
 import '../../../calls/presentation/widgets/calls_card.dart';
-import '../../../home/presentation/widgets/sliver_list_seprated.dart';
 
 class CallsPageContent extends StatefulWidget {
   const CallsPageContent({Key? key}) : super(key: key);

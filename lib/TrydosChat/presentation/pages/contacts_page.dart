@@ -1,31 +1,27 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/assets_provider.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/form_state_mixin.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/form_utils.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/list_ex.dart';
+import 'package:delivery_man_app/TrydosChat/config/theme/typography.dart';
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/utils/responsive_padding.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/app_bar_params.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/app_text_field.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/contact_card.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_text_widget.dart'
+    show MyTextWidget;
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/sliver_list_seprated.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/trydos_appbar.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/trydos_loader.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:trydos/common/test_utils/test_var.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
-import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/domin/repositories/prefs_repository.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/core/utils/extensions/state_ext.dart';
-import 'package:trydos/core/utils/form_utils.dart';
-import 'package:trydos/features/chat/presentation/manager/chat_event.dart';
-import 'package:trydos/features/chat/presentation/widgets/contact_card.dart';
-import 'package:trydos/generated/locale_keys.g.dart';
-import '../../../../common/constant/design/assets_provider.dart';
-import '../../../../common/test_utils/widgets_keys.dart';
-import '../../../../core/utils/form_state_mixin.dart';
-import '../../../../core/utils/responsive_padding.dart';
-import '../../../../service/language_service.dart';
-import '../../../app/app_widgets/app_text_field.dart';
-import '../../../app/app_widgets/loading_indicator/trydos_loader.dart';
-import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
-import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
-import '../../../app/my_text_widget.dart';
-import '../../../home/presentation/widgets/sliver_list_seprated.dart';
+import 'package:delivery_man_app/TrydosChat/config/theme/my_color_scheme.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/theme_state.dart';
 import '../../data/models/my_contacts_response_model.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_state.dart';
@@ -37,7 +33,8 @@ class MyContactsPage extends StatefulWidget {
   State<MyContactsPage> createState() => _MyContactsPageState();
 }
 
-class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
+class _MyContactsPageState extends ThemeState<MyContactsPage>
+    with FormStateMinxin {
   final ScrollController scrollController = ScrollController();
   late ChatBloc chatBloc;
   ValueNotifier<List<Contact>> searchContacts =
@@ -75,9 +72,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                 children: [
                   Transform(
                     alignment: Alignment.center,
-                    transform: (Matrix4.identity()
-                      ..scale(LanguageService.languageCode == 'ar' ? -1.0 : 1.0,
-                          1.0, 1.0)),
+                    transform: (Matrix4.identity()..scale(-1.0, 1.0, 1.0)),
                     child: InkWell(
                       onTap: () {
                         Navigator.pop(context);
@@ -95,7 +90,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                   ),
                   10.horizontalSpace,
                   MyTextWidget(
-                    LocaleKeys.contacts_list.tr(),
+                    "contacts_list",
                     style: textTheme.bodyMedium?.rr
                         .copyWith(color: const Color(0xff388CFF)),
                   ),
@@ -120,7 +115,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                   controller: form.controllers[0],
                   filledColor: colorScheme.grey50,
                   bordersColor: colorScheme.grey50,
-                  hintText: LocaleKeys.search_chat_contact_startNewChat.tr(),
+                  hintText: "search_chat_contact_startNewChat",
                   hintTextStyle: textTheme.bodySmall?.lr
                       .copyWith(color: const Color(0xffD3D3D3)),
                   onChange: (String? text) {
@@ -182,7 +177,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                         onPressed: () {
                           chatBloc.add(GetContactsEvent());
                         },
-                        child: MyTextWidget(LocaleKeys.try_again.tr())),
+                        child: MyTextWidget("try_again")),
                   );
                 }
                 return SliverMainAxisGroup(
@@ -201,11 +196,7 @@ class _MyContactsPageState extends State<MyContactsPage> with FormStateMinxin {
                           return sliverListSeparated(
                             itemBuilder: (_, index) {
                               return ContactCard(
-                                key: TestVariables.kTestMode
-                                    ? Key(
-                                        '${WidgetsKeys.contactCardKey}$index',
-                                      )
-                                    : null,
+                                key: null,
                                 index: index,
                                 contact: searchedContacts[index],
                               );

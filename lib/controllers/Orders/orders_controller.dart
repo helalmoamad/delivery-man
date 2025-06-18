@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/background_service/background_service.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
@@ -9,12 +10,15 @@ import 'package:delivery_man_app/models/Orders/change_status_model.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/assign_order_tome_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_received_amount_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_status.dart';
+import 'package:delivery_man_app/providers/Orders_providers.dart/get_my_orders_for_chat_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/get_my_orders_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/unassign_to_vehicle_provider.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
+import 'package:delivery_man_app/shared/global_functions/push_notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -80,7 +84,7 @@ class OrdersController extends GetxController {
 
   int orderIdForDetails = 0;
   int myOrderIdForDetails = 0;
-
+  int myOrderIdInMarket = 0;
   String orderStatus = '';
   int selectedOrderStatus = 0;
 
@@ -110,8 +114,11 @@ class OrdersController extends GetxController {
   bool isGetMyOrderStatusNoInternetConnection = false;
 
   ListOrderModel? myOrdersData;
+  GetOrderForChat? myOrderForChatData;
   late GetMyOrdersProvider getMyOrdersProvider =
       Get.find<GetMyOrdersProvider>();
+  late GetMyOrdersForChatProvider getMyOrdersForChatProvider =
+      Get.find<GetMyOrdersForChatProvider>();
 
   String myOrderStatus = '';
   int selectedMyOrderStatus = 0;
@@ -178,6 +185,15 @@ class OrdersController extends GetxController {
   }
 
   void onNotifiNavigation() async {
+    if (GlobalFunctions.getNotifiType() == "chat") {
+      await GlobalFunctions.setNotifiType(notifiType: '');
+      await GlobalFunctions.setIsFromNotifiForNewOrder(
+          isFromNotifiForNewOrder: true);
+      PushNotificationService.handleOpenChatPageFromNotificationInBackground(
+          GlobalFunctions.getOrderId());
+      return;
+    }
+    GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
     if (GlobalFunctions.getNotifiType() == NotificationsTypes.newOrder ||
         GlobalFunctions.getNotifiType() ==
             NotificationsTypes.orderRequiresAssingment ||
@@ -377,7 +393,9 @@ class OrdersController extends GetxController {
   Future<void> chooseMyOrderStatus({
     required String status,
     required int index,
+    String id = "",
     bool isForAssignToMe = false,
+    bool isForChat = false,
   }) async {
     String token = GlobalFunctions.getToken();
     myOrderStatus = status;
@@ -387,8 +405,11 @@ class OrdersController extends GetxController {
       isForAssignToMe
           ? null
           : myOrderStatusScrollController.jumpTo(index: index);
-
-      await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
+      if (isForChat) {
+        await getMyOrderForChatData(token: token, id: id, offset: 1);
+      } else {
+        await getMyOrdersData(token: token, status: myOrderStatus, offset: 1);
+      }
     }
 
     update();
@@ -871,6 +892,23 @@ class OrdersController extends GetxController {
       myOrdersData = getOrdersData;
       hideGetMyOrdersCircleIndicator();
       hideGetMyOrdersNoInternetPage();
+    });
+  }
+
+  Future<void> getMyOrderForChatData({
+    required String token,
+    required String id,
+    required int offset,
+  }) async {
+    final failureOrGetOrdersData = await getMyOrdersForChatProvider.call(
+        token: token, id: id, offset: offset);
+    failureOrGetOrdersData.fold((failure) {}, (getOrdersData) async {
+      await GlobalFunctions.setOrderId(
+          orderId: (getOrdersData.data?.id ?? 0).toString());
+      print(
+          "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEWW${getOrdersData.data?.id ?? 0}");
+
+      myOrderForChatData = getOrdersData;
     });
   }
 

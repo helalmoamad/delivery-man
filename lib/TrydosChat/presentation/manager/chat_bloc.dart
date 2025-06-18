@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:delivery_man_app/TrydosChat/chat_utils/use_case.dart';
+import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart'
+    as chats;
 import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart';
 import 'package:delivery_man_app/TrydosChat/data/models/my_contacts_response_model.dart';
 import 'package:delivery_man_app/TrydosChat/data/models/pagination/pagination_model.dart';
@@ -24,6 +26,7 @@ import 'package:delivery_man_app/TrydosChat/domain/use_cases/send_error_to_serve
 import 'package:delivery_man_app/TrydosChat/domain/use_cases/send_message_usecase.dart';
 import 'package:delivery_man_app/TrydosChat/domain/use_cases/share_product_on_social_app_count_usecase.dart';
 import 'package:delivery_man_app/TrydosChat/domain/use_cases/share_product_with_contacts_or_channels_usecase.dart';
+import 'package:delivery_man_app/TrydosChat/domain/use_cases/store_fcm_usecase.dart';
 import 'package:delivery_man_app/TrydosChat/domain/use_cases/update_profile_chat_usecase.dart';
 import 'package:delivery_man_app/TrydosChat/domain/use_cases/upload_file_cloudinary_usecase.dart';
 import 'package:delivery_man_app/TrydosChat/domain/use_cases/upload_file_usecase.dart';
@@ -53,7 +56,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 @LazySingleton()
-class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
+class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ChatBloc(
       this.getContactsUseCase,
       this.getMyChatsUseCase,
@@ -63,6 +66,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       this.getSharedProductCountUseCase,
       this.getMessagesBetweenUseCase,
       this.getOrderRecipientIdUseCase,
+      this.storeFcmUseCase,
       this.uploadFileCloudinaryUseCase,
       this.getMessagesForChatUseCase,
       this.deleteChatUseCase,
@@ -121,7 +125,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     on<GetOrderRecipientIdEvent>(
       _onGetOrderRecipientIdEvent,
     );
-
+    on<StoreFcmTokenEvent>(
+      _onStoreFcmTokenEvent,
+    );
     on<ReceiveMissCallEvent>(
       _onReceiveMissCallEvent,
     );
@@ -143,6 +149,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   final GetSharedProductCountUseCase getSharedProductCountUseCase;
   final GetDateTimeUseCase getDateTimeUseCase;
   final GetMyChatsUseCase getMyChatsUseCase;
+  final StoreFcmUseCase storeFcmUseCase;
   final GetOrderRecipientIdUseCase getOrderRecipientIdUseCase;
   final SendErrorToServerUseCase sendErrorToServerUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
@@ -167,7 +174,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     //todo waiting messages and not sent yet
 
     List<String> ids = List.of(state.currentMessage);
-    List<Message> messages;
+    List<ChatMessage> messages;
     bool fromPinned = false;
 
     //todo ---if-----
@@ -208,7 +215,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       //todo insert the new message in the first of the list
       messages.insert(
           0,
-          Message(
+          ChatMessage(
               channelId: event.channelId,
               id: event.messageId,
               localId: event.messageId,
@@ -234,7 +241,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                     ]
                   : null,
               parentMessage: parentMessageId != null
-                  ? Message(
+                  ? ChatMessage(
                       file: event.file,
                       senderUserId: index != -1
                           ? messages[index].senderUserId
@@ -318,7 +325,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                   return e;
                 }).toList());
           } else if (e.id == event.channelId) {
-            List<Message> messages = List.of(e.messages ?? []);
+            List<ChatMessage> messages = List.of(e.messages ?? []);
             int index = messages.indexWhere((element) =>
                 (element.id == event.messageId ||
                     element.localId == event.messageId));
@@ -346,7 +353,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                   return e;
                 }).toList());
           } else if (e.id == event.channelId) {
-            List<Message> messages = List.of(e.messages ?? []);
+            List<ChatMessage> messages = List.of(e.messages ?? []);
             int index = messages.indexWhere((element) =>
                 (element.id == event.messageId ||
                     element.localId == event.messageId));
@@ -379,6 +386,29 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     );
   }
 
+  FutureOr<void> _onStoreFcmTokenEvent(
+      StoreFcmTokenEvent event, Emitter<ChatState> emit) async {
+    final response = await storeFcmUseCase(
+      StoreFcmParams(
+        userId: event.userId,
+        fcmToken: event.fcmToken,
+      ),
+    );
+    response.fold((l) {
+      if (!isFailedTheFirstTime.contains('StoreFcmTokenEvent')) {
+        add(StoreFcmTokenEvent(
+          userId: event.userId,
+          fcmToken: event.fcmToken,
+        ));
+        isFailedTheFirstTime.add('StoreFcmTokenEvent');
+      }
+    }, (r) {
+      isFailedTheFirstTime.remove('StoreFcmTokenEvent');
+      final id = r.data!.id;
+      _prefsRepository.setFcmTokenId(id!);
+    });
+  }
+
   FutureOr<void> _onShareProductWithContactsOrChannelsEvent(
       ShareProductWithContactsOrChannelsEvent event,
       Emitter<ChatState> emit) async {
@@ -387,7 +417,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     List<Chat> chats = List.of(state.chats);
     List<Chat> pinnedChats = List.of(state.pinnedChats);
     List<String> ids = List.of(state.currentMessage);
-    Map<String, List<Message>> messagesPerChannel = {};
+    Map<String, List<ChatMessage>> messagesPerChannel = {};
     Map<String, int?> receivers = {};
 
     // load messages of channels
@@ -418,7 +448,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       messagesPerChannel.forEach((key, value) {
         value.insert(
             0,
-            Message(
+            ChatMessage(
               channelId: key,
               id: messageId,
               localId: messageId,
@@ -514,7 +544,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                   return e;
                 }).toList());
           } else if (event.channelIds.contains(e.id)) {
-            List<Message> messages = List.of(e.messages ?? []);
+            List<ChatMessage> messages = List.of(e.messages ?? []);
             int index = messages.indexWhere((element) =>
                 (element.id == messageId || element.localId == messageId));
             messages[index] = r.copyWith(
@@ -540,7 +570,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                   return e;
                 }).toList());
           } else if (event.channelIds.contains(e.id)) {
-            List<Message> messages = List.of(e.messages ?? []);
+            List<ChatMessage> messages = List.of(e.messages ?? []);
             int index = messages.indexWhere((element) =>
                 (element.id == messageId || element.localId == messageId));
             messages[index] = r.copyWith(
@@ -791,8 +821,9 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       (r) {
         isFailedTheFirstTime.remove('GetOrderRecipientIdEvent');
         List<Chat> newChats = List.of(state.chats);
-        bool changed = false;
-        List<Chat> chats = List.of(state.chats);
+        //    newChats.removeWhere((element) => element.isPrivate ?? false);
+        //bool changed = false;
+        /*  List<Chat> chats = List.of(state.chats);
         chats.addAll(state.pinnedChats);
 //        debugPrint('long : ${r.contacts?.length}');
 
@@ -804,38 +835,40 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
                     orElse: () => ChannelMember(userId: -1))
                 .userId !=
             -1);
-        debugPrint('index : $index');
-        if (index == -1) {
-          debugPrint('new chat');
-          changed = true;
-          String uuid = const Uuid().v4();
-          newChats.insert(
-              0,
-              Chat(
-                  id: uuid,
-                  localId: uuid,
-                  messages: [],
-                  paginationStatus: PaginationStatus.initial,
-                  channelName: "recipient",
-                  channelMembers: [
-                    ChannelMember(
-                        userId: r.data?.recipient?.id,
-                        user:
-                            User(id: r.data?.recipient?.id, name: "recipient")),
-                    ChannelMember(
-                        userId: _prefsRepository.myChatId,
-                        user: User(
-                            id: _prefsRepository.myChatId,
-                            name: _prefsRepository.myChatName)),
-                  ]));
-        }
+        debugPrint('index : $index');*/
+        // if (index == -1) {
+        //   debugPrint('new chat');
+        //  changed = true;
+        String uuid = const Uuid().v4();
+        newChats.insert(
+            0,
+            r.data?.chatParticipant != null
+                ? r.data!.chatParticipant!
+                : chats.Chat(
+                    id: uuid,
+                    localId: uuid,
+                    messages: [],
+                    paginationStatus: PaginationStatus.initial,
+                    channelName: "recipient",
+                    channelMembers: [
+                      ChannelMember(
+                          userId: r.data?.recipient?.id,
+                          user: User(
+                              id: r.data?.recipient?.id, name: "recipient")),
+                      ChannelMember(
+                          userId: _prefsRepository.myChatId,
+                          user: User(
+                              id: _prefsRepository.myChatId,
+                              name: _prefsRepository.myChatName)),
+                    ]));
+        //}
 
         emit(
           state.copyWith(
             recipientUserId: r.data?.recipient?.id.toString(),
-            chats: changed ? newChats : state.chats,
+            chats: newChats, // changed ? newChats : state.chats,
             newSortedChatsByDate: groupReceivedMessageOnDays(chats: [
-              ...(changed ? newChats : state.chats),
+              ...(/*changed ?*/ newChats /*: state.chats*/),
               ...state.pinnedChats
             ]),
             getOrderRecipientIdStatus: GetOrderRecipientIdStatus.success,
@@ -849,7 +882,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
       UploadFileEvent event, Emitter<ChatState> emit) async {
     List<String> ids = List.of(state.currentMessage);
     ids.add(event.messageId);
-    List<Message> messages;
+    List<ChatMessage> messages;
     String? parentMessageId;
     bool fromPinned = false;
     if (state.chats.any(
@@ -877,7 +910,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
     messages.insert(
         0,
-        Message(
+        ChatMessage(
             channelId: event.channelId,
             id: event.messageId,
             localId: event.messageId,
@@ -890,7 +923,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             parentMessageId: parentMessageId,
             authMessageStatus: MessageStatus(isDeleted: 0, deleteForAll: false),
             parentMessage: parentMessageId != null
-                ? Message(
+                ? ChatMessage(
                     file: event.file,
                     senderUserId: index != -1
                         ? messages[index].senderUserId
@@ -969,7 +1002,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     print('_onReceiveMessageEvent_onReceiveMessageEvent');
 
     emit(state.copyWith(receiveMessageStatus: ReceiveMessageStatus.loading));
-    List<Message> messages = [];
+    List<ChatMessage> messages = [];
     bool fromPinned = false;
     List<Chat> chats;
     if (state.chats.any(
@@ -1328,7 +1361,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
   }
 
   List<Chat> sortChats(
-      List<Chat> unSortedChats, String? channelId, List<Message> messages) {
+      List<Chat> unSortedChats, String? channelId, List<ChatMessage> messages) {
     List<Chat> chats = List.of(unSortedChats);
     Chat chat = chats.firstWhere((element) => element.id == channelId);
     chats.removeWhere((e) => e.id == chat.id);
@@ -1524,7 +1557,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               }).toList(),
       ));
     }, (r) {
-      List<Message> messages = List.of(chat.messages ?? []);
+      List<ChatMessage> messages = List.of(chat.messages ?? []);
       messages.addAll(r);
       debugPrint('////chat messages length//// ${messages.length} //////////');
       chat = chat.copyWith(
@@ -1581,7 +1614,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
         getMessagesBetweenStatus: GetMessagesBetweenStatus.failure,
       ));
     }, (r) {
-      List<Message> messages = List.of(chat.messages ?? []);
+      List<ChatMessage> messages = List.of(chat.messages ?? []);
       int index =
           messages.indexWhere((element) => element.id == event.secondMessageId);
       for (int i = 0; i < r.length; i++) {
@@ -1649,7 +1682,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     }
   }
 
-  @override
+/*  @override
   ChatState? fromJson(Map<String, dynamic> json) {
     return ChatState.fromJson(json);
   }
@@ -1697,7 +1730,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
             sendMessageStatus: SendMessageStatus.init)
         .toJson();
   }
-
+*/
   FutureOr<void> _onAddAMessageToAChannel(
       AddAMessageToAChannel event, Emitter<ChatState> emit) {
     bool fromPinned = false;
@@ -1863,8 +1896,8 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
 
   _onResendMessageEvent(ResendMessageEvent event, Emitter<ChatState> emit) {
     emit(state.copyWith(resendMessageStatus: ResendMessageStatus.init));
-    List<Message> messages;
-    Message message;
+    List<ChatMessage> messages;
+    ChatMessage message;
     bool fromPinned = false;
     bool faildToUploadeToClodinary = false;
     Chat chat;
@@ -2172,7 +2205,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
     if (!event.getWithPagination) {
       resultOfSearch = PaginationModel.init();
 
-      List<Message> messages =
+      List<ChatMessage> messages =
           List.of(state.newSortedChatsByDate![event.channel_id]!)
               .reversed
               .toList();
@@ -2219,7 +2252,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
           !event.getWithPagination) {
         return;
       }
-      List<Message> messages =
+      List<ChatMessage> messages =
           List.of(state.newSortedChatsByDate![event.channel_id]!)
               .reversed
               .toList();
@@ -2231,7 +2264,7 @@ class ChatBloc extends HydratedBloc<ChatEvent, ChatState> {
               messages
                       .firstWhere(
                         (elements) => elements.id == element,
-                        orElse: () => Message(
+                        orElse: () => ChatMessage(
                             authMessageStatus: MessageStatus(isDeleted: 0)),
                       )
                       .authMessageStatus

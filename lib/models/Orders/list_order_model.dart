@@ -1,3 +1,53 @@
+// To parse this JSON data, do
+//
+//     final getOrderForChat = getOrderForChatFromJson(jsonString);
+
+class GetOrderForChat {
+  final bool? isSuccessful;
+  final bool? hasContent;
+  final int? code;
+  final dynamic message;
+  final dynamic detailedError;
+  final OrderDataModel? data;
+
+  GetOrderForChat({
+    this.isSuccessful,
+    this.hasContent,
+    this.code,
+    this.message,
+    this.detailedError,
+    this.data,
+  });
+
+  GetOrderForChat copyWith({
+    bool? isSuccessful,
+    bool? hasContent,
+    int? code,
+    dynamic message,
+    dynamic detailedError,
+    OrderDataModel? data,
+  }) =>
+      GetOrderForChat(
+        isSuccessful: isSuccessful ?? this.isSuccessful,
+        hasContent: hasContent ?? this.hasContent,
+        code: code ?? this.code,
+        message: message ?? this.message,
+        detailedError: detailedError ?? this.detailedError,
+        data: data ?? this.data,
+      );
+
+  factory GetOrderForChat.fromJson(Map<String, dynamic> json) =>
+      GetOrderForChat(
+        isSuccessful: json["isSuccessful"],
+        hasContent: json["hasContent"],
+        code: json["code"],
+        message: json["message"],
+        detailedError: json["detailed_error"],
+        data:
+            json["data"] == null ? null : OrderDataModel.fromJson(json["data"]),
+      );
+}
+
 class ListOrderModel {
   final bool? isSuccessful;
   final bool? hasContent;

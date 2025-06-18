@@ -1,5 +1,7 @@
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import '../../controllers/Orders/orders_controller.dart';
 import '../../routes/routes.dart';
 import '../../shared/constants/color_constants.dart';
@@ -16,7 +18,10 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     String status;
     if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
-      status = OrderStatuses.inDeliveryCenter;
+      status = (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
+              GetIt.I<PrefsRepository>().myOrderIdForChat != null)
+          ? OrderStatuses.outForDelivery
+          : OrderStatuses.inDeliveryCenter;
     } else {
       if (ordersController.previousRoute == Routes.myOrdersPage) {
         status = ordersController.myOrderStatus;

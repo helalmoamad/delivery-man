@@ -43,6 +43,16 @@ class OrdersRepository {
     );
   }
 
+  Future<Either<FailureDelivery, GetOrderForChat>> getMyOrderDataForChatApi(
+      {required String token, required String id, required int offset}) async {
+    return RepoNetworkRequest.makeNetworkRequest<GetOrderForChat>(
+      networkInfo: networkInfo,
+      isClientCloseFailure: true,
+      request: () => ordersApiService.getMyOrderDataForChatApi(
+          token: token, id: id, offset: offset),
+    );
+  }
+
   Future<Either<FailureDelivery, List<dynamic>>> getOrderStatusData({
     required String token,
   }) async {

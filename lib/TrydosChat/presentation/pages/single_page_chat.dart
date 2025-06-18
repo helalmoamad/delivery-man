@@ -2,61 +2,63 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/assets_provider.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/build_context.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/list_ex.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/theme_state.dart';
+import 'package:delivery_man_app/TrydosChat/config/theme/my_color_scheme.dart';
+import 'package:delivery_man_app/TrydosChat/config/theme/typography.dart';
+import 'package:delivery_man_app/TrydosChat/data/models/pagination/pagination_model.dart';
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/TrydosChat/helper/file_saving.dart';
+import 'package:delivery_man_app/TrydosChat/helper/helper_functions.dart';
+import 'package:delivery_man_app/TrydosChat/helper/show_message.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/app_bloc/app_bloc.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/app_bloc/app_event.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/app_bloc/app_state.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/pages/profile_page.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/utils/constant_design.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/utils/firebase_presence.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/utils/responsive_padding.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/app_bar_params.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/app_text_field.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/chat_input_field.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/chat_widgets/document_message.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/chat_widgets/image_message.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/chat_widgets/reply_messge.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/chat_widgets/video_message.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/loading_indicator.dart'
+    show LoadingIndicator;
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_cached_network_image.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_text_widget.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/trydos_appbar.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/trydos_loader.dart';
+import 'package:delivery_man_app/TrydosChat/router/router.dart';
+import 'package:delivery_man_app/calls/presentation/bloc/calls_bloc.dart';
+import 'package:delivery_man_app/services/service_provider.dart';
+import 'package:delivery_man_app/shared/widgets/circle_indecator_widget.dart';
+import 'package:delivery_man_app/shared/widgets/no_connection_widget.dart';
 import 'package:eraser/eraser.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_html/flutter_html.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
+
 import 'package:permission_handler/permission_handler.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:trydos/common/constant/constant.dart';
-import 'package:trydos/common/helper/file_saving.dart';
-import 'package:trydos/common/helper/show_message.dart';
-import 'package:trydos/common/test_utils/test_var.dart';
-import 'package:trydos/config/theme/my_color_scheme.dart';
-import 'package:trydos/config/theme/typography.dart';
-import 'package:trydos/core/utils/extensions/build_context.dart';
-import 'package:trydos/core/utils/extensions/list.dart';
-import 'package:trydos/core/utils/extensions/state_ext.dart';
-import 'package:trydos/core/utils/responsive_padding.dart';
-import 'package:trydos/features/app/app_widgets/app_text_field.dart';
-import 'package:trydos/features/app/app_widgets/loading_indicator/trydos_loader.dart';
-import 'package:trydos/features/app/blocs/app_bloc/app_state.dart';
-import 'package:trydos/features/app/loading_indicator.dart';
-import 'package:trydos/features/calls/presentation/bloc/calls_bloc.dart';
-import 'package:trydos/features/chat/presentation/pages/profile_page.dart';
-import 'package:trydos/features/chat/presentation/utils/firebase_presence.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_input_field.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_widgets/document_message.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_widgets/image_message.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_messge.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_widgets/reply_on_me_message.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_widgets/shared_product_message.dart';
-import 'package:trydos/features/chat/presentation/widgets/chat_widgets/video_message.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_bloc.dart';
-import 'package:trydos/features/home/presentation/manager/homeBloc/home_event.dart';
-import 'package:trydos/generated/locale_keys.g.dart';
+
 import 'package:uuid/uuid.dart';
-import '../../../../common/test_utils/widgets_keys.dart';
-import '../../../../common/helper/helper_functions.dart';
-import '../../../../core/data/model/pagination_model.dart';
-import '../../../../core/domin/repositories/prefs_repository.dart';
-import '../../../../routes/router.dart';
-import '../../../../service/language_service.dart';
-import '../../../app/app_widgets/trydos_app_bar/app_bar_params.dart';
-import '../../../app/app_widgets/trydos_app_bar/trydos_appbar.dart';
-import '../../../app/blocs/app_bloc/app_bloc.dart';
-import '../../../app/blocs/app_bloc/app_event.dart';
-import '../../../app/my_cached_network_image.dart';
-import '../../../app/my_text_widget.dart';
+
 import '../../../calls/presentation/utils/caller_info.dart';
-import '../../../home/presentation/pages/product_details_page.dart';
+
 import '../../data/models/my_chats_response_model.dart';
 import '../manager/chat_bloc.dart';
 import '../manager/chat_event.dart';
@@ -75,12 +77,14 @@ class SinglePageChat extends StatefulWidget {
       required this.receiverPhone,
       required this.fullReceiverName,
       required this.senderName,
+      this.orderId,
       this.fromSearch = false,
       this.senderPhoto,
       this.receiverPhoto})
       : super(key: key);
   final int? dataLength;
   final String chatId;
+  final String? orderId;
   final String receiverName;
   final bool? fromSearch;
   final String fullReceiverName;
@@ -93,7 +97,7 @@ class SinglePageChat extends StatefulWidget {
   State<SinglePageChat> createState() => _SinglePageChatState();
 }
 
-class _SinglePageChatState extends State<SinglePageChat> {
+class _SinglePageChatState extends ThemeState<SinglePageChat> {
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   late ChatBloc chatBloc;
 
@@ -113,7 +117,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   int? previousMessageSenderId, currentMessageSenderId;
   List<Widget> data = [];
-  Map<String, List<Message>> messagesByDate = {};
+  Map<String, List<ChatMessage>> messagesByDate = {};
   bool rebuild = true;
   bool rebuildForScrollWhenGetAllMessage = false;
   bool rebuildForScrollFirstWord = true;
@@ -140,11 +144,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
   void initState() {
     print("%%%%%%%%%${GetIt.I<PrefsRepository>().chatToken}*");
     rebuildMessage.value = -2;
-    Eraser.clearAllAppNotifications();
+    Eraser.clearAppNotificationsByTag(widget.chatId);
     callsBloc = BlocProvider.of<CallsBloc>(context);
     chatBloc = BlocProvider.of<ChatBloc>(context);
     autoScrollController = AutoScrollController();
     callsBloc.add(GetMissedCallCountEvent());
+    GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
     chatBloc.add(ReadAllMessagesEvent(widget.chatId.toString()));
     chatBloc.add(AddUserConntctSatuseEvent(
         userConnectedStatuse: " ", chatId: widget.chatId));
@@ -223,6 +228,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _scrollToBottom();
     });
+
     return WillPopScope(
       onWillPop: () {
         if (controller.text.length > 0) {
@@ -236,1404 +242,1428 @@ class _SinglePageChatState extends State<SinglePageChat> {
             .add(RefreshChatInputField(false, 'null', false));
         chatBloc
             .add(ChangeGlobalUsedVariablesInBloc(currentOpenedChatId: null));
+        chatBloc.add(
+            AddUserConntctSatuseEvent(userConnectedStatuse: " ", chatId: " "));
+
         return Future.value(true);
       },
-      child: Scaffold(
-          backgroundColor: const Color(0xffEBFFF8),
-          appBar: TrydosAppBar(
-            heightAppBar: (widget.fromSearch ?? false) ? 120 : 56,
-            appBarParams: AppBarParams(
-                dividerBottom: false,
-                hasLeading: false,
-                surfaceTintColor: Colors.transparent,
-                elevation: 0,
-                child: SafeArea(
+      child: ScreenUtilInit(
+          designSize: kDesignSize,
+          minTextAdapt: true,
+          builder: (context, child) {
+            return Scaffold(
+                backgroundColor: const Color.fromARGB(255, 255, 197, 197),
+                appBar: TrydosAppBar(
+                  heightAppBar: (widget.fromSearch ?? false) ? 120 : 56,
+                  appBarParams: AppBarParams(
+                      dividerBottom: false,
+                      hasLeading: false,
+                      surfaceTintColor: Colors.transparent,
+                      elevation: 0,
+                      child: SafeArea(
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 7,
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                /*  ValueListenableBuilder<bool>(
+                                    valueListenable: clickBackButton,
+                                    builder: (context, clicked, _) {
+                                      return InkWell(
+                                        key: null,
+                                        onTap: () {
+                                          BlocProvider.of<AppBloc>(context).add(
+                                              RefreshChatInputField(
+                                                  false, 'null', false));
+                                          chatBloc.add(
+                                              ChangeGlobalUsedVariablesInBloc(
+                                                  currentOpenedChatId: null));
+                                          clickBackButton.value = true;
+                                          Future.delayed(
+                                            Duration(milliseconds: 100),
+                                            () {
+                                              clickBackButton.value = false;
+                                              GoRouter.of(context).pop();
+                                            },
+                                          );
+                                        },
+                                        child: Container(
+                                          color: clicked
+                                              ? Colors.grey.shade100
+                                              : Colors.transparent,
+                                          padding:
+                                              HWEdgeInsetsDirectional.fromSTEB(
+                                                  20.w, 15, 10, 15),
+                                          child: SvgPicture.asset(
+                                            AppAssets.backArrowArabic,
+                                            width: 8.w,
+                                            color: const Color(0xff388CFF),
+                                          ),
+                                          //                              )
+                                          //                              ,
+                                        ),
+                                      );
+                                    }),*/
+                                BlocListener<ChatBloc, ChatState>(
+                                    listenWhen: (p, c) =>
+                                        p.currentOpenedChatId !=
+                                        c.currentOpenedChatId,
+                                    listener: (context, state) {
+                                      chat = state.chats.firstWhere(
+                                          (element) =>
+                                              element.id.toString() ==
+                                                  widget.chatId ||
+                                              element.localId.toString() ==
+                                                  widget.chatId,
+                                          orElse: () => state.pinnedChats
+                                              .firstWhere((element) =>
+                                                  element.id.toString() ==
+                                                      widget.chatId ||
+                                                  element.localId.toString() ==
+                                                      widget.chatId));
+
+                                      member = !chat
+                                              .channelMembers.isNullOrEmpty
+                                          ? chat.channelMembers!.firstWhere(
+                                              (element) =>
+                                                  element.userId !=
+                                                  _prefsRepository.myChatId)
+                                          : null;
+                                      FirebasePresence.listeningToConnectStatus(
+                                          chatId: widget.chatId,
+                                          friendId: member!.userId!);
+                                    },
+                                    child: BlocBuilder<ChatBloc, ChatState>(
+                                        builder: (context, state) {
+                                      if ((state.unReadMessagesFromAllChats -
+                                              countMessagesReceivedToMeNow) >
+                                          0) {
+                                        return Row(
+                                          children: [
+                                            MyTextWidget(
+                                              (state.unReadMessagesFromAllChats -
+                                                      countMessagesReceivedToMeNow)
+                                                  .toString(),
+                                              style: textTheme.bodyMedium?.rr
+                                                  .copyWith(
+                                                      color: const Color(
+                                                          0xff388CFF)),
+                                            ),
+                                          ],
+                                        );
+                                      }
+                                      return const SizedBox.shrink();
+                                    })),
+                                10.horizontalSpace,
+                                widget.receiverPhoto != null
+                                    ? Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1.0,
+                                              color: const Color(0xff388cff)),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              color: Color(0x29388cff),
+                                              offset: Offset(0, 3),
+                                              blurRadius: 6,
+                                            ),
+                                          ],
+                                        ),
+                                        child: MyCachedNetworkImage(
+                                          imageUrl: (widget.receiverPhoto
+                                                      .toString()
+                                                      .contains("cloudinary")
+                                                  ? ""
+                                                  : "${dotenv.env['Profile_Images_Url']}") +
+                                              widget.receiverPhoto!,
+                                          imageFit: BoxFit.cover,
+                                          progressIndicatorBuilderWidget:
+                                              TrydosLoader(),
+                                          height: 40,
+                                          width: 40.w,
+                                        ),
+                                      )
+                                    : NoImageWidget(
+                                        height: 40,
+                                        width: 40.w,
+                                        textStyle: context
+                                            .textTheme.bodyMedium?.br
+                                            .copyWith(
+                                                color: const Color(0xff6638FF),
+                                                letterSpacing: 0.18,
+                                                height: 1.33),
+                                        name: widget.receiverName),
+                                20.horizontalSpace,
+                                Expanded(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      InkWell(
+                                        key: null,
+                                        onTap: () {
+                                          /*   Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      ProfilePage(
+                                                        receiverName: widget
+                                                            .receiverName,
+                                                        dataLength: widget
+                                                                .dataLength ??
+                                                            0,
+                                                        receiverPhoto: widget
+                                                            .receiverPhoto,
+                                                        senderName:
+                                                            widget.senderName,
+                                                        senderPhoto: widget
+                                                            .senderPhoto,
+                                                        fullReceiverName: widget
+                                                            .fullReceiverName,
+                                                        receiverPhone: widget
+                                                            .receiverPhone,
+                                                        chatId: widget.chatId,
+                                                      )));*/
+                                        },
+                                        child: MyTextWidget(
+                                          widget.fullReceiverName,
+                                          style: textTheme.bodyMedium?.mr
+                                              .copyWith(
+                                                  color:
+                                                      const Color(0xff5D5C5D)),
+                                        ),
+                                      ),
+                                      if (int.tryParse(widget.chatId) != null)
+                                        BlocBuilder<AppBloc, AppState>(
+                                          builder: (context, state) {
+                                            if (state.pusherActivityIds[
+                                                    int.parse(widget.chatId)] !=
+                                                null) {
+                                              return MyTextWidget(
+                                                state.pusherActivityDescription[
+                                                        int.parse(
+                                                            widget.chatId)]
+                                                    .toString(),
+                                                overflow: TextOverflow.ellipsis,
+                                                style: textTheme.titleMedium?.mr
+                                                    .copyWith(
+                                                        color: const Color(
+                                                            0xff007CFF)),
+                                              );
+                                            } else {
+                                              return BlocBuilder<ChatBloc,
+                                                  ChatState>(
+                                                builder: (context, state) {
+                                                  return state.userConnectedStatuse !=
+                                                              ' ' &&
+                                                          DateTime.tryParse(state
+                                                                  .userConnectedStatuse) !=
+                                                              null
+                                                      ? DateTime.parse(state.userConnectedStatuse)
+                                                                  .subtract(Duration(
+                                                                      minutes:
+                                                                          duration))
+                                                                  .difference(
+                                                                      DateTime.now()
+                                                                          .toUtc())
+                                                                  .inMinutes
+                                                                  .abs() <=
+                                                              5
+                                                          ? MyTextWidget("Online",
+                                                              overflow: TextOverflow
+                                                                  .ellipsis,
+                                                              style: textTheme
+                                                                  .titleMedium
+                                                                  ?.mr
+                                                                  .copyWith(
+                                                                      color: const Color(0xff007CFF)))
+                                                          : Row(
+                                                              children: [
+                                                                MyTextWidget(
+                                                                    "أخر ظهور ",
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style: textTheme
+                                                                        .titleMedium
+                                                                        ?.mr
+                                                                        .copyWith(
+                                                                            color:
+                                                                                const Color(0xff007CFF))),
+                                                                MyTextWidget(
+                                                                    formatDate(DateTime.tryParse(state
+                                                                            .userConnectedStatuse)!
+                                                                        .subtract(Duration(
+                                                                            minutes:
+                                                                                duration))),
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style: textTheme
+                                                                        .titleMedium
+                                                                        ?.mr
+                                                                        .copyWith(
+                                                                            color:
+                                                                                const Color(0xff007CFF))),
+                                                                MyTextWidget(
+                                                                    " الساعة ",
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style: textTheme
+                                                                        .titleMedium
+                                                                        ?.mr
+                                                                        .copyWith(
+                                                                            color:
+                                                                                const Color(0xff007CFF))),
+                                                                MyTextWidget(
+                                                                    HelperFunctions.gettimesInFormat(DateTime.tryParse(state
+                                                                            .userConnectedStatuse)!
+                                                                        .subtract(Duration(
+                                                                            minutes:
+                                                                                duration))),
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style: textTheme
+                                                                        .titleMedium
+                                                                        ?.mr
+                                                                        .copyWith(
+                                                                            color:
+                                                                                const Color(0xff007CFF))),
+                                                              ],
+                                                            )
+                                                      : SizedBox.shrink();
+                                                },
+                                              );
+                                            }
+                                          },
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                /*  BlocBuilder<CallsBloc, CallsState>(
+                                  builder: (context, state) => InkWell(
+                                    onTap: () async {
+                                      List<Map<String, dynamic>> info =
+                                          callerInfo(channelId: widget.chatId);
+                                      PermissionStatus microphone =
+                                          await Permission.microphone.request();
+                                      var status2 = await Permission
+                                          .mediaLibrary
+                                          .request();
+                                      PermissionStatus camera =
+                                          await Permission.camera.request();
+                                      if (microphone.isGranted &&
+                                          status2.isGranted &&
+                                          camera.isGranted) {
+                                        if (info[0]
+                                            .containsKey('currentReceiver')) {
+                                          GetIt.I<CallsBloc>().add(
+                                              MakeCallEvent(
+                                                  receiverUserId: info[0]
+                                                          ['currentReceiver']
+                                                      .toString(),
+                                                  receiverCallName:
+                                                      widget.fullReceiverName,
+                                                  chatId: info[1]['channelId'],
+                                                  isVideo: true,
+                                                  payload: info[1]));
+                                        } else {
+                                          GetIt.I<CallsBloc>().add(
+                                              MakeCallEvent(
+                                                  isVideo: true,
+                                                  receiverCallName:
+                                                      widget.fullReceiverName,
+                                                  chatId: info[0]['channelId'],
+                                                  payload: info[0]));
+                                          //todo we have the id of the chat so we can move to the call immediately
+                                        }
+                                      } else if (microphone.isDenied ||
+                                          status2.isDenied ||
+                                          camera.isDenied) {
+                                        showMessage("permission_denied");
+                                        openAppSettings();
+                                      }
+                                    },
+                                    child: SvgPicture.asset(
+                                      AppAssets.makeVideoCallSvg,
+                                      width: 34.w,
+                                      height: 25,
+                                    ),
+                                  ),
+                                ),
+                                30.horizontalSpace,
+                                // todo CreateCallPage
+                                InkWell(
+                                  onTap: () async {
+                                    try {
+                                      List<Map<String, dynamic>> info =
+                                          callerInfo(channelId: widget.chatId);
+                                      PermissionStatus microphone =
+                                          await Permission.microphone.request();
+                                      var status2 = await Permission
+                                          .mediaLibrary
+                                          .request();
+                                      if (microphone.isGranted &&
+                                          status2.isGranted) {
+                                        //todo we have the receiver id so the chat dose not exist
+                                        if (info[0]
+                                            .containsKey('currentReceiver')) {
+                                          debugPrint(
+                                              'currentReceiver${info[0]['currentReceiver']}');
+
+                                          GetIt.I<CallsBloc>().add(
+                                              MakeCallEvent(
+                                                  receiverUserId: info[0]
+                                                          ['currentReceiver']
+                                                      .toString(),
+                                                  receiverCallName:
+                                                      widget.fullReceiverName,
+                                                  chatId: info[1]['channelId'],
+                                                  isVideo: false,
+                                                  payload: info[1]));
+
+                                          // GetIt.I<CallsBloc>().add(VideoCallEvent(
+                                          //     receiverUserId: info[0]['currentReceiver'],
+                                          //     payload: info[1]));
+                                          //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
+                                        }
+                                        //todo else the chat already exist so we don't have the receiver id just the chat id
+                                        else {
+                                          debugPrint(
+                                              'widget.chatId${widget.chatId}');
+                                          debugPrint('info[0]${info[0]}');
+
+                                          GetIt.I<CallsBloc>().add(
+                                              MakeCallEvent(
+                                                  isVideo: false,
+                                                  receiverCallName:
+                                                      widget.fullReceiverName,
+                                                  chatId: info[0]['channelId'],
+                                                  payload: info[0]));
+                                          //todo we have the id of the chat so we can move to the call immediately
+                                        }
+                                      } else if (microphone.isDenied ||
+                                          status2.isDenied) {
+                                        showMessage("permission_denied");
+                                        openAppSettings();
+                                      }
+                                    } catch (e, st) {
+                                      print(e);
+                                      print(st);
+                                    }
+                                  },
+                                  child: SvgPicture.asset(
+                                    AppAssets.makeCallSvg,
+                                    width: 25.w,
+                                    height: 25,
+                                  ),
+                                ),*/
+                              ],
+                            ),
+                            if ((widget.fromSearch ?? false)) ...{
+                              SizedBox(
+                                height: 5,
+                              ),
+                              ValueListenableBuilder<Map<String, int>>(
+                                valueListenable: currentIndextForEachMessage,
+                                builder:
+                                    (context, currentIndextForMessages, _) {
+                                  currentFocusedIcon.value = -2;
+                                  return BlocBuilder<ChatBloc, ChatState>(
+                                    buildWhen: (previous, current) {
+                                      return previous.resultOfSearchTextInChat
+                                                  ?.paginationStatus !=
+                                              current.resultOfSearchTextInChat
+                                                  ?.paginationStatus ||
+                                          previous.getMessagesBetweenStatus !=
+                                              current.getMessagesBetweenStatus;
+                                    },
+                                    builder: (context, state) {
+                                      searchResults = state
+                                              .resultOfSearchTextInChat
+                                              ?.items ??
+                                          [];
+                                      if (searchResults.length > 0 &&
+                                          indexForEveryTextInSearchResult ==
+                                              0 &&
+                                          controller.text.length > 0 &&
+                                          state.resultOfSearchTextInChat
+                                                  ?.paginationStatus ==
+                                              PaginationStatus.success &&
+                                          rebuildForScrollFirstWord) {
+                                        rebuildForScrollFirstWord = false;
+                                        scrollToIndex(
+                                            currentIndextForMessages[searchResults[
+                                                    indexForEveryTextInSearchResult]] ??
+                                                -1,
+                                            currentId: currentIndextForMessages
+                                                .keys.first,
+                                            forSearchText: true,
+                                            parentMessageId: searchResults[
+                                                indexForEveryTextInSearchResult]);
+                                      }
+                                      return SafeArea(
+                                          child: Material(
+                                        color: Colors.transparent,
+                                        child: Padding(
+                                          padding: HWEdgeInsets.symmetric(
+                                                  horizontal: 20.0)
+                                              .copyWith(bottom: 10),
+                                          child: AppTextField(
+                                            filledColor: Color(0xffF8F8F8),
+                                            bordersColor: Color(0xffF8F8F8),
+                                            hintText: 'Search',
+                                            roundingCornersValue: 30,
+                                            controller: controller,
+                                            onChange: (String text) {
+                                              if (text.length == 0) {
+                                                rebuildForScrollFirstWord =
+                                                    false;
+                                                chatBloc.add(
+                                                    SearchTextInChatEvent(
+                                                        channel_id:
+                                                            widget.chatId,
+                                                        searchText: "",
+                                                        clearSearch: true));
+                                              }
+                                              if (text.length > 0) {
+                                                rebuildForScrollFirstWord =
+                                                    true;
+                                                chatBloc.add(
+                                                    SearchTextInChatEvent(
+                                                        getWithPagination:
+                                                            false,
+                                                        channel_id:
+                                                            widget.chatId,
+                                                        searchText: text));
+                                                indexForEveryTextInSearchResult =
+                                                    0;
+                                              }
+                                            },
+                                            textStyle: context
+                                                .textTheme.titleMedium?.lr
+                                                .copyWith(
+                                                    color: const Color(
+                                                        0xff8D8D8D)),
+                                            hintTextStyle: context
+                                                .textTheme.bodySmall?.lr
+                                                .copyWith(
+                                                    color: const Color(
+                                                        0xff8D8D8D)),
+                                            prefixIcon: Padding(
+                                              padding:
+                                                  HWEdgeInsetsDirectional.only(
+                                                      top: 15, bottom: 15),
+                                              child: SvgPicture.asset(
+                                                AppAssets.searchOutlinedSvg,
+                                              ),
+                                            ),
+                                            suffix: (state.resultOfSearchTextInChat
+                                                                ?.paginationStatus ==
+                                                            PaginationStatus
+                                                                .loading &&
+                                                        state
+                                                            .resultOfSearchTextInChat!
+                                                            .items
+                                                            .isEmpty) ||
+                                                    state.getMessagesBetweenStatus ==
+                                                        GetMessagesBetweenStatus
+                                                            .loading
+                                                ? LoadingIndicator()
+                                                : SizedBox.shrink(),
+                                            suffixIcon: (state.resultOfSearchTextInChat
+                                                                ?.paginationStatus ==
+                                                            PaginationStatus
+                                                                .loading &&
+                                                        state
+                                                            .resultOfSearchTextInChat!
+                                                            .items
+                                                            .isEmpty) ||
+                                                    state.getMessagesBetweenStatus ==
+                                                        GetMessagesBetweenStatus
+                                                            .loading
+                                                ? SizedBox.shrink()
+                                                : Container(
+                                                    height: 15,
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        IconButton(
+                                                          onPressed: () {
+                                                            if (indexForEveryTextInSearchResult >
+                                                                0) {
+                                                              indexForEveryTextInSearchResult =
+                                                                  indexForEveryTextInSearchResult -
+                                                                      1;
+                                                            }
+
+                                                            scrollToIndex(
+                                                                currentIndextForMessages[
+                                                                        searchResults[
+                                                                            indexForEveryTextInSearchResult]] ??
+                                                                    -1,
+                                                                currentId:
+                                                                    currentIndextForMessages
+                                                                        .keys
+                                                                        .first,
+                                                                forSearchText:
+                                                                    true,
+                                                                parentMessageId:
+                                                                    searchResults[
+                                                                        indexForEveryTextInSearchResult]);
+                                                          },
+                                                          icon: Icon(Icons
+                                                              .arrow_downward),
+                                                        ),
+                                                        IconButton(
+                                                          onPressed: () {
+                                                            MoveToUpToScrollSearch(
+                                                                state
+                                                                    .resultOfSearchTextInChat!
+                                                                    .paginationStatus,
+                                                                currentIndextForMessages);
+                                                          },
+                                                          icon: Icon(Icons
+                                                              .arrow_upward),
+                                                        ),
+                                                      ],
+                                                    )),
+                                          ),
+                                        ),
+                                      ));
+                                    },
+                                  );
+                                },
+                              )
+                            }
+                          ],
+                        ),
+                      )),
+                ),
+                body: BlocListener<ChatBloc, ChatState>(
+                  listenWhen: (p, c) => (p.getMessagesBetweenStatus !=
+                          c.getMessagesBetweenStatus &&
+                      c.getMessagesBetweenStatus ==
+                          GetMessagesBetweenStatus.success &&
+                      p.resultOfSearchTextInChat?.paginationStatus !=
+                          c.resultOfSearchTextInChat?.paginationStatus &&
+                      c.scrollToParentMessage),
+                  listener: (context, state) {
+                    searchResults = state.resultOfSearchTextInChat?.items ?? [];
+                    rebuildForScrollWhenGetAllMessage = true;
+                  },
                   child: Column(
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          ValueListenableBuilder<bool>(
-                              valueListenable: clickBackButton,
-                              builder: (context, clicked, _) {
-                                return InkWell(
-                                  key: TestVariables.kTestMode
-                                      ? Key(WidgetsKeys.backFromChatKey)
-                                      : null,
-                                  onTap: () {
-                                    BlocProvider.of<AppBloc>(context).add(
-                                        RefreshChatInputField(
-                                            false, 'null', false));
-                                    chatBloc.add(
-                                        ChangeGlobalUsedVariablesInBloc(
-                                            currentOpenedChatId: null));
-                                    clickBackButton.value = true;
-                                    Future.delayed(
-                                      Duration(milliseconds: 100),
-                                      () {
-                                        clickBackButton.value = false;
-                                        GoRouter.of(context).pop();
-                                      },
-                                    );
-                                  },
-                                  child: Container(
-                                    color: clicked
-                                        ? Colors.grey.shade100
-                                        : Colors.transparent,
-                                    padding: HWEdgeInsetsDirectional.fromSTEB(
-                                        20.w, 15, 10, 15),
-                                    child: SvgPicture.asset(
-                                      !LanguageService.rtl
-                                          ? AppAssets.backFromCallSvg
-                                          : AppAssets.backArrowArabic,
-                                      width: 8.w,
-                                      color: const Color(0xff388CFF),
-                                    ),
-                                    //                              )
-                                    //                              ,
-                                  ),
-                                );
-                              }),
-                          BlocListener<ChatBloc, ChatState>(
-                              listenWhen: (p, c) =>
-                                  p.currentOpenedChatId !=
-                                  c.currentOpenedChatId,
-                              listener: (context, state) {
-                                chat = state.chats.firstWhere(
+                      Flexible(
+                        child: BlocConsumer<ChatBloc, ChatState>(
+                          listenWhen: (p, c) =>
+                              p.sendMessageStatus != c.sendMessageStatus ||
+                              (p.getMessagesBetweenStatus !=
+                                      c.getMessagesBetweenStatus &&
+                                  c.getMessagesBetweenStatus ==
+                                      GetMessagesBetweenStatus.success &&
+                                  c.scrollToParentMessage) ||
+                              p.resendMessageStatus != c.resendMessageStatus ||
+                              (p.receiveMessageStatus !=
+                                      c.receiveMessageStatus &&
+                                  c.receiveMessageStatus ==
+                                      ReceiveMessageStatus.success),
+                          listener: (context, state) {
+                            if (state.sendMessageStatus ==
+                                    SendMessageStatus.loading ||
+                                state.receiveMessageStatus ==
+                                    ReceiveMessageStatus.success) {
+                              WidgetsBinding.instance
+                                  .addPostFrameCallback((timeStamp) {
+                                _scrollToBottom();
+                              });
+                            }
+                            print(widget.chatId);
+                            print(state.currentChannelReceivedMessage);
+                            if (state.receiveMessageStatus ==
+                                    ReceiveMessageStatus.success &&
+                                (widget.chatId ==
+                                        state.currentChannelReceivedMessage ||
+                                    chat.localId ==
+                                        state.currentChannelReceivedMessage)) {
+                              chatBloc.add(
+                                  ReadAllMessagesEvent(chat.id.toString()));
+                            }
+                          },
+                          builder: (context, chatState) {
+                            chat = chatState.chats.firstWhere(
+                                (element) =>
+                                    element.id.toString() == widget.chatId ||
+                                    element.localId.toString() == widget.chatId,
+                                orElse: () => chatState.pinnedChats.firstWhere(
                                     (element) =>
                                         element.id.toString() ==
                                             widget.chatId ||
                                         element.localId.toString() ==
                                             widget.chatId,
-                                    orElse: () => state.pinnedChats.firstWhere(
-                                        (element) =>
-                                            element.id.toString() ==
-                                                widget.chatId ||
-                                            element.localId.toString() ==
-                                                widget.chatId));
+                                    orElse: () => Chat()));
 
-                                member = !chat.channelMembers.isNullOrEmpty
-                                    ? chat.channelMembers!.firstWhere(
-                                        (element) =>
-                                            element.userId !=
-                                            _prefsRepository.myChatId)
-                                    : null;
-                                FirebasePresence.listeningToConnectStatus(
-                                    chatId: widget.chatId,
-                                    friendId: member!.userId!);
-                              },
-                              child: BlocBuilder<ChatBloc, ChatState>(
-                                  builder: (context, state) {
-                                if ((state.unReadMessagesFromAllChats -
-                                        countMessagesReceivedToMeNow) >
-                                    0) {
-                                  return Row(
-                                    children: [
-                                      MyTextWidget(
-                                        (state.unReadMessagesFromAllChats -
-                                                countMessagesReceivedToMeNow)
-                                            .toString(),
-                                        style: textTheme.bodyMedium?.rr
-                                            .copyWith(
-                                                color: const Color(0xff388CFF)),
-                                      ),
-                                    ],
-                                  );
-                                }
-                                return const SizedBox.shrink();
-                              })),
-
-                          20.horizontalSpace,
-                          widget.receiverPhoto != null
-                              ? Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1.0,
-                                        color: const Color(0xff388cff)),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Color(0x29388cff),
-                                        offset: Offset(0, 3),
-                                        blurRadius: 6,
-                                      ),
-                                    ],
-                                  ),
-                                  child: MyCachedNetworkImage(
-                                    imageUrl: (widget.receiverPhoto
-                                                .toString()
-                                                .contains("cloudinary")
-                                            ? ""
-                                            : "${dotenv.env['Profile_Images_Url']}") +
-                                        widget.receiverPhoto!,
-                                    imageFit: BoxFit.cover,
-                                    progressIndicatorBuilderWidget:
-                                        TrydosLoader(),
-                                    height: 40,
-                                    width: 40.w,
-                                  ),
-                                )
-                              : NoImageWidget(
-                                  height: 40,
-                                  width: 40.w,
-                                  textStyle: context.textTheme.bodyMedium?.br
-                                      .copyWith(
-                                          color: const Color(0xff6638FF),
-                                          letterSpacing: 0.18,
-                                          height: 1.33),
-                                  name: widget.receiverName),
-                          20.horizontalSpace,
-
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                InkWell(
-                                  key: TestVariables.kTestMode
-                                      ? Key(WidgetsKeys.goToProfileButtonKey)
-                                      : null,
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (_) => ProfilePage(
-                                                  receiverName:
-                                                      widget.receiverName,
-                                                  dataLength:
-                                                      widget.dataLength ?? 0,
-                                                  receiverPhoto:
-                                                      widget.receiverPhoto,
-                                                  senderName: widget.senderName,
-                                                  senderPhoto:
-                                                      widget.senderPhoto,
-                                                  fullReceiverName:
-                                                      widget.fullReceiverName,
-                                                  receiverPhone:
-                                                      widget.receiverPhone,
-                                                  chatId: widget.chatId,
-                                                )));
-                                  },
-                                  child: MyTextWidget(
-                                    widget.fullReceiverName,
-                                    style: textTheme.bodyMedium?.mr.copyWith(
-                                        color: const Color(0xff5D5C5D)),
-                                  ),
-                                ),
-                                if (int.tryParse(widget.chatId) != null)
-                                  BlocBuilder<AppBloc, AppState>(
-                                    builder: (context, state) {
-                                      if (state.pusherActivityIds[
-                                              int.parse(widget.chatId)] !=
-                                          null) {
-                                        return MyTextWidget(
-                                          state.pusherActivityDescription[
-                                                  int.parse(widget.chatId)]
-                                              .toString(),
-                                          overflow: TextOverflow.ellipsis,
-                                          style: textTheme.titleMedium?.mr
-                                              .copyWith(
-                                                  color:
-                                                      const Color(0xff007CFF)),
-                                        );
-                                      } else {
-                                        return BlocBuilder<ChatBloc, ChatState>(
-                                          builder: (context, state) {
-                                            return state.userConnectedStatuse !=
-                                                        ' ' &&
-                                                    DateTime.tryParse(state
-                                                            .userConnectedStatuse) !=
-                                                        null
-                                                ? DateTime.parse(state.userConnectedStatuse)
-                                                            .subtract(Duration(
-                                                                minutes:
-                                                                    duration))
-                                                            .difference(
-                                                                DateTime.now()
-                                                                    .toUtc())
-                                                            .inMinutes
-                                                            .abs() <=
-                                                        5
-                                                    ? MyTextWidget("Online",
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: textTheme
-                                                            .titleMedium?.mr
-                                                            .copyWith(
-                                                                color: const Color(
-                                                                    0xff007CFF)))
-                                                    : Row(
-                                                        children: [
-                                                          MyTextWidget(
-                                                              "أخر ظهور ",
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style: textTheme
-                                                                  .titleMedium
-                                                                  ?.mr
-                                                                  .copyWith(
-                                                                      color: const Color(
-                                                                          0xff007CFF))),
-                                                          MyTextWidget(
-                                                              formatDate(DateTime
-                                                                      .tryParse(state
-                                                                          .userConnectedStatuse)!
-                                                                  .subtract(Duration(
-                                                                      minutes:
-                                                                          duration))),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style: textTheme
-                                                                  .titleMedium
-                                                                  ?.mr
-                                                                  .copyWith(
-                                                                      color: const Color(
-                                                                          0xff007CFF))),
-                                                          MyTextWidget(
-                                                              " الساعة ",
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style: textTheme
-                                                                  .titleMedium
-                                                                  ?.mr
-                                                                  .copyWith(
-                                                                      color: const Color(
-                                                                          0xff007CFF))),
-                                                          MyTextWidget(
-                                                              HelperFunctions.gettimesInFormat(DateTime
-                                                                      .tryParse(state
-                                                                          .userConnectedStatuse)!
-                                                                  .subtract(Duration(
-                                                                      minutes:
-                                                                          duration))),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style: textTheme
-                                                                  .titleMedium
-                                                                  ?.mr
-                                                                  .copyWith(
-                                                                      color: const Color(
-                                                                          0xff007CFF))),
-                                                        ],
-                                                      )
-                                                : SizedBox.shrink();
-                                          },
-                                        );
-                                      }
-                                    },
-                                  ),
-                              ],
-                            ),
-                          ),
-                          BlocBuilder<CallsBloc, CallsState>(
-                            builder: (context, state) => InkWell(
-                              onTap: () async {
-                                List<Map<String, dynamic>> info =
-                                    callerInfo(channelId: widget.chatId);
-                                PermissionStatus microphone =
-                                    await Permission.microphone.request();
-                                var status2 =
-                                    await Permission.mediaLibrary.request();
-                                PermissionStatus camera =
-                                    await Permission.camera.request();
-                                if (microphone.isGranted &&
-                                    status2.isGranted &&
-                                    camera.isGranted) {
-                                  if (info[0].containsKey('currentReceiver')) {
-                                    GetIt.I<CallsBloc>().add(MakeCallEvent(
-                                        receiverUserId: info[0]
-                                                ['currentReceiver']
-                                            .toString(),
-                                        receiverCallName:
-                                            widget.fullReceiverName,
-                                        chatId: info[1]['channelId'],
-                                        isVideo: true,
-                                        payload: info[1]));
-                                  } else {
-                                    GetIt.I<CallsBloc>().add(MakeCallEvent(
-                                        isVideo: true,
-                                        receiverCallName:
-                                            widget.fullReceiverName,
-                                        chatId: info[0]['channelId'],
-                                        payload: info[0]));
-                                    //todo we have the id of the chat so we can move to the call immediately
-                                  }
-                                } else if (microphone.isDenied ||
-                                    status2.isDenied ||
-                                    camera.isDenied) {
-                                  showMessage(
-                                      LocaleKeys.permission_denied.tr());
-                                  openAppSettings();
-                                }
-                              },
-                              child: SvgPicture.asset(
-                                AppAssets.makeVideoCallSvg,
-                                width: 34.w,
-                                height: 25,
-                              ),
-                            ),
-                          ),
-                          30.horizontalSpace,
-                          // todo CreateCallPage
-                          InkWell(
-                            onTap: () async {
-                              try {
-                                List<Map<String, dynamic>> info =
-                                    callerInfo(channelId: widget.chatId);
-                                PermissionStatus microphone =
-                                    await Permission.microphone.request();
-                                var status2 =
-                                    await Permission.mediaLibrary.request();
-                                if (microphone.isGranted && status2.isGranted) {
-                                  //todo we have the receiver id so the chat dose not exist
-                                  if (info[0].containsKey('currentReceiver')) {
-                                    debugPrint(
-                                        'currentReceiver${info[0]['currentReceiver']}');
-
-                                    GetIt.I<CallsBloc>().add(MakeCallEvent(
-                                        receiverUserId: info[0]
-                                                ['currentReceiver']
-                                            .toString(),
-                                        receiverCallName:
-                                            widget.fullReceiverName,
-                                        chatId: info[1]['channelId'],
-                                        isVideo: false,
-                                        payload: info[1]));
-
-                                    // GetIt.I<CallsBloc>().add(VideoCallEvent(
-                                    //     receiverUserId: info[0]['currentReceiver'],
-                                    //     payload: info[1]));
-                                    //todo we need to wait the response to get the new chat id and join the video call so the navigation will be in the listener
-                                  }
-                                  //todo else the chat already exist so we don't have the receiver id just the chat id
-                                  else {
-                                    debugPrint('widget.chatId${widget.chatId}');
-                                    debugPrint('info[0]${info[0]}');
-
-                                    GetIt.I<CallsBloc>().add(MakeCallEvent(
-                                        isVideo: false,
-                                        receiverCallName:
-                                            widget.fullReceiverName,
-                                        chatId: info[0]['channelId'],
-                                        payload: info[0]));
-                                    //todo we have the id of the chat so we can move to the call immediately
-                                  }
-                                } else if (microphone.isDenied ||
-                                    status2.isDenied) {
-                                  showMessage(
-                                      LocaleKeys.permission_denied.tr());
-                                  openAppSettings();
-                                }
-                              } catch (e, st) {
-                                print(e);
-                                print(st);
-                              }
-                            },
-                            child: SvgPicture.asset(
-                              AppAssets.makeCallSvg,
-                              width: 25.w,
-                              height: 25,
-                            ),
-                          ),
-                          20.horizontalSpace
-                        ],
-                      ),
-                      if ((widget.fromSearch ?? false)) ...{
-                        SizedBox(
-                          height: 5,
-                        ),
-                        ValueListenableBuilder<Map<String, int>>(
-                          valueListenable: currentIndextForEachMessage,
-                          builder: (context, currentIndextForMessages, _) {
-                            currentFocusedIcon.value = -2;
-                            return BlocBuilder<ChatBloc, ChatState>(
-                              buildWhen: (previous, current) {
-                                return previous.resultOfSearchTextInChat
-                                            ?.paginationStatus !=
-                                        current.resultOfSearchTextInChat
-                                            ?.paginationStatus ||
-                                    previous.getMessagesBetweenStatus !=
-                                        current.getMessagesBetweenStatus;
-                              },
-                              builder: (context, state) {
-                                searchResults =
-                                    state.resultOfSearchTextInChat?.items ?? [];
-                                if (searchResults.length > 0 &&
-                                    indexForEveryTextInSearchResult == 0 &&
-                                    controller.text.length > 0 &&
-                                    state.resultOfSearchTextInChat
-                                            ?.paginationStatus ==
-                                        PaginationStatus.success &&
-                                    rebuildForScrollFirstWord) {
-                                  rebuildForScrollFirstWord = false;
-                                  scrollToIndex(
-                                      currentIndextForMessages[searchResults[
-                                              indexForEveryTextInSearchResult]] ??
-                                          -1,
-                                      currentId:
-                                          currentIndextForMessages.keys.first,
-                                      forSearchText: true,
-                                      parentMessageId: searchResults[
-                                          indexForEveryTextInSearchResult]);
-                                }
-                                return SafeArea(
-                                    child: Material(
-                                  color: Colors.transparent,
-                                  child: Padding(
-                                    padding:
-                                        HWEdgeInsets.symmetric(horizontal: 20.0)
-                                            .copyWith(bottom: 10),
-                                    child: AppTextField(
-                                      filledColor: Color(0xffF8F8F8),
-                                      bordersColor: Color(0xffF8F8F8),
-                                      hintText: 'Search',
-                                      roundingCornersValue: 30,
-                                      controller: controller,
-                                      onChange: (String text) {
-                                        if (text.length == 0) {
-                                          rebuildForScrollFirstWord = false;
-                                          chatBloc.add(SearchTextInChatEvent(
-                                              channel_id: widget.chatId,
-                                              searchText: "",
-                                              clearSearch: true));
-                                        }
-                                        if (text.length > 0) {
-                                          rebuildForScrollFirstWord = true;
-                                          chatBloc.add(SearchTextInChatEvent(
-                                              getWithPagination: false,
-                                              channel_id: widget.chatId,
-                                              searchText: text));
-                                          indexForEveryTextInSearchResult = 0;
-                                        }
-                                      },
-                                      textStyle: context
-                                          .textTheme.titleMedium?.lr
-                                          .copyWith(
-                                              color: const Color(0xff8D8D8D)),
-                                      hintTextStyle: context
-                                          .textTheme.bodySmall?.lr
-                                          .copyWith(
-                                              color: const Color(0xff8D8D8D)),
-                                      prefixIcon: Padding(
-                                        padding: HWEdgeInsetsDirectional.only(
-                                            top: 15, bottom: 15),
-                                        child: SvgPicture.asset(
-                                          AppAssets.searchOutlinedSvg,
-                                        ),
-                                      ),
-                                      suffix: (state.resultOfSearchTextInChat
-                                                          ?.paginationStatus ==
-                                                      PaginationStatus
-                                                          .loading &&
-                                                  state
-                                                      .resultOfSearchTextInChat!
-                                                      .items
-                                                      .isEmpty) ||
-                                              state.getMessagesBetweenStatus ==
-                                                  GetMessagesBetweenStatus
-                                                      .loading
-                                          ? LoadingIndicator()
-                                          : SizedBox.shrink(),
-                                      suffixIcon: (state.resultOfSearchTextInChat
-                                                          ?.paginationStatus ==
-                                                      PaginationStatus
-                                                          .loading &&
-                                                  state
-                                                      .resultOfSearchTextInChat!
-                                                      .items
-                                                      .isEmpty) ||
-                                              state.getMessagesBetweenStatus ==
-                                                  GetMessagesBetweenStatus
-                                                      .loading
-                                          ? SizedBox.shrink()
-                                          : Container(
-                                              height: 15,
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      if (indexForEveryTextInSearchResult >
-                                                          0) {
-                                                        indexForEveryTextInSearchResult =
-                                                            indexForEveryTextInSearchResult -
-                                                                1;
-                                                      }
-
-                                                      scrollToIndex(
-                                                          currentIndextForMessages[
-                                                                  searchResults[
-                                                                      indexForEveryTextInSearchResult]] ??
-                                                              -1,
-                                                          currentId:
-                                                              currentIndextForMessages
-                                                                  .keys.first,
-                                                          forSearchText: true,
-                                                          parentMessageId:
-                                                              searchResults[
-                                                                  indexForEveryTextInSearchResult]);
-                                                    },
-                                                    icon: Icon(
-                                                        Icons.arrow_downward),
-                                                  ),
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      MoveToUpToScrollSearch(
-                                                          state
-                                                              .resultOfSearchTextInChat!
-                                                              .paginationStatus,
-                                                          currentIndextForMessages);
-                                                    },
-                                                    icon: Icon(
-                                                        Icons.arrow_upward),
-                                                  ),
-                                                ],
-                                              )),
-                                    ),
-                                  ),
-                                ));
-                              },
-                            );
-                          },
-                        )
-                      }
-                    ],
-                  ),
-                )),
-          ),
-          body: BlocListener<ChatBloc, ChatState>(
-            listenWhen: (p, c) =>
-                (p.getMessagesBetweenStatus != c.getMessagesBetweenStatus &&
-                    c.getMessagesBetweenStatus ==
-                        GetMessagesBetweenStatus.success &&
-                    p.resultOfSearchTextInChat?.paginationStatus !=
-                        c.resultOfSearchTextInChat?.paginationStatus &&
-                    c.scrollToParentMessage),
-            listener: (context, state) {
-              searchResults = state.resultOfSearchTextInChat?.items ?? [];
-              rebuildForScrollWhenGetAllMessage = true;
-            },
-            child: Column(
-              children: [
-                Flexible(
-                  child: BlocConsumer<ChatBloc, ChatState>(
-                    listenWhen: (p, c) =>
-                        p.sendMessageStatus != c.sendMessageStatus ||
-                        (p.getMessagesBetweenStatus !=
-                                c.getMessagesBetweenStatus &&
-                            c.getMessagesBetweenStatus ==
-                                GetMessagesBetweenStatus.success &&
-                            c.scrollToParentMessage) ||
-                        p.resendMessageStatus != c.resendMessageStatus ||
-                        (p.receiveMessageStatus != c.receiveMessageStatus &&
-                            c.receiveMessageStatus ==
-                                ReceiveMessageStatus.success),
-                    listener: (context, state) {
-                      if (state.sendMessageStatus ==
-                              SendMessageStatus.loading ||
-                          state.receiveMessageStatus ==
-                              ReceiveMessageStatus.success) {
-                        WidgetsBinding.instance
-                            .addPostFrameCallback((timeStamp) {
-                          _scrollToBottom();
-                        });
-                      }
-                      print(widget.chatId);
-                      print(state.currentChannelReceivedMessage);
-                      if (state.receiveMessageStatus ==
-                              ReceiveMessageStatus.success &&
-                          (widget.chatId ==
-                                  state.currentChannelReceivedMessage ||
-                              chat.localId ==
-                                  state.currentChannelReceivedMessage)) {
-                        chatBloc.add(ReadAllMessagesEvent(chat.id.toString()));
-                      }
-                    },
-                    builder: (context, chatState) {
-                      chat = chatState.chats.firstWhere(
-                          (element) =>
-                              element.id.toString() == widget.chatId ||
-                              element.localId.toString() == widget.chatId,
-                          orElse: () => chatState.pinnedChats.firstWhere(
-                              (element) =>
-                                  element.id.toString() == widget.chatId ||
-                                  element.localId.toString() == widget.chatId,
-                              orElse: () => Chat()));
-
-                      return GestureDetector(
-                          onTap: () {
-                            rebuildMessage.value = -1;
-                          },
-                          child: SafeArea(
-                              child: ValueListenableBuilder<int>(
-                                  valueListenable: rebuildMessage,
-                                  builder: (context, currentIndex, _) {
-                                    currentFocusedIcon.value = -2;
-                                    return ValueListenableBuilder<int>(
-                                        valueListenable: currentFocusedIcon,
-                                        builder: (context, focusedIndex, _) {
-                                          return Column(
-                                            children: [
-                                              chat.paginationStatus ==
-                                                      PaginationStatus.loading
-                                                  ? TrydosLoader()
-                                                  : SizedBox.shrink(),
-                                              chat.paginationStatus ==
-                                                      PaginationStatus.loading
-                                                  ? 8.verticalSpace
-                                                  : SizedBox.shrink(),
-                                              Flexible(
-                                                  child: ListView.builder(
-                                                      key: TestVariables
-                                                              .kTestMode
-                                                          ? Key(
-                                                              WidgetsKeys
-                                                                  .messagesListKey,
-                                                            )
-                                                          : null,
-                                                      physics:
-                                                          const ClampingScrollPhysics(),
-                                                      shrinkWrap: true,
-                                                      reverse: true,
-                                                      controller:
-                                                          autoScrollController,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        List<Message> messages =
-                                                            chatState
-                                                                .newSortedChatsByDate![chat
-                                                                    .id
-                                                                    .toString()]!
-                                                                .reversed
-                                                                .toList();
-
-                                                        if (messages[index]
-                                                            .isDateMessage!) {
-                                                          return AutoScrollTag(
-                                                              key: ValueKey(
-                                                                  index),
-                                                              index: index,
-                                                              controller:
-                                                                  autoScrollController,
-                                                              child: Column(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
-                                                                children: [
-                                                                  10.verticalSpace,
-                                                                  MessagesDate(
-                                                                      date: messages[
-                                                                              index]
-                                                                          .dateValue!),
-                                                                ],
-                                                              ));
-                                                        }
-                                                        debugPrint(
-                                                            'isForward : ${messages[index].isForward}');
-                                                        debugPrint(
-                                                            'senderUserId : ${messages[index].senderUserId}');
-                                                        debugPrint(
-                                                            'myChatId : ${_prefsRepository.myChatId}');
-                                                        bool isSent = messages[
-                                                                    index]
-                                                                .senderUserId ==
-                                                            _prefsRepository
-                                                                .myChatId;
-                                                        String? messageId =
-                                                            messages[index].id;
-                                                        messagesIndexes = {};
-                                                        for (int i = 0;
-                                                            i < messages.length;
-                                                            i++) {
-                                                          messagesIndexes
-                                                              .addAll({
-                                                            messages[i]
-                                                                .id
-                                                                .toString(): i
-                                                          });
-                                                        }
-                                                        /*   messagesIndexes[messages[
-                                                                    index]
-                                                                .id
-                                                                .toString()] =
-                                                            index;*/
-                                                        WidgetsBinding.instance
-                                                            .addPostFrameCallback(
-                                                                (_) {
-                                                          // الكود الذي تريد تنفيذه بعد انتهاء عملية إعادة البناء
-                                                          currentIndextForEachMessage
-                                                              .value = {
-                                                            ...messagesIndexes
-                                                          };
-                                                        });
-                                                        if (rebuildForScrollWhenGetAllMessage) {
-                                                          WidgetsBinding
-                                                              .instance
-                                                              .addPostFrameCallback(
-                                                                  (timeStamp) {
-                                                            controller.text
-                                                                        .length >
-                                                                    0
-                                                                ? messages
-                                                                            .firstWhere(
-                                                                              (element) => element.id == (indexForEveryTextInSearchResult >= searchResults.length ? "null" : searchResults[indexForEveryTextInSearchResult]),
-                                                                              orElse: () => Message(authMessageStatus: MessageStatus(isDeleted: 1)),
-                                                                            )
-                                                                            .authMessageStatus
-                                                                            ?.isDeleted ==
-                                                                        1
-                                                                    ? MoveToUpToScrollSearch(
-                                                                        PaginationStatus
-                                                                            .success,
-                                                                        currentIndextForEachMessage
-                                                                            .value)
-                                                                    : scrollToIndex(
-                                                                        messagesIndexes[searchResults[indexForEveryTextInSearchResult]] ??
-                                                                            messages.length -
-                                                                                1,
-                                                                        currentId: currentIndextForEachMessage
-                                                                            .value
-                                                                            .keys
-                                                                            .last,
-                                                                        forSearchText:
-                                                                            true,
-                                                                        parentMessageId:
-                                                                            searchResults[
-                                                                                indexForEveryTextInSearchResult])
-                                                                : scrollToIndex(
-                                                                    messages.length -
-                                                                        1,
-                                                                    forSearchText:
-                                                                        false);
-                                                          });
-                                                          rebuildForScrollWhenGetAllMessage =
-                                                              false;
-                                                        }
-                                                        return AutoScrollTag(
-                                                            key: ValueKey(
-                                                                messageId),
-                                                            index: index,
+                            return GestureDetector(
+                                onTap: () {
+                                  rebuildMessage.value = -1;
+                                },
+                                child: SafeArea(
+                                    child: ValueListenableBuilder<int>(
+                                        valueListenable: rebuildMessage,
+                                        builder: (context, currentIndex, _) {
+                                          currentFocusedIcon.value = -2;
+                                          return ValueListenableBuilder<int>(
+                                              valueListenable:
+                                                  currentFocusedIcon,
+                                              builder:
+                                                  (context, focusedIndex, _) {
+                                                return Column(
+                                                  children: [
+                                                    chat.paginationStatus ==
+                                                            PaginationStatus
+                                                                .loading
+                                                        ? TrydosLoader()
+                                                        : SizedBox.shrink(),
+                                                    chat.paginationStatus ==
+                                                            PaginationStatus
+                                                                .loading
+                                                        ? 8.verticalSpace
+                                                        : SizedBox.shrink(),
+                                                    Flexible(
+                                                        child: ListView.builder(
+                                                            key: null,
+                                                            physics:
+                                                                const ClampingScrollPhysics(),
+                                                            shrinkWrap: true,
+                                                            reverse: true,
                                                             controller:
                                                                 autoScrollController,
-                                                            child: Column(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
-                                                                children: [
-                                                                  messages[index]
-                                                                          .isFirstMessage!
-                                                                      ? 30.verticalSpace
-                                                                      : 10.verticalSpace,
-                                                                  ////////////////
-                                                                  GestureDetector(
-                                                                    key: TestVariables
-                                                                            .kTestMode
-                                                                        ? Key(
-                                                                            '${WidgetsKeys.messagesListCardKey}$index')
-                                                                        : null,
-                                                                    onLongPress:
-                                                                        () {
-                                                                      if (messages[index]
-                                                                              .authMessageStatus!
-                                                                              .isDeleted ==
-                                                                          1) {
-                                                                        /*    showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder: (context) => AlertDialog(
-                                                                    title:
-                                                                        Text(" حذف هذه الرسالة  "),
-                                                                    actions: [
-                                                                      MaterialButton(
-                                                                        onPressed: () {
-                                                                          callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
-                                                                          Navigator.of(context).pop();
-                                                                          rebuildMessage.value = -1;
-                                                                        },
-                                                                        child: Text("نعم"),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width: 20.w,
-                                                                      ),
-                                                                      MaterialButton(
-                                                                          child: Text("إغلاق"),
-                                                                          onPressed: () {
-                                                                            Navigator.of(context).pop();
-                                                                            rebuildMessage.value = -1;
-                                                                          })
-                                                                    ]),
-                                                                                                                                      );
-                                                                                                                                      */
-                                                                        return;
-                                                                      }
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              List<ChatMessage>
+                                                                  messages =
+                                                                  chatState
+                                                                      .newSortedChatsByDate![chat
+                                                                          .id
+                                                                          .toString()]!
+                                                                      .reversed
+                                                                      .toList();
 
-                                                                      if ((chatState.sendMessageStatus ==
-                                                                              SendMessageStatus
-                                                                                  .loading &&
-                                                                          chatState
-                                                                              .currentMessage
-                                                                              .contains(messageId))) {
-                                                                        return;
-                                                                      }
-                                                                      if (messages[index]
-                                                                              .messageType
-                                                                              ?.name
-                                                                              ?.contains('Call') ??
-                                                                          false) {
-                                                                        return;
-                                                                      }
-                                                                      rebuildMessage
-                                                                              .value =
-                                                                          index;
-                                                                    },
-                                                                    onTap: () {
-                                                                      if (messages[index]
-                                                                              .messageType
-                                                                              ?.name ==
-                                                                          'ShareProduct') {
-                                                                        BlocProvider.of<HomeBloc>(context)
-                                                                            .add(GetFullProductDetailsEvent(
-                                                                          productSlug:
-                                                                              messages[index].shareProductContent?.productSlug.toString() ?? "",
-                                                                        ));
-                                                                        Navigator.of(context).push(MaterialPageRoute(
-                                                                            builder: (ctx) => ProductDetailsPage(
-                                                                                  productIdForOpeningChatDirectly: messages[index].shareProductContent?.productId.toString(),
-                                                                                )));
-                                                                      }
-                                                                      rebuildMessage
-                                                                          .value = -1;
-                                                                    },
+                                                              if (messages[
+                                                                      index]
+                                                                  .isDateMessage!) {
+                                                                return AutoScrollTag(
+                                                                    key: ValueKey(
+                                                                        index),
+                                                                    index:
+                                                                        index,
+                                                                    controller:
+                                                                        autoScrollController,
                                                                     child:
-                                                                        Container(
-                                                                      color: currentScrolledIndex ==
-                                                                              index
-                                                                          ? Colors
-                                                                              .black12
-                                                                              .withOpacity(0.05)
-                                                                          : null,
-                                                                      child:
-                                                                          getTheMessageWidget(
-                                                                        listIndex:
-                                                                            index,
-                                                                        message:
-                                                                            messages[index],
-                                                                        senderName:
-                                                                            widget.senderName,
-                                                                        receiverName:
-                                                                            widget.receiverName,
-                                                                        receiverPhoto:
-                                                                            widget.receiverPhoto,
-                                                                        senderPhoto:
-                                                                            widget.senderPhoto,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  index == 0
-                                                                      ? 10
-                                                                          .verticalSpace
-                                                                      : const SizedBox
-                                                                          .shrink(),
-                                                                  currentIndex ==
-                                                                          index
-                                                                      ? 5
-                                                                          .verticalSpace
-                                                                      : const SizedBox
-                                                                          .shrink(),
-                                                                  currentIndex ==
-                                                                          index
-                                                                      ? Padding(
-                                                                          padding: HWEdgeInsets.only(
-                                                                              left: isSent ? 40.w : 20.w,
-                                                                              top: 10,
-                                                                              right: isSent ? 20.w : 40.w),
-                                                                          child: GestureDetector(
-                                                                              onPanDown: (details) {
-                                                                                if ((details.localPosition.dx + (isSent ? 140 : 0)) < (lan ? 210.w : 40)) {
-                                                                                  currentFocusedIcon.value = -1;
-                                                                                } else if ((details.localPosition.dx + (isSent ? 140 : 0)) > (lan ? 40 : 210.w)) {
-                                                                                  currentFocusedIcon.value = lan ? 5 : 0;
-                                                                                } else {
-                                                                                  currentFocusedIcon.value = (lan ? (details.localPosition.dx + 40 + (isSent ? 140 : 0)) : (details.localPosition.dx - 40 - (isSent ? 140 : 0))) ~/ (30.w);
-                                                                                }
-                                                                              },
-                                                                              onPanEnd: (details) {
-                                                                                debugPrint('end');
-                                                                                rebuildMessage.value = -1;
-                                                                                dealWithMessageOptions(currentFocusedIcon.value, messageId);
-                                                                              },
-                                                                              onPanUpdate: (details) {
-                                                                                if ((details.localPosition.dx - (isSent ? 140 : 0)) < 40) {
-                                                                                  currentFocusedIcon.value = -1;
-                                                                                } else if ((details.localPosition.dx - (isSent ? 140 : 0)) > 210.w) {
-                                                                                  currentFocusedIcon.value = 5;
-                                                                                } else {
-                                                                                  currentFocusedIcon.value = (details.localPosition.dx - 40 - (isSent ? 140 : 0)) ~/ 30.w;
-                                                                                }
-                                                                              },
-                                                                              child: Container(
-                                                                                  //color: Colors.red,
-                                                                                  child: Row(
-                                                                                      mainAxisAlignment: isSent
-                                                                                          ? lan
-                                                                                              ? MainAxisAlignment.end
-                                                                                              : MainAxisAlignment.start
-                                                                                          : lan
-                                                                                              ? MainAxisAlignment.start
-                                                                                              : MainAxisAlignment.end,
-                                                                                      children: !lan
-                                                                                          ? [
-                                                                                              Column(
-                                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                                crossAxisAlignment: !lan ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                                                                                                children: [
-                                                                                                  Row(
-                                                                                                    mainAxisAlignment: !lan ? MainAxisAlignment.end : MainAxisAlignment.start,
-                                                                                                    children: [
-                                                                                                      Container(
-                                                                                                        width: 185.w,
-                                                                                                        height: 40,
-                                                                                                        padding: HWEdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                                                                                                        decoration: BoxDecoration(
-                                                                                                          color: const Color(0xfffafafa),
-                                                                                                          borderRadius: BorderRadius.circular(12.0),
-                                                                                                          boxShadow: const [
-                                                                                                            BoxShadow(
-                                                                                                              color: Color(0x29000000),
-                                                                                                              offset: Offset(0, 2),
-                                                                                                              blurRadius: 10,
-                                                                                                            ),
-                                                                                                          ],
-                                                                                                        ),
-                                                                                                        child: Row(
-                                                                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                        Column(
+                                                                      mainAxisSize:
+                                                                          MainAxisSize
+                                                                              .min,
+                                                                      children: [
+                                                                        10.verticalSpace,
+                                                                        MessagesDate(
+                                                                            date:
+                                                                                messages[index].dateValue!),
+                                                                      ],
+                                                                    ));
+                                                              }
+                                                              debugPrint(
+                                                                  'isForward : ${messages[index].isForward}');
+                                                              debugPrint(
+                                                                  'senderUserId : ${messages[index].senderUserId}');
+                                                              debugPrint(
+                                                                  'myChatId : ${_prefsRepository.myChatId}');
+                                                              bool isSent = messages[
+                                                                          index]
+                                                                      .senderUserId ==
+                                                                  _prefsRepository
+                                                                      .myChatId;
+                                                              String?
+                                                                  messageId =
+                                                                  messages[
+                                                                          index]
+                                                                      .id;
+                                                              messagesIndexes =
+                                                                  {};
+                                                              for (int i = 0;
+                                                                  i <
+                                                                      messages
+                                                                          .length;
+                                                                  i++) {
+                                                                messagesIndexes
+                                                                    .addAll({
+                                                                  messages[i]
+                                                                      .id
+                                                                      .toString(): i
+                                                                });
+                                                              }
+                                                              /*   messagesIndexes[messages[
+                                                                            index]
+                                                                        .id
+                                                                        .toString()] =
+                                                                    index;*/
+                                                              WidgetsBinding
+                                                                  .instance
+                                                                  .addPostFrameCallback(
+                                                                      (_) {
+                                                                // الكود الذي تريد تنفيذه بعد انتهاء عملية إعادة البناء
+                                                                currentIndextForEachMessage
+                                                                    .value = {
+                                                                  ...messagesIndexes
+                                                                };
+                                                              });
+                                                              if (rebuildForScrollWhenGetAllMessage) {
+                                                                WidgetsBinding
+                                                                    .instance
+                                                                    .addPostFrameCallback(
+                                                                        (timeStamp) {
+                                                                  controller.text
+                                                                              .length >
+                                                                          0
+                                                                      ? messages
+                                                                                  .firstWhere(
+                                                                                    (element) => element.id == (indexForEveryTextInSearchResult >= searchResults.length ? "null" : searchResults[indexForEveryTextInSearchResult]),
+                                                                                    orElse: () => ChatMessage(authMessageStatus: MessageStatus(isDeleted: 1)),
+                                                                                  )
+                                                                                  .authMessageStatus
+                                                                                  ?.isDeleted ==
+                                                                              1
+                                                                          ? MoveToUpToScrollSearch(
+                                                                              PaginationStatus
+                                                                                  .success,
+                                                                              currentIndextForEachMessage
+                                                                                  .value)
+                                                                          : scrollToIndex(messagesIndexes[searchResults[indexForEveryTextInSearchResult]] ?? messages.length - 1,
+                                                                              currentId: currentIndextForEachMessage
+                                                                                  .value.keys.last,
+                                                                              forSearchText:
+                                                                                  true,
+                                                                              parentMessageId: searchResults[
+                                                                                  indexForEveryTextInSearchResult])
+                                                                      : scrollToIndex(
+                                                                          messages.length -
+                                                                              1,
+                                                                          forSearchText:
+                                                                              false);
+                                                                });
+                                                                rebuildForScrollWhenGetAllMessage =
+                                                                    false;
+                                                              }
+                                                              return AutoScrollTag(
+                                                                  key: ValueKey(
+                                                                      messageId),
+                                                                  index: index,
+                                                                  controller:
+                                                                      autoScrollController,
+                                                                  child: Column(
+                                                                      mainAxisSize:
+                                                                          MainAxisSize
+                                                                              .min,
+                                                                      children: [
+                                                                        messages[index].isFirstMessage!
+                                                                            ? 30.verticalSpace
+                                                                            : 10.verticalSpace,
+                                                                        ////////////////
+                                                                        GestureDetector(
+                                                                          key:
+                                                                              null,
+                                                                          onLongPress:
+                                                                              () {
+                                                                            if (messages[index].authMessageStatus!.isDeleted ==
+                                                                                1) {
+                                                                              /*    showDialog(
+                                                                        context:
+                                                                            context,
+                                                                        builder: (context) => AlertDialog(
+                                                                            title:
+                                                                                Text(" حذف هذه الرسالة  "),
+                                                                            actions: [
+                                                                              MaterialButton(
+                                                                                onPressed: () {
+                                                                                  callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
+                                                                                  Navigator.of(context).pop();
+                                                                                  rebuildMessage.value = -1;
+                                                                                },
+                                                                                child: Text("نعم"),
+                                                                              ),
+                                                                              SizedBox(
+                                                                                width: 20.w,
+                                                                              ),
+                                                                              MaterialButton(
+                                                                                  child: Text("إغلاق"),
+                                                                                  onPressed: () {
+                                                                                    Navigator.of(context).pop();
+                                                                                    rebuildMessage.value = -1;
+                                                                                  })
+                                                                            ]),
+                                                                                                                                              );
+                                                                                                                                              */
+                                                                              return;
+                                                                            }
+
+                                                                            if ((chatState.sendMessageStatus == SendMessageStatus.loading &&
+                                                                                chatState.currentMessage.contains(messageId))) {
+                                                                              return;
+                                                                            }
+                                                                            if (messages[index].messageType?.name?.contains('Call') ??
+                                                                                false) {
+                                                                              return;
+                                                                            }
+                                                                            rebuildMessage.value =
+                                                                                index;
+                                                                          },
+                                                                          onTap:
+                                                                              () {
+                                                                            if (messages[index].messageType?.name ==
+                                                                                'ShareProduct') {
+                                                                              /*  BlocProvider.of<HomeBloc>(context)
+                                                                                    .add(GetFullProductDetailsEvent(
+                                                                                  productSlug:
+                                                                                      messages[index].shareProductContent?.productSlug.toString() ?? "",
+                                                                                ));
+                                                                                Navigator.of(context).push(MaterialPageRoute(
+                                                                                    builder: (ctx) => ProductDetailsPage(
+                                                                                          productIdForOpeningChatDirectly: messages[index].shareProductContent?.productId.toString(),
+                                                                                        )));*/
+                                                                            }
+                                                                            rebuildMessage.value =
+                                                                                -1;
+                                                                          },
+                                                                          child:
+                                                                              Container(
+                                                                            color: currentScrolledIndex == index
+                                                                                ? Colors.black12.withOpacity(0.05)
+                                                                                : null,
+                                                                            child:
+                                                                                getTheMessageWidget(
+                                                                              listIndex: index,
+                                                                              message: messages[index],
+                                                                              senderName: widget.senderName,
+                                                                              receiverName: widget.receiverName,
+                                                                              receiverPhoto: widget.receiverPhoto,
+                                                                              senderPhoto: widget.senderPhoto,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        index ==
+                                                                                0
+                                                                            ? 10.verticalSpace
+                                                                            : const SizedBox.shrink(),
+                                                                        currentIndex ==
+                                                                                index
+                                                                            ? 5.verticalSpace
+                                                                            : const SizedBox.shrink(),
+                                                                        currentIndex ==
+                                                                                index
+                                                                            ? Padding(
+                                                                                padding: HWEdgeInsets.only(left: isSent ? 40.w : 20.w, top: 10, right: isSent ? 20.w : 40.w),
+                                                                                child: GestureDetector(
+                                                                                    onPanDown: (details) {
+                                                                                      if ((details.localPosition.dx + (isSent ? 140 : 0)) < (lan ? 210.w : 40)) {
+                                                                                        currentFocusedIcon.value = -1;
+                                                                                      } else if ((details.localPosition.dx + (isSent ? 140 : 0)) > (lan ? 40 : 210.w)) {
+                                                                                        currentFocusedIcon.value = lan ? 5 : 0;
+                                                                                      } else {
+                                                                                        currentFocusedIcon.value = (lan ? (details.localPosition.dx + 40 + (isSent ? 140 : 0)) : (details.localPosition.dx - 40 - (isSent ? 140 : 0))) ~/ (30.w);
+                                                                                      }
+                                                                                    },
+                                                                                    onPanEnd: (details) {
+                                                                                      debugPrint('end');
+                                                                                      rebuildMessage.value = -1;
+                                                                                      dealWithMessageOptions(currentFocusedIcon.value, messageId);
+                                                                                    },
+                                                                                    onPanUpdate: (details) {
+                                                                                      if ((details.localPosition.dx - (isSent ? 140 : 0)) < 40) {
+                                                                                        currentFocusedIcon.value = -1;
+                                                                                      } else if ((details.localPosition.dx - (isSent ? 140 : 0)) > 210.w) {
+                                                                                        currentFocusedIcon.value = 5;
+                                                                                      } else {
+                                                                                        currentFocusedIcon.value = (details.localPosition.dx - 40 - (isSent ? 140 : 0)) ~/ 30.w;
+                                                                                      }
+                                                                                    },
+                                                                                    child: Container(
+                                                                                        //color: Colors.red,
+                                                                                        child: Row(
+                                                                                            mainAxisAlignment: isSent
+                                                                                                ? lan
+                                                                                                    ? MainAxisAlignment.end
+                                                                                                    : MainAxisAlignment.start
+                                                                                                : lan
+                                                                                                    ? MainAxisAlignment.start
+                                                                                                    : MainAxisAlignment.end,
+                                                                                            children: !lan
+                                                                                                ? [
+                                                                                                    Column(
+                                                                                                      mainAxisSize: MainAxisSize.min,
+                                                                                                      crossAxisAlignment: !lan ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                                                                                                      children: [
+                                                                                                        Row(
+                                                                                                          mainAxisAlignment: !lan ? MainAxisAlignment.end : MainAxisAlignment.start,
                                                                                                           children: [
-                                                                                                            MessageActionWidget(
-                                                                                                              key: TestVariables.kTestMode ? Key('${WidgetsKeys.forWardMessageKey}$index') : null,
-                                                                                                              onTap: () => forwardMessageMethod(messages.firstWhere((element) => element.id == messageId)),
-                                                                                                              iconUrl: AppAssets.goBackIconSvg,
-                                                                                                              myIndex: lan ? 0 : 5,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                            MessageActionWidget(
-                                                                                                              onTap: () {},
-                                                                                                              iconUrl: AppAssets.copyIconSvg,
-                                                                                                              myIndex: lan ? 1 : 4,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                            MessageActionWidget(
-                                                                                                              onTap: () {},
-                                                                                                              iconUrl: AppAssets.addToGroupSvg,
-                                                                                                              myIndex: lan ? 2 : 3,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                            MessageActionWidget(
-                                                                                                              key: TestVariables.kTestMode ? Key('${WidgetsKeys.deleteMessageKey}$index') : null,
-                                                                                                              onTap: () {
-                                                                                                                showDialog(
-                                                                                                                  context: context,
-                                                                                                                  builder: (context) => AlertDialog(title: Text(LocaleKeys.delete_message.tr()), actions: [
-                                                                                                                    MaterialButton(
-                                                                                                                      key: TestVariables.kTestMode ? Key('${WidgetsKeys.deleteOnlyMeButtonKey}$index') : null,
-                                                                                                                      onPressed: () {
-                                                                                                                        callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
-                                                                                                                        Navigator.of(context).pop();
-                                                                                                                        rebuildMessage.value = -1;
-                                                                                                                      },
-                                                                                                                      child: Text(chatState.currentFailedMessage.contains(messages[index].id!) ? LocaleKeys.yes.tr() : LocaleKeys.only_me.tr()),
-                                                                                                                    ),
-                                                                                                                    SizedBox(
-                                                                                                                      width: 20.w,
-                                                                                                                    ),
-                                                                                                                    chatState.currentFailedMessage.contains(messages[index].id!)
-                                                                                                                        ? MaterialButton(
-                                                                                                                            child: Text(LocaleKeys.cancel.tr()),
+                                                                                                            Container(
+                                                                                                              width: 185.w,
+                                                                                                              height: 40,
+                                                                                                              padding: HWEdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                                                                                                              decoration: BoxDecoration(
+                                                                                                                color: const Color(0xfffafafa),
+                                                                                                                borderRadius: BorderRadius.circular(12.0),
+                                                                                                                boxShadow: const [
+                                                                                                                  BoxShadow(
+                                                                                                                    color: Color(0x29000000),
+                                                                                                                    offset: Offset(0, 2),
+                                                                                                                    blurRadius: 10,
+                                                                                                                  ),
+                                                                                                                ],
+                                                                                                              ),
+                                                                                                              child: Row(
+                                                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                                children: [
+                                                                                                                  MessageActionWidget(
+                                                                                                                    key: null,
+                                                                                                                    onTap: () => forwardMessageMethod(messages.firstWhere((element) => element.id == messageId)),
+                                                                                                                    iconUrl: AppAssets.goBackIconSvg,
+                                                                                                                    myIndex: lan ? 0 : 5,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                  MessageActionWidget(
+                                                                                                                    onTap: () {},
+                                                                                                                    iconUrl: AppAssets.copyIconSvg,
+                                                                                                                    myIndex: lan ? 1 : 4,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                  MessageActionWidget(
+                                                                                                                    onTap: () {},
+                                                                                                                    iconUrl: AppAssets.addToGroupSvg,
+                                                                                                                    myIndex: lan ? 2 : 3,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                  MessageActionWidget(
+                                                                                                                    key: null,
+                                                                                                                    onTap: () {
+                                                                                                                      showDialog(
+                                                                                                                        context: context,
+                                                                                                                        builder: (context) => AlertDialog(title: Text("delete_message"), actions: [
+                                                                                                                          MaterialButton(
+                                                                                                                            key: null,
                                                                                                                             onPressed: () {
-                                                                                                                              Navigator.of(context).pop();
-                                                                                                                              rebuildMessage.value = -1;
-                                                                                                                            })
-                                                                                                                        : MaterialButton(
-                                                                                                                            onPressed: () {
-                                                                                                                              callsBloc.add(DeleteMessageEvent(deleteFromId: _prefsRepository.myChatId!, type: "message", deleteFromBoth: 1, messageId: messages[index].id!, channelId: widget.chatId));
+                                                                                                                              callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
                                                                                                                               Navigator.of(context).pop();
                                                                                                                               rebuildMessage.value = -1;
                                                                                                                             },
-                                                                                                                            child: Text(LocaleKeys.everyone.tr()),
-                                                                                                                          )
-                                                                                                                  ]),
-                                                                                                                );
-                                                                                                              },
-                                                                                                              iconUrl: AppAssets.removeIconSvg,
-                                                                                                              myIndex: lan ? 3 : 2,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                            MessageActionWidget(
-                                                                                                              onTap: () {},
-                                                                                                              iconUrl: AppAssets.editIconSvg,
-                                                                                                              myIndex: lan ? 4 : 1,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                            MessageActionWidget(
-                                                                                                              onTap: () {},
-                                                                                                              iconUrl: AppAssets.notificationIconSvg,
-                                                                                                              myIndex: lan ? 5 : 0,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                          ],
-                                                                                                        ),
-                                                                                                      ),
-                                                                                                    ],
-                                                                                                  ),
-                                                                                                  10.verticalSpace,
-                                                                                                  focusedIndex >= 0 ? Transform.translate(offset: Offset(focusedIndex * 30.w, 0), child: MessageSubtitleWidget(focusedIndex: focusedIndex)) : const SizedBox.shrink()
-                                                                                                ],
-                                                                                              ),
-                                                                                              5.horizontalSpace,
-                                                                                              Column(
-                                                                                                children: [
-                                                                                                  InkWell(
-                                                                                                    highlightColor: const Color(0xfffafafa),
-                                                                                                    splashColor: const Color(0xfffafafa),
-                                                                                                    onTap: () {
-                                                                                                      currentFocusedIcon.value = -1;
-                                                                                                    },
-                                                                                                    child: InkWell(
-                                                                                                      onTap: () {
-                                                                                                        dealWithMessageOptions(-1, messageId);
-                                                                                                      },
-                                                                                                      child: Container(
-                                                                                                        height: 40,
-                                                                                                        width: 35.w,
-                                                                                                        decoration: BoxDecoration(
-                                                                                                          color: const Color(0xfffafafa),
-                                                                                                          borderRadius: BorderRadius.circular(12.0),
-                                                                                                          boxShadow: const [
-                                                                                                            BoxShadow(
-                                                                                                              color: Color(0x29000000),
-                                                                                                              offset: Offset(0, 2),
-                                                                                                              blurRadius: 10,
-                                                                                                            ),
-                                                                                                          ],
-                                                                                                        ),
-                                                                                                        child: Center(
-                                                                                                            child: SvgPicture.asset(
-                                                                                                          AppAssets.replyButtonLogoSvg,
-                                                                                                        )),
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  10.verticalSpace,
-                                                                                                  focusedIndex == -1
-                                                                                                      ? Container(
-                                                                                                          width: 50.w,
-                                                                                                          height: 22,
-                                                                                                          decoration: BoxDecoration(
-                                                                                                            color: const Color(0xff404040),
-                                                                                                            borderRadius: BorderRadius.circular(8.0),
-                                                                                                            boxShadow: const [
-                                                                                                              BoxShadow(
-                                                                                                                color: Color(0x34000000),
-                                                                                                                offset: Offset(0, 3),
-                                                                                                                blurRadius: 6,
+                                                                                                                            child: Text(chatState.currentFailedMessage.contains(messages[index].id!) ? "yes" : "only_me"),
+                                                                                                                          ),
+                                                                                                                          SizedBox(
+                                                                                                                            width: 20.w,
+                                                                                                                          ),
+                                                                                                                          chatState.currentFailedMessage.contains(messages[index].id!)
+                                                                                                                              ? MaterialButton(
+                                                                                                                                  child: Text("cancel"),
+                                                                                                                                  onPressed: () {
+                                                                                                                                    Navigator.of(context).pop();
+                                                                                                                                    rebuildMessage.value = -1;
+                                                                                                                                  })
+                                                                                                                              : MaterialButton(
+                                                                                                                                  onPressed: () {
+                                                                                                                                    callsBloc.add(DeleteMessageEvent(deleteFromId: _prefsRepository.myChatId!, type: "message", deleteFromBoth: 1, messageId: messages[index].id!, channelId: widget.chatId));
+                                                                                                                                    Navigator.of(context).pop();
+                                                                                                                                    rebuildMessage.value = -1;
+                                                                                                                                  },
+                                                                                                                                  child: Text("everyone"),
+                                                                                                                                )
+                                                                                                                        ]),
+                                                                                                                      );
+                                                                                                                    },
+                                                                                                                    iconUrl: AppAssets.removeIconSvg,
+                                                                                                                    myIndex: lan ? 3 : 2,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                  MessageActionWidget(
+                                                                                                                    onTap: () {},
+                                                                                                                    iconUrl: AppAssets.editIconSvg,
+                                                                                                                    myIndex: lan ? 4 : 1,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                  MessageActionWidget(
+                                                                                                                    onTap: () {},
+                                                                                                                    iconUrl: AppAssets.notificationIconSvg,
+                                                                                                                    myIndex: lan ? 5 : 0,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                ],
                                                                                                               ),
-                                                                                                            ],
-                                                                                                          ),
-                                                                                                          child: Center(
-                                                                                                            child: MyTextWidget(
-                                                                                                              LocaleKeys.replay.tr(),
-                                                                                                              style: textTheme.titleSmall?.rr.copyWith(color: colorScheme.white, height: 1.4),
-                                                                                                            ),
-                                                                                                          ),
-                                                                                                        )
-                                                                                                      : const SizedBox.shrink()
-                                                                                                ],
-                                                                                              ),
-                                                                                            ]
-                                                                                          : [
-                                                                                              Column(
-                                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                                crossAxisAlignment: !lan ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                                                                                                children: [
-                                                                                                  Row(
-                                                                                                    mainAxisAlignment: !lan ? MainAxisAlignment.end : MainAxisAlignment.start,
-                                                                                                    children: [
-                                                                                                      Container(
-                                                                                                        width: 185.w,
-                                                                                                        height: 40,
-                                                                                                        padding: HWEdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                                                                                                        decoration: BoxDecoration(
-                                                                                                          color: const Color(0xfffafafa),
-                                                                                                          borderRadius: BorderRadius.circular(12.0),
-                                                                                                          boxShadow: const [
-                                                                                                            BoxShadow(
-                                                                                                              color: Color(0x29000000),
-                                                                                                              offset: Offset(0, 2),
-                                                                                                              blurRadius: 10,
                                                                                                             ),
                                                                                                           ],
                                                                                                         ),
-                                                                                                        child: Row(
-                                                                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                        10.verticalSpace,
+                                                                                                        focusedIndex >= 0 ? Transform.translate(offset: Offset(focusedIndex * 30.w, 0), child: MessageSubtitleWidget(focusedIndex: focusedIndex)) : const SizedBox.shrink()
+                                                                                                      ],
+                                                                                                    ),
+                                                                                                    5.horizontalSpace,
+                                                                                                    Column(
+                                                                                                      children: [
+                                                                                                        InkWell(
+                                                                                                          highlightColor: const Color(0xfffafafa),
+                                                                                                          splashColor: const Color(0xfffafafa),
+                                                                                                          onTap: () {
+                                                                                                            currentFocusedIcon.value = -1;
+                                                                                                          },
+                                                                                                          child: InkWell(
+                                                                                                            onTap: () {
+                                                                                                              dealWithMessageOptions(-1, messageId);
+                                                                                                            },
+                                                                                                            child: Container(
+                                                                                                              height: 40,
+                                                                                                              width: 35.w,
+                                                                                                              decoration: BoxDecoration(
+                                                                                                                color: const Color(0xfffafafa),
+                                                                                                                borderRadius: BorderRadius.circular(12.0),
+                                                                                                                boxShadow: const [
+                                                                                                                  BoxShadow(
+                                                                                                                    color: Color(0x29000000),
+                                                                                                                    offset: Offset(0, 2),
+                                                                                                                    blurRadius: 10,
+                                                                                                                  ),
+                                                                                                                ],
+                                                                                                              ),
+                                                                                                              child: Center(
+                                                                                                                  child: SvgPicture.asset(
+                                                                                                                AppAssets.replyButtonLogoSvg,
+                                                                                                              )),
+                                                                                                            ),
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                        10.verticalSpace,
+                                                                                                        focusedIndex == -1
+                                                                                                            ? Container(
+                                                                                                                width: 50.w,
+                                                                                                                height: 22,
+                                                                                                                decoration: BoxDecoration(
+                                                                                                                  color: const Color(0xff404040),
+                                                                                                                  borderRadius: BorderRadius.circular(8.0),
+                                                                                                                  boxShadow: const [
+                                                                                                                    BoxShadow(
+                                                                                                                      color: Color(0x34000000),
+                                                                                                                      offset: Offset(0, 3),
+                                                                                                                      blurRadius: 6,
+                                                                                                                    ),
+                                                                                                                  ],
+                                                                                                                ),
+                                                                                                                child: Center(
+                                                                                                                  child: MyTextWidget(
+                                                                                                                    "replay",
+                                                                                                                    style: textTheme.titleSmall?.rr.copyWith(color: colorScheme.white, height: 1.4),
+                                                                                                                  ),
+                                                                                                                ),
+                                                                                                              )
+                                                                                                            : const SizedBox.shrink()
+                                                                                                      ],
+                                                                                                    ),
+                                                                                                  ]
+                                                                                                : [
+                                                                                                    Column(
+                                                                                                      mainAxisSize: MainAxisSize.min,
+                                                                                                      crossAxisAlignment: !lan ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                                                                                                      children: [
+                                                                                                        Row(
+                                                                                                          mainAxisAlignment: !lan ? MainAxisAlignment.end : MainAxisAlignment.start,
                                                                                                           children: [
-                                                                                                            MessageActionWidget(
-                                                                                                              onTap: () => forwardMessageMethod(messages.firstWhere((element) => element.id == messageId)),
-                                                                                                              iconUrl: AppAssets.goBackIconSvg,
-                                                                                                              myIndex: lan ? 0 : 5,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                            MessageActionWidget(
-                                                                                                              onTap: () {},
-                                                                                                              iconUrl: AppAssets.copyIconSvg,
-                                                                                                              myIndex: lan ? 1 : 4,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                            MessageActionWidget(
-                                                                                                              onTap: () {},
-                                                                                                              iconUrl: AppAssets.addToGroupSvg,
-                                                                                                              myIndex: lan ? 2 : 3,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                            MessageActionWidget(
-                                                                                                              onTap: () {
-                                                                                                                showDialog(
-                                                                                                                  context: context,
-                                                                                                                  builder: (context) => AlertDialog(title: Text(LocaleKeys.delete_message.tr()), actions: [
-                                                                                                                    MaterialButton(
-                                                                                                                      onPressed: () {
-                                                                                                                        callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
-                                                                                                                        Navigator.of(context).pop();
-                                                                                                                        rebuildMessage.value = -1;
-                                                                                                                      },
-                                                                                                                      child: Text(chatState.currentFailedMessage.contains(messages[index].id!) ? LocaleKeys.yes.tr() : LocaleKeys.only_me.tr()),
-                                                                                                                    ),
-                                                                                                                    SizedBox(
-                                                                                                                      width: 20.w,
-                                                                                                                    ),
-                                                                                                                    chatState.currentFailedMessage.contains(messages[index].id!)
-                                                                                                                        ? MaterialButton(
-                                                                                                                            child: Text(LocaleKeys.cancel.tr()),
+                                                                                                            Container(
+                                                                                                              width: 185.w,
+                                                                                                              height: 40,
+                                                                                                              padding: HWEdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                                                                                                              decoration: BoxDecoration(
+                                                                                                                color: const Color(0xfffafafa),
+                                                                                                                borderRadius: BorderRadius.circular(12.0),
+                                                                                                                boxShadow: const [
+                                                                                                                  BoxShadow(
+                                                                                                                    color: Color(0x29000000),
+                                                                                                                    offset: Offset(0, 2),
+                                                                                                                    blurRadius: 10,
+                                                                                                                  ),
+                                                                                                                ],
+                                                                                                              ),
+                                                                                                              child: Row(
+                                                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                                children: [
+                                                                                                                  MessageActionWidget(
+                                                                                                                    onTap: () => forwardMessageMethod(messages.firstWhere((element) => element.id == messageId)),
+                                                                                                                    iconUrl: AppAssets.goBackIconSvg,
+                                                                                                                    myIndex: lan ? 0 : 5,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                  MessageActionWidget(
+                                                                                                                    onTap: () {},
+                                                                                                                    iconUrl: AppAssets.copyIconSvg,
+                                                                                                                    myIndex: lan ? 1 : 4,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                  MessageActionWidget(
+                                                                                                                    onTap: () {},
+                                                                                                                    iconUrl: AppAssets.addToGroupSvg,
+                                                                                                                    myIndex: lan ? 2 : 3,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                  MessageActionWidget(
+                                                                                                                    onTap: () {
+                                                                                                                      showDialog(
+                                                                                                                        context: context,
+                                                                                                                        builder: (context) => AlertDialog(title: Text("delete_message"), actions: [
+                                                                                                                          MaterialButton(
                                                                                                                             onPressed: () {
-                                                                                                                              Navigator.of(context).pop();
-                                                                                                                              rebuildMessage.value = -1;
-                                                                                                                            })
-                                                                                                                        : MaterialButton(
-                                                                                                                            onPressed: () {
-                                                                                                                              callsBloc.add(DeleteMessageEvent(deleteFromId: _prefsRepository.myChatId!, type: "message", deleteFromBoth: 1, messageId: messages[index].id!, channelId: widget.chatId));
+                                                                                                                              callsBloc.add(DeleteMessageEvent(type: "message", deleteFromBoth: 0, messageId: messages[index].id!, channelId: widget.chatId, deleteFromId: _prefsRepository.myChatId!));
                                                                                                                               Navigator.of(context).pop();
                                                                                                                               rebuildMessage.value = -1;
                                                                                                                             },
-                                                                                                                            child: Text(LocaleKeys.everyone.tr()),
-                                                                                                                          )
-                                                                                                                  ]),
-                                                                                                                );
-                                                                                                              },
-                                                                                                              iconUrl: AppAssets.removeIconSvg,
-                                                                                                              myIndex: lan ? 3 : 2,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                            MessageActionWidget(
-                                                                                                              onTap: () {},
-                                                                                                              iconUrl: AppAssets.editIconSvg,
-                                                                                                              myIndex: lan ? 4 : 1,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                            MessageActionWidget(
-                                                                                                              onTap: () {},
-                                                                                                              iconUrl: AppAssets.notificationIconSvg,
-                                                                                                              myIndex: lan ? 5 : 0,
-                                                                                                              focusedIndex: focusedIndex,
-                                                                                                            ),
-                                                                                                          ],
-                                                                                                        ),
-                                                                                                      ),
-                                                                                                    ],
-                                                                                                  ),
-                                                                                                  10.verticalSpace,
-                                                                                                  focusedIndex >= 0 ? Transform.translate(offset: Offset(focusedIndex * 30.w, 0), child: MessageSubtitleWidget(focusedIndex: focusedIndex)) : const SizedBox.shrink()
-                                                                                                ],
-                                                                                              ),
-                                                                                              5.horizontalSpace,
-                                                                                              Column(
-                                                                                                children: [
-                                                                                                  InkWell(
-                                                                                                    highlightColor: const Color(0xfffafafa),
-                                                                                                    splashColor: const Color(0xfffafafa),
-                                                                                                    onTap: () {
-                                                                                                      currentFocusedIcon.value = -1;
-                                                                                                    },
-                                                                                                    child: InkWell(
-                                                                                                      onTap: () {
-                                                                                                        dealWithMessageOptions(-1, messageId);
-                                                                                                      },
-                                                                                                      child: Container(
-                                                                                                        height: 40,
-                                                                                                        width: 35.w,
-                                                                                                        decoration: BoxDecoration(
-                                                                                                          color: const Color(0xfffafafa),
-                                                                                                          borderRadius: BorderRadius.circular(12.0),
-                                                                                                          boxShadow: const [
-                                                                                                            BoxShadow(
-                                                                                                              color: Color(0x29000000),
-                                                                                                              offset: Offset(0, 2),
-                                                                                                              blurRadius: 10,
-                                                                                                            ),
-                                                                                                          ],
-                                                                                                        ),
-                                                                                                        child: Center(
-                                                                                                            child: SvgPicture.asset(
-                                                                                                          AppAssets.replyButtonLogoSvg,
-                                                                                                        )),
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  10.verticalSpace,
-                                                                                                  focusedIndex == -1
-                                                                                                      ? Container(
-                                                                                                          width: 50.w,
-                                                                                                          height: 22,
-                                                                                                          decoration: BoxDecoration(
-                                                                                                            color: const Color(0xff404040),
-                                                                                                            borderRadius: BorderRadius.circular(8.0),
-                                                                                                            boxShadow: const [
-                                                                                                              BoxShadow(
-                                                                                                                color: Color(0x34000000),
-                                                                                                                offset: Offset(0, 3),
-                                                                                                                blurRadius: 6,
+                                                                                                                            child: Text(chatState.currentFailedMessage.contains(messages[index].id!) ? "yes" : "only_me"),
+                                                                                                                          ),
+                                                                                                                          SizedBox(
+                                                                                                                            width: 20.w,
+                                                                                                                          ),
+                                                                                                                          chatState.currentFailedMessage.contains(messages[index].id!)
+                                                                                                                              ? MaterialButton(
+                                                                                                                                  child: Text("cancel"),
+                                                                                                                                  onPressed: () {
+                                                                                                                                    Navigator.of(context).pop();
+                                                                                                                                    rebuildMessage.value = -1;
+                                                                                                                                  })
+                                                                                                                              : MaterialButton(
+                                                                                                                                  onPressed: () {
+                                                                                                                                    callsBloc.add(DeleteMessageEvent(deleteFromId: _prefsRepository.myChatId!, type: "message", deleteFromBoth: 1, messageId: messages[index].id!, channelId: widget.chatId));
+                                                                                                                                    Navigator.of(context).pop();
+                                                                                                                                    rebuildMessage.value = -1;
+                                                                                                                                  },
+                                                                                                                                  child: Text("everyone"),
+                                                                                                                                )
+                                                                                                                        ]),
+                                                                                                                      );
+                                                                                                                    },
+                                                                                                                    iconUrl: AppAssets.removeIconSvg,
+                                                                                                                    myIndex: lan ? 3 : 2,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                  MessageActionWidget(
+                                                                                                                    onTap: () {},
+                                                                                                                    iconUrl: AppAssets.editIconSvg,
+                                                                                                                    myIndex: lan ? 4 : 1,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                  MessageActionWidget(
+                                                                                                                    onTap: () {},
+                                                                                                                    iconUrl: AppAssets.notificationIconSvg,
+                                                                                                                    myIndex: lan ? 5 : 0,
+                                                                                                                    focusedIndex: focusedIndex,
+                                                                                                                  ),
+                                                                                                                ],
                                                                                                               ),
-                                                                                                            ],
-                                                                                                          ),
-                                                                                                          child: Center(
-                                                                                                            child: MyTextWidget(
-                                                                                                              LocaleKeys.replay.tr(),
-                                                                                                              style: textTheme.titleSmall?.rr.copyWith(color: colorScheme.white, height: 1.4),
+                                                                                                            ),
+                                                                                                          ],
+                                                                                                        ),
+                                                                                                        10.verticalSpace,
+                                                                                                        focusedIndex >= 0 ? Transform.translate(offset: Offset(focusedIndex * 30.w, 0), child: MessageSubtitleWidget(focusedIndex: focusedIndex)) : const SizedBox.shrink()
+                                                                                                      ],
+                                                                                                    ),
+                                                                                                    5.horizontalSpace,
+                                                                                                    Column(
+                                                                                                      children: [
+                                                                                                        InkWell(
+                                                                                                          highlightColor: const Color(0xfffafafa),
+                                                                                                          splashColor: const Color(0xfffafafa),
+                                                                                                          onTap: () {
+                                                                                                            currentFocusedIcon.value = -1;
+                                                                                                          },
+                                                                                                          child: InkWell(
+                                                                                                            onTap: () {
+                                                                                                              dealWithMessageOptions(-1, messageId);
+                                                                                                            },
+                                                                                                            child: Container(
+                                                                                                              height: 40,
+                                                                                                              width: 35.w,
+                                                                                                              decoration: BoxDecoration(
+                                                                                                                color: const Color(0xfffafafa),
+                                                                                                                borderRadius: BorderRadius.circular(12.0),
+                                                                                                                boxShadow: const [
+                                                                                                                  BoxShadow(
+                                                                                                                    color: Color(0x29000000),
+                                                                                                                    offset: Offset(0, 2),
+                                                                                                                    blurRadius: 10,
+                                                                                                                  ),
+                                                                                                                ],
+                                                                                                              ),
+                                                                                                              child: Center(
+                                                                                                                  child: SvgPicture.asset(
+                                                                                                                AppAssets.replyButtonLogoSvg,
+                                                                                                              )),
                                                                                                             ),
                                                                                                           ),
-                                                                                                        )
-                                                                                                      : const SizedBox.shrink()
-                                                                                                ],
-                                                                                              ),
-                                                                                            ].reversed.toList()))))
-                                                                      : SizedBox.shrink()
-                                                                ]));
-                                                      },
-                                                      itemCount: chatState
-                                                                      .newSortedChatsByDate![
-                                                                  chat.id] !=
-                                                              null
-                                                          ? chatState
-                                                              .newSortedChatsByDate![
-                                                                  chat.id]!
-                                                              .length
-                                                          : 0)),
-                                            ],
-                                          );
-                                        });
-                                  })));
-                    },
+                                                                                                        ),
+                                                                                                        10.verticalSpace,
+                                                                                                        focusedIndex == -1
+                                                                                                            ? Container(
+                                                                                                                width: 50.w,
+                                                                                                                height: 22,
+                                                                                                                decoration: BoxDecoration(
+                                                                                                                  color: const Color(0xff404040),
+                                                                                                                  borderRadius: BorderRadius.circular(8.0),
+                                                                                                                  boxShadow: const [
+                                                                                                                    BoxShadow(
+                                                                                                                      color: Color(0x34000000),
+                                                                                                                      offset: Offset(0, 3),
+                                                                                                                      blurRadius: 6,
+                                                                                                                    ),
+                                                                                                                  ],
+                                                                                                                ),
+                                                                                                                child: Center(
+                                                                                                                  child: MyTextWidget(
+                                                                                                                    "replay",
+                                                                                                                    style: textTheme.titleSmall?.rr.copyWith(color: colorScheme.white, height: 1.4),
+                                                                                                                  ),
+                                                                                                                ),
+                                                                                                              )
+                                                                                                            : const SizedBox.shrink()
+                                                                                                      ],
+                                                                                                    ),
+                                                                                                  ].reversed.toList()))))
+                                                                            : SizedBox.shrink()
+                                                                      ]));
+                                                            },
+                                                            itemCount: chatState
+                                                                            .newSortedChatsByDate![
+                                                                        chat
+                                                                            .id] !=
+                                                                    null
+                                                                ? chatState
+                                                                    .newSortedChatsByDate![
+                                                                        chat.id]!
+                                                                    .length
+                                                                : 0)),
+                                                  ],
+                                                );
+                                              });
+                                        })));
+                          },
+                        ),
+                      ),
+                      BlocBuilder<AppBloc, AppState>(
+                        buildWhen: (p, c) => p.thereIsReply != c.thereIsReply,
+                        builder: (context, state) {
+                          //                flutterToast.s
+                          return ChatInputField(
+                            channelId: chat.id ?? "",
+                            senderName: widget.senderName,
+                            senderUserImage: widget.senderPhoto,
+                            onSendFile: (File file, String customPathType) {
+                              String id = const Uuid().v4();
+                              FileSaving().saveFileToSpecificDirectory(file);
+                              ChannelMember? member = !chat
+                                      .channelMembers.isNullOrEmpty
+                                  ? chat.channelMembers!.firstWhere((element) =>
+                                      element.userId !=
+                                      _prefsRepository.myChatId)
+                                  : null;
+                              String mimeStr =
+                                  lookupMimeType(file.absolute.path) ?? '';
+                              bool isMediaFile =
+                                  mimeStr.split('/')[0] != 'application';
+
+                              chatBloc.add(UploadFileEvent(
+                                  file: file,
+                                  channelId: chat.id.toString(),
+                                  filePath: customPathType == 'image'
+                                      ? 'images/test'
+                                      : customPathType == 'file'
+                                          ? 'files/test'
+                                          : customPathType == 'video'
+                                              ? 'videos/test'
+                                              : 'voices/test',
+                                  useCloudinaryToUpload: isMediaFile,
+                                  fileName: file.path,
+                                  messageType: customPathType == 'image'
+                                      ? 'ImageMessage'
+                                      : customPathType == 'file'
+                                          ? 'FileMessage'
+                                          : customPathType == 'video'
+                                              ? 'VideoMessage'
+                                              : 'VoiceMessage',
+                                  isForward: false,
+                                  senderParentMessageId:
+                                      state.senderParentMessageId,
+                                  parentMessageId: state.thereIsReply
+                                      ? state.messageId
+                                      : null,
+                                  messageId: id,
+                                  parentMessageContent:
+                                      customPathType == 'image'
+                                          ? "photo"
+                                          : customPathType == 'file'
+                                              ? "file"
+                                              : customPathType == 'video'
+                                                  ? "video"
+                                                  : "voice",
+                                  receiverUserId: member?.userId));
+                              BlocProvider.of<AppBloc>(context).add(
+                                  RefreshChatInputField(false, '', false,
+                                      messageId: null,
+                                      message: null,
+                                      senderParentMessageId: null,
+                                      imageUrl: null,
+                                      time: null));
+                            },
+                            onSendMessage: (String message) {
+                              String id = const Uuid().v4();
+                              ChannelMember? member = !chat
+                                      .channelMembers.isNullOrEmpty
+                                  ? chat.channelMembers?.firstWhere((element) =>
+                                      element.userId !=
+                                      _prefsRepository.myChatId)
+                                  : null;
+
+                              debugPrint('there : ${state.thereIsReply}');
+                              chatBloc.add(SendMessageEvent(
+                                  messageType: 'TextMessage',
+                                  channelId: chat.id.toString(),
+                                  isForward: false,
+                                  parentMessageId: state.thereIsReply
+                                      ? state.messageId
+                                      : null,
+                                  content: message,
+                                  messageId: id,
+                                  senderParentMessageId:
+                                      state.senderParentMessageId,
+                                  parentMessageContent: state.message,
+                                  receiverUserId: member?.userId));
+                              BlocProvider.of<AppBloc>(context).add(
+                                  RefreshChatInputField(false, '', false,
+                                      messageId: null,
+                                      message: null,
+                                      senderParentMessageId: null,
+                                      imageUrl: null,
+                                      time: null));
+                              // rebuildMessage.value = data.length;
+                            },
+                          );
+                        },
+                      ),
+                      0.2.verticalSpace
+                    ],
                   ),
-                ),
-                BlocBuilder<AppBloc, AppState>(
-                  buildWhen: (p, c) => p.thereIsReply != c.thereIsReply,
-                  builder: (context, state) {
-//                flutterToast.s
-                    return ChatInputField(
-                      channelId: chat.id ?? "",
-                      senderName: widget.senderName,
-                      senderUserImage: widget.senderPhoto,
-                      onSendFile: (File file, String customPathType) {
-                        String id = const Uuid().v4();
-                        FileSaving().saveFileToSpecificDirectory(file);
-                        ChannelMember? member =
-                            !chat.channelMembers.isNullOrEmpty
-                                ? chat.channelMembers!.firstWhere((element) =>
-                                    element.userId != _prefsRepository.myChatId)
-                                : null;
-                        String mimeStr =
-                            lookupMimeType(file.absolute.path) ?? '';
-                        bool isMediaFile =
-                            mimeStr.split('/')[0] != 'application';
-
-                        chatBloc.add(UploadFileEvent(
-                            file: file,
-                            channelId: chat.id.toString(),
-                            filePath: customPathType == 'image'
-                                ? 'images/test'
-                                : customPathType == 'file'
-                                    ? 'files/test'
-                                    : customPathType == 'video'
-                                        ? 'videos/test'
-                                        : 'voices/test',
-                            useCloudinaryToUpload: isMediaFile,
-                            fileName: file.path,
-                            messageType: customPathType == 'image'
-                                ? 'ImageMessage'
-                                : customPathType == 'file'
-                                    ? 'FileMessage'
-                                    : customPathType == 'video'
-                                        ? 'VideoMessage'
-                                        : 'VoiceMessage',
-                            isForward: false,
-                            senderParentMessageId: state.senderParentMessageId,
-                            parentMessageId:
-                                state.thereIsReply ? state.messageId : null,
-                            messageId: id,
-                            parentMessageContent: customPathType == 'image'
-                                ? LocaleKeys.photo.tr()
-                                : customPathType == 'file'
-                                    ? LocaleKeys.file.tr()
-                                    : customPathType == 'video'
-                                        ? LocaleKeys.vvideo.tr()
-                                        : LocaleKeys.voice.tr(),
-                            receiverUserId: member?.userId));
-                        BlocProvider.of<AppBloc>(context).add(
-                            RefreshChatInputField(false, '', false,
-                                messageId: null,
-                                message: null,
-                                senderParentMessageId: null,
-                                imageUrl: null,
-                                time: null));
-                      },
-                      onSendMessage: (String message) {
-                        String id = const Uuid().v4();
-                        ChannelMember? member =
-                            !chat.channelMembers.isNullOrEmpty
-                                ? chat.channelMembers?.firstWhere((element) =>
-                                    element.userId != _prefsRepository.myChatId)
-                                : null;
-
-                        debugPrint('there : ${state.thereIsReply}');
-                        chatBloc.add(SendMessageEvent(
-                            messageType: 'TextMessage',
-                            channelId: chat.id.toString(),
-                            isForward: false,
-                            parentMessageId:
-                                state.thereIsReply ? state.messageId : null,
-                            content: message,
-                            messageId: id,
-                            senderParentMessageId: state.senderParentMessageId,
-                            parentMessageContent: state.message,
-                            receiverUserId: member?.userId));
-                        BlocProvider.of<AppBloc>(context).add(
-                            RefreshChatInputField(false, '', false,
-                                messageId: null,
-                                message: null,
-                                senderParentMessageId: null,
-                                imageUrl: null,
-                                time: null));
-                        // rebuildMessage.value = data.length;
-                      },
-                    );
-                  },
-                ),
-                0.2.verticalSpace
-              ],
-            ),
-          )),
+                ));
+          }),
     );
   }
 
@@ -1648,7 +1678,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     }
   }
 
-  void forwardMessageMethod(Message message) {
+  void forwardMessageMethod(ChatMessage message) {
     String id = const Uuid().v4();
     context.push(
       GRouter.config.applicationRoutes.kChatPage +
@@ -1686,7 +1716,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
     );
   }
 
-  void replayMessage(Message message, int? myChatId) {
+  void replayMessage(ChatMessage message, int? myChatId) {
     BlocProvider.of<AppBloc>(context).add(RefreshChatInputField(
         true,
         message.messageType!.name == 'TextMessage'
@@ -1700,9 +1730,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         messageId: message.id,
         senderParentMessageId: message.senderUserId,
         message: message.messageContent?.content ??
-            (message.messageType!.name == 'TextMessage'
-                ? LocaleKeys.photo.tr()
-                : LocaleKeys.voice.tr()),
+            (message.messageType!.name == 'TextMessage' ? "photo" : "voice"),
         imageUrl:
             message.mediaMessageContent?.first.filePath ?? message.file?.path,
         time: message.createdAt));
@@ -1769,7 +1797,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
 
   getTheMessageWidget({
     required int listIndex,
-    required Message message,
+    required ChatMessage message,
     required String senderName,
     required String receiverName,
     String? senderPhoto,
@@ -1804,8 +1832,8 @@ class _SinglePageChatState extends State<SinglePageChat> {
                 Spacer(),
                 MyTextWidget(
                   message.deletedByUserId == _prefsRepository.myChatId
-                      ? LocaleKeys.you_have_deleted_this_message.tr()
-                      : LocaleKeys.this_message_has_been_deleted.tr(),
+                      ? "you_have_deleted_this_message"
+                      : "this_message_has_been_deleted",
                   textAlign: TextAlign.center,
                   style: textTheme.titleSmall?.lr.copyWith(
                       fontSize: 12, height: 1.1, color: colorScheme.grey200),
@@ -1851,7 +1879,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         index == -1 ? null : message.messageStatus![index];
 
     if (message.parentMessageId != null && message.parentMessage != null) {
-      Message parentMessage = message.parentMessage!;
+      ChatMessage parentMessage = message.parentMessage!;
 
       index = parentMessage.messageStatus
               ?.indexWhere((e) => e.userId != _prefsRepository.myChatId) ??
@@ -1900,12 +1928,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
           answeredFile: message.file,
           message: parentMessage.messageContent?.content == null
               ? parentMessage.messageType!.name == 'ImageMessage'
-                  ? LocaleKeys.photo.tr()
+                  ? "photo"
                   : parentMessage.messageType!.name == 'FileMessage'
-                      ? LocaleKeys.file.tr()
+                      ? "file"
                       : parentMessage.messageType!.name == 'VideoMessage'
-                          ? LocaleKeys.vvideo.tr()
-                          : LocaleKeys.voice.tr()
+                          ? "Video"
+                          : "voice"
               : parentMessage.messageContent!.content.toString(),
           receivedAt: messageStatus?.receivedAt,
           messageAnswerId: message.id!,
@@ -1914,9 +1942,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       } else {
         return ReplayOnMeMessage(
             messageType: message.messageType?.name ?? "",
-            key: TestVariables.kTestMode
-                ? Key('${WidgetsKeys.replayOnMeMessageKey}$listIndex')
-                : null,
+            key: null,
             index: listIndex,
             messageId: message.parentMessageId!,
             receivedAt: messageStatus?.receivedAt,
@@ -1947,12 +1973,12 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isAnswerMessageReceived: (messageStatus?.isReceived ?? 0) == 1,
             message: parentMessage.messageContent?.content == null
                 ? parentMessage.messageType?.name == 'ImageMessage'
-                    ? LocaleKeys.photo.tr()
+                    ? "photo"
                     : parentMessage.messageType?.name == 'FileMessage'
-                        ? LocaleKeys.file.tr()
+                        ? "file"
                         : parentMessage.messageType?.name == 'VideoMessage'
-                            ? LocaleKeys.vvideo.tr()
-                            : LocaleKeys.voice.tr()
+                            ? "video"
+                            : "voice"
                 : parentMessage.messageContent!.content.toString(),
             messageAnswerId: message.id!,
             channalId: message.channelId!);
@@ -1961,9 +1987,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
       switch (message.messageType?.name) {
         case 'TextMessage':
           return TextMessage(
-              key: TestVariables.kTestMode
-                  ? Key('${WidgetsKeys.textMessageCardKey}$listIndex')
-                  : null,
+              key: null,
               index: listIndex,
               receivedAt: messageStatus?.receivedAt,
               createAt: message.createdAt,
@@ -2015,50 +2039,6 @@ class _SinglePageChatState extends State<SinglePageChat> {
             isReceived: (messageStatus?.isReceived ?? 0) == 1,
             isLocalMessage: true,
             isForwarded: message.isForward == 1,
-          );
-        case 'ShareProduct':
-          return SharedProductMessage(
-            channelId: message.channelId!,
-            imageUrl: addSuitableWidthAndHeightToImage(
-              imageUrl: message.shareProductContent!.productImageUrl!,
-              width: (((message.shareProductContent!.imageWidth ?? 0) > 0)
-                  ? message.shareProductContent!.imageWidth
-                  : 1.sw - 100)!,
-              // the width of the image in the ui
-              height: (((message.shareProductContent!.imageHeight ?? 0) > 0)
-                  ? message.shareProductContent!.imageHeight
-                  : 464)!,
-              // the height of the image in the ui
-              ordinalWidth: ((message.shareProductContent!.imageWidth ?? 0) > 0)
-                  ? message.shareProductContent!.imageWidth
-                  : 1.sw -
-                      100, //double.tryParse(message.mediaMessageContent![0].originalWidth.toString()),
-              ordinalHeight:
-                  ((message.shareProductContent!.imageHeight ?? 0) > 0)
-                      ? message.shareProductContent!.imageHeight
-                      : 464,
-              //double.tryParse(image.originalHeight.toString())
-            ),
-            productName: message.shareProductContent!.productName ?? "",
-            productDescription:
-                message.shareProductContent!.productDescription ?? "",
-            imageFile: message.file,
-            receivedAt: messageStatus?.receivedAt,
-            createAt: message.createdAt,
-            key: ValueKey(message.id),
-            isSent: isSentMessage,
-            messageId: message.id.toString(),
-            senderId: message.senderUserId!,
-            userMessageName: message.receiverUserId != _prefsRepository.myChatId
-                ? senderName
-                : receiverName,
-            userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
-            isFirstMessage:
-                message.isFirstMessage! || message.isFirstMessageForThisDay!,
-            isRead: messageStatus?.isWatched ?? false,
-            isReceived: (messageStatus?.isReceived ?? 0) == 1,
-            isForwarded: message.isForward == 1,
-            watchedAt: messageStatus?.watchedAt,
           );
 
         case 'VideoMessage':
@@ -2134,7 +2114,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         case 'VideoCall':
           return CallMessage(
             isVideo: true,
-            message: LocaleKeys.video_call_at.tr(),
+            message: "video_call_at",
             time: message.createdAt!,
             isSent: isSentMessage,
             userMessageName: isSentMessage ? senderName : receiverName,
@@ -2143,7 +2123,7 @@ class _SinglePageChatState extends State<SinglePageChat> {
         case 'VoiceCall':
           return CallMessage(
             isVideo: false,
-            message: LocaleKeys.voice_call_at.tr(),
+            message: "voice_call_at",
             isSent: isSentMessage,
             time: message.createdAt!,
             userMessageName: isSentMessage ? senderName : receiverName,
@@ -2164,9 +2144,9 @@ class MessagesDate extends StatelessWidget {
     Duration difference = now.difference(date);
 
     if (difference.inDays == 0) {
-      return LocaleKeys.today.tr();
+      return "today";
     } else if (difference.inDays == 1) {
-      return LocaleKeys.yesterday.tr();
+      return "yesterday";
     } else {
       return dateStr;
     }
@@ -2235,22 +2215,22 @@ class MessageSubtitleWidget extends StatelessWidget {
     String hoverText = '';
     switch (focusedIndex) {
       case 5:
-        hoverText = lan ? LocaleKeys.re_mind.tr() : LocaleKeys.forward.tr();
+        hoverText = lan ? "re_mind" : "forward";
         break;
       case 4:
-        hoverText = lan ? LocaleKeys.edit.tr() : LocaleKeys.copy.tr();
+        hoverText = lan ? "edit" : "copy";
         break;
       case 3:
-        hoverText = lan ? LocaleKeys.delete.tr() : LocaleKeys.category.tr();
+        hoverText = lan ? "delete" : "category";
         break;
       case 2:
-        hoverText = lan ? LocaleKeys.category.tr() : LocaleKeys.delete.tr();
+        hoverText = lan ? "category" : "delete";
         break;
       case 1:
-        hoverText = lan ? LocaleKeys.copy.tr() : LocaleKeys.edit.tr();
+        hoverText = lan ? "copy" : "edit";
         break;
       case 0:
-        lan ? hoverText = LocaleKeys.forward.tr() : LocaleKeys.re_mind.tr();
+        lan ? hoverText = "forward" : "re_mind";
         break;
     }
     return Container(
@@ -2283,9 +2263,9 @@ String formatDate(DateTime dateStr) {
   Duration difference = now.difference(dateStr);
 
   if (difference.inDays == 0) {
-    return LocaleKeys.today.tr();
+    return "today";
   } else if (difference.inDays == 1) {
-    return LocaleKeys.yesterday.tr();
+    return "yesterday";
   } else {
     return DateFormat.yMd().format(dateStr);
   }

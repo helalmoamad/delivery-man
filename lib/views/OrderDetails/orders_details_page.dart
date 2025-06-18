@@ -1,5 +1,12 @@
+import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart';
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_state.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/pages/single_page_chat.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
+import 'package:delivery_man_app/services/service_provider.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/handling_errors.dart/handling_errors.dart';
@@ -7,7 +14,9 @@ import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
 import 'package:delivery_man_app/shared/widgets/snackbar_widgets.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import '../../shared/constants/order_statuses.dart';
 import '../../shared/widgets/custom_app_bar.dart';
 import 'order_details_with_status_buttons.dart';
@@ -30,14 +39,25 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
   }
 
   void getAllData() async {
+    print(
+        "DDDDDDDDDDDDDDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSssss---------${GlobalFunctions.getIsFromNotifiForNewOrder()}");
+
     if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
       String token = GlobalFunctions.getToken();
       //////////////////////////////////////////////////////////
+      print(
+          "DDDDDDDDDDDDDDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSssss");
       await ordersController.getOrderDetailsData(
         token: token,
         orderId: int.parse(GlobalFunctions.getOrderId() ?? '-1'),
         isForMyOrder: false,
       );
+      print(
+          "DDDDDDDDDDDDDDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSssss++++");
+
+      GetIt.I<ChatBloc>().add(GetOrderRecipientIdEvent(
+          originalUserId: GlobalFunctions.getUserId().toString(),
+          orderId: ordersController.myOrderIdInMarket.toString()));
     }
   }
 
@@ -45,7 +65,10 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
   Widget build(BuildContext context) {
     String status;
     if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
-      status = OrderStatuses.inDeliveryCenter;
+      status = (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
+              GetIt.I<PrefsRepository>().myOrderIdForChat != null)
+          ? OrderStatuses.outForDelivery
+          : OrderStatuses.inDeliveryCenter;
     } else {
       if (ordersController.previousRoute == Routes.myOrdersPage) {
         status = ordersController.myOrderStatus;
@@ -71,24 +94,6 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
         },
         child: Scaffold(
           appBar: buildAppBar(),
-          floatingActionButton: status == OrderStatuses.outForDelivery
-              ? FloatingActionButton(
-                  onPressed: () {
-                    if (GlobalFunctions.getMobilePhone().isNotEmpty) {
-                      if (GlobalFunctions.getChatToken().isNotEmpty) {
-                        Get.toNamed(Routes.chatPage);
-                      } else {
-                        Get.toNamed(Routes.otpVerificationPage);
-                      }
-                    } else {
-                      SnackBarWidgets.showSuccessSnackBar(
-                          'Please enter the phone number', '');
-                    }
-                  },
-                  tooltip: 'Chat',
-                  child: const Icon(Icons.chat),
-                )
-              : null,
           floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
           body: GetBuilder<OrdersController>(
             id: 'all_order_details_page',
@@ -134,35 +139,165 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
               ],
             );
           } else {
-            if (ordersController.previousRoute == Routes.myOrdersPage) {
-              String status = ordersController.myOrderStatus;
-              return (status == OrderStatuses.inDeliveryCenter) ||
-                      // (status == OrderStatuses.shipped) ||
-                      (status == OrderStatuses.outForDelivery)
-                  ? Container()
-                  // AppButton.normalButton(
-                  //     title: 'UnAssign Order'.tr,
-                  //     height: 40,
-                  //     titleSize: 13,
-                  //     backgroundColor: AppColors.secondary,
-                  //     onPress: () async {
-                  //       AppDialogs.showConfirmationDialog(
-                  //         context: context,
-                  //         title: 'Are you sure to unAssign the Order ?'.tr,
-                  //         onConfirm: () async {
-                  //           Get.back();
-                  //           ///////////////////
-                  //           int orderId = ordersController.myOrderIdForDetails;
-                  //           String token = GlobalFunctions.getToken();
-                  //           await ordersController.unAssignOrderToMe(
-                  //             token: token,
-                  //             orderId: orderId,
-                  //           );
-                  //         },
-                  //       );
-                  //     },
-                  //   )
-                  : Container();
+            if (ordersController.previousRoute == Routes.myOrdersPage ||
+                GlobalFunctions.getIsFromNotifiForNewOrder()) {
+              String status = "";
+              if (GlobalFunctions.getIsFromNotifiForNewOrder() &&
+                  (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
+                      GetIt.I<PrefsRepository>().myOrderIdForChat != null)) {
+                ordersController.myOrderStatus = OrderStatuses.outForDelivery;
+              }
+              status = ordersController.myOrderStatus;
+
+              return
+                  // (status == OrderStatuses.shipped) ||
+                  (status == OrderStatuses.outForDelivery)
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            BlocListener<ChatBloc, ChatState>(
+                              listenWhen: (previous, current) =>
+                                  previous.getOrderRecipientIdStatus !=
+                                  current.getOrderRecipientIdStatus,
+                              listener: (context, state) {
+                                if (state.getOrderRecipientIdStatus ==
+                                    GetOrderRecipientIdStatus.success) {
+                                  String receiverName = "recipient";
+                                  String fullReceiverName = "recipient";
+                                  String? recipientUserId =
+                                      state.recipientUserId;
+                                  if (recipientUserId == null) {
+                                    return;
+                                  }
+                                  Chat? chat;
+                                  User? receiver;
+                                  List<Chat> chats =
+                                      List.of(GetIt.I<ChatBloc>().state.chats);
+                                  debugPrint(chats.toString());
+                                  chats.addAll(
+                                      GetIt.I<ChatBloc>().state.pinnedChats);
+                                  chat = chats.firstWhere((element) =>
+                                      element.channelMembers!.any((element) {
+                                        return element.userId.toString() ==
+                                            recipientUserId;
+                                      }));
+                                  final preferences =
+                                      GetIt.I<PrefsRepository>();
+                                  receiver = chat.channelMembers
+                                      ?.firstWhere(
+                                        (element) =>
+                                            element.userId !=
+                                            preferences.myChatId,
+                                        orElse: () => ChannelMember(
+                                            userId:
+                                                int.tryParse(recipientUserId),
+                                            user: User(
+                                                id: int.tryParse(
+                                                    recipientUserId),
+                                                name: receiverName)),
+                                      )
+                                      .user;
+                                  print(
+                                      "DDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEEEE${chat.id ?? ""}");
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => SinglePageChat(
+                                        orderId: ordersController
+                                            .myOrderIdInMarket
+                                            .toString(),
+                                        chatId: chat?.id ?? "",
+                                        receiverName: "CU",
+                                        receiverPhone: "",
+                                        fullReceiverName: "Customer",
+                                        senderName: "Ali",
+                                      ),
+                                    ),
+                                  );
+                                }
+                                // TODO: implement listener
+                              },
+                              child: BlocBuilder<ChatBloc, ChatState>(
+                                buildWhen: (previous, current) =>
+                                    previous.getOrderRecipientIdStatus !=
+                                    current.getOrderRecipientIdStatus,
+                                builder: (context, state) {
+                                  if (state.getOrderRecipientIdStatus ==
+                                          GetOrderRecipientIdStatus.loading &&
+                                      GlobalFunctions.getChatToken()
+                                          .isNotEmpty &&
+                                      GlobalFunctions.getChatToken()
+                                          .isNotEmpty) {
+                                    return const SizedBox(
+                                      width: 30,
+                                      height: 30,
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  return InkWell(
+                                    onTap: () {
+                                      if (GlobalFunctions.getMobilePhone()
+                                          .isNotEmpty) {
+                                        if ((GetIt.I<PrefsRepository>()
+                                                    .chatToken
+                                                    ?.length ??
+                                                0) >
+                                            7) {
+                                          GetIt.I<ChatBloc>().add(
+                                              GetOrderRecipientIdEvent(
+                                                  originalUserId:
+                                                      GlobalFunctions
+                                                              .getUserId()
+                                                          .toString(),
+                                                  orderId: ordersController
+                                                      .myOrderIdInMarket
+                                                      .toString()));
+
+                                          // Get.toNamed(Routes.chatPage);
+                                        } else {
+                                          Get.toNamed(
+                                              Routes.otpVerificationPage);
+                                        }
+                                      } else {
+                                        SnackBarWidgets.showSuccessSnackBar(
+                                            'Please enter the phone number',
+                                            '');
+                                      }
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      width: 30,
+                                      height: 40,
+                                      child: const Icon(Icons.chat),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        )
+                      // AppButton.normalButton(
+                      //     title: 'UnAssign Order'.tr,
+                      //     height: 40,
+                      //     titleSize: 13,
+                      //     backgroundColor: AppColors.secondary,
+                      //     onPress: () async {
+                      //       AppDialogs.showConfirmationDialog(
+                      //         context: context,
+                      //         title: 'Are you sure to unAssign the Order ?'.tr,
+                      //         onConfirm: () async {
+                      //           Get.back();
+                      //           ///////////////////
+                      //           int orderId = ordersController.myOrderIdForDetails;
+                      //           String token = GlobalFunctions.getToken();
+                      //           await ordersController.unAssignOrderToMe(
+                      //             token: token,
+                      //             orderId: orderId,
+                      //           );
+                      //         },
+                      //       );
+                      //     },
+                      //   )
+                      : Container();
             } else {
               return Container();
             }

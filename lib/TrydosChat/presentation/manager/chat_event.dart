@@ -21,6 +21,20 @@ class LoadWidthAndHeightForImage extends ChatEvent {
   List<Object?> get props => [];
 }
 
+class StoreFcmTokenEvent extends ChatEvent {
+  final int userId;
+  final String fcmToken;
+
+  const StoreFcmTokenEvent({
+    required this.userId,
+    required this.fcmToken,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [userId, fcmToken];
+}
+
 class SearchTextInChatEvent extends ChatEvent {
   final String searchText;
   final String channel_id;
@@ -244,7 +258,7 @@ class SaveContactsEvent extends ChatEvent {
 }
 
 class ReceiveMessageEvent extends ChatEvent {
-  final Message message;
+  final ChatMessage message;
   final String? prevMessageId;
   final bool increaseUnReadMessages;
   const ReceiveMessageEvent(
@@ -384,7 +398,7 @@ class GetAllMessagesBetweenEvent extends ChatEvent {
 }
 
 class AddAMessageToAChannel extends ChatEvent {
-  final Message message;
+  final ChatMessage message;
   final String localChannelId;
 
   const AddAMessageToAChannel({
@@ -455,7 +469,7 @@ class ChangeSlop extends ChatEvent {
 }
 
 class AddChannelToChannels extends ChatEvent {
-  final Message message;
+  final ChatMessage message;
   const AddChannelToChannels({required this.message});
   @override
   // TODO: implement props

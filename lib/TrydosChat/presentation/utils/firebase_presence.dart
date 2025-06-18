@@ -211,11 +211,6 @@ class FirebasePresence {
 
   static Future<void> sendUserTransaction(
       {required String channelId, String? description}) async {
-    print([...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
-        .firstWhere((element) =>
-            element.id == channelId || element.localId == channelId)
-        .channelMembers
-        .toString());
     [...chatBloc.state.chats, ...chatBloc.state.pinnedChats]
         .firstWhere((element) =>
             element.id == channelId || element.localId == channelId)

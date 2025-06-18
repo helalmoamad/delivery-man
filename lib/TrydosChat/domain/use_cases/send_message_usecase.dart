@@ -2,18 +2,18 @@ import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/TrydosChat/api/error/failures.dart';
 import 'package:delivery_man_app/TrydosChat/chat_utils/use_case.dart';
 import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart'
-    show Message;
+    show ChatMessage;
 import 'package:delivery_man_app/TrydosChat/domain/repositories/chat_repository.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
-class SendMessageUseCase extends UseCase<Message, SendMessageParams> {
+class SendMessageUseCase extends UseCase<ChatMessage, SendMessageParams> {
   final ChatRepository repository;
 
   SendMessageUseCase(this.repository);
 
   @override
-  Future<Either<Failure, Message>> call(SendMessageParams params) {
+  Future<Either<Failure, ChatMessage>> call(SendMessageParams params) {
     return repository.sendMessage(params.map);
   }
 }
