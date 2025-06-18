@@ -9,8 +9,13 @@ class UnAssignOrderToMeProvider {
   UnAssignOrderToMeProvider(this.ordersRepository);
 
   Future<Either<FailureDelivery, UnAssignOrderToMeDataModel>> call(
-      {required String token, required int orderId}) async {
+      {required String token,
+      required int orderId,
+      required String note}) async {
     return await ordersRepository.unAssignOrderToMe(
-        token: token, orderId: orderId);
+      token: token,
+      orderId: orderId,
+      note: note,
+    );
   }
 }

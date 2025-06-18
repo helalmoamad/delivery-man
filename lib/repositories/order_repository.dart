@@ -105,12 +105,14 @@ class OrdersRepository {
       unAssignOrderToMe({
     required String token,
     required int orderId,
+    required String note,
   }) async {
     return RepoNetworkRequest.makeNetworkRequest<UnAssignOrderToMeDataModel>(
       networkInfo: networkInfo,
       request: () => ordersApiService.postUnAssignOrderToMeApi(
         token: token,
         orderId: orderId,
+        note: note,
       ),
     );
   }

@@ -6,7 +6,6 @@ import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_state.dart
 import 'package:delivery_man_app/TrydosChat/presentation/pages/single_page_chat.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
-import 'package:delivery_man_app/services/service_provider.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/handling_errors.dart/handling_errors.dart';
@@ -275,28 +274,6 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
                             ),
                           ],
                         )
-                      // AppButton.normalButton(
-                      //     title: 'UnAssign Order'.tr,
-                      //     height: 40,
-                      //     titleSize: 13,
-                      //     backgroundColor: AppColors.secondary,
-                      //     onPress: () async {
-                      //       AppDialogs.showConfirmationDialog(
-                      //         context: context,
-                      //         title: 'Are you sure to unAssign the Order ?'.tr,
-                      //         onConfirm: () async {
-                      //           Get.back();
-                      //           ///////////////////
-                      //           int orderId = ordersController.myOrderIdForDetails;
-                      //           String token = GlobalFunctions.getToken();
-                      //           await ordersController.unAssignOrderToMe(
-                      //             token: token,
-                      //             orderId: orderId,
-                      //           );
-                      //         },
-                      //       );
-                      //     },
-                      //   )
                       : Container();
             } else {
               return Container();

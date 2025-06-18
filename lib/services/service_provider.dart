@@ -8,7 +8,7 @@ import 'package:get_it/get_it.dart';
 
 class ServiceProvider extends StatelessWidget {
   final Widget child;
-  const ServiceProvider({Key? key, required this.child}) : super(key: key);
+  const ServiceProvider({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

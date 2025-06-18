@@ -752,10 +752,14 @@ class OrdersController extends GetxController {
   Future<void> unAssignOrderToMe({
     required String token,
     required int orderId,
+    required String note,
   }) async {
     showAssignUnAssignOrderCircleIndicator();
-    final failureOrAssignToVehicle =
-        await unAssignOrderToMeProvider.call(token: token, orderId: orderId);
+    final failureOrAssignToVehicle = await unAssignOrderToMeProvider.call(
+      token: token,
+      orderId: orderId,
+      note: note,
+    );
 
     failureOrAssignToVehicle.fold(
       (failure) {

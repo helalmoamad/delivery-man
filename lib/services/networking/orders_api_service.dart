@@ -38,6 +38,7 @@ abstract class OrdersApiService {
   Future<UnAssignOrderToMeDataModel> postUnAssignOrderToMeApi({
     required String token,
     required int orderId,
+    required String note,
   });
 
   Future<ChangeStatusModel> postChangeStatusApi({
@@ -280,6 +281,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   Future<UnAssignOrderToMeDataModel> postUnAssignOrderToMeApi({
     required String token,
     required int orderId,
+    required String note,
   }) async {
     clientController.reOpenClient();
 
@@ -292,6 +294,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
             isGlobalTimer: true,
             body: {
               'order_id': orderId,
+              'unassign_note': note,
             },
             fromJson: UnAssignOrderToMeDataModel.fromJson);
 
