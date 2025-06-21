@@ -1,4 +1,4 @@
-class AssignOrderToMeDataModel {
+class AssignUnAssignOrderToMeDataModel {
   final bool? isSuccessful;
   final bool? hasContent;
   final int? code;
@@ -6,7 +6,7 @@ class AssignOrderToMeDataModel {
   final String? detailedError;
   final AssignUnAssignOrderDataModel? data;
 
-  AssignOrderToMeDataModel({
+  AssignUnAssignOrderToMeDataModel({
     required this.isSuccessful,
     required this.hasContent,
     required this.code,
@@ -15,8 +15,8 @@ class AssignOrderToMeDataModel {
     this.data,
   });
 
-  factory AssignOrderToMeDataModel.fromJson(Map<String, dynamic> json) {
-    return AssignOrderToMeDataModel(
+  factory AssignUnAssignOrderToMeDataModel.fromJson(Map<String, dynamic> json) {
+    return AssignUnAssignOrderToMeDataModel(
       isSuccessful: json['isSuccessful'],
       hasContent: json['hasContent'],
       code: json['code'],
@@ -32,13 +32,17 @@ class AssignOrderToMeDataModel {
 class AssignUnAssignOrderDataModel {
   final bool? requiresConfirmation;
   final int? otherUnassignedCount;
+  final int? otherAssignedCount;
   final List<int>? otherUnassignedOrderIds;
+  final List<int>? otherAssignedOrderIds;
   final String? notificationMessage;
 
   AssignUnAssignOrderDataModel({
     required this.requiresConfirmation,
     required this.otherUnassignedCount,
+    required this.otherAssignedCount,
     required this.otherUnassignedOrderIds,
+    required this.otherAssignedOrderIds,
     required this.notificationMessage,
   });
 
@@ -46,8 +50,11 @@ class AssignUnAssignOrderDataModel {
     return AssignUnAssignOrderDataModel(
       requiresConfirmation: json['requires_confirmation'],
       otherUnassignedCount: json['other_unassigned_count'] ?? 0,
+      otherAssignedCount: json['other_assigned_count'] ?? 0,
       otherUnassignedOrderIds:
           List<int>.from(json['other_unassigned_order_ids'] ?? []),
+      otherAssignedOrderIds:
+          List<int>.from(json['other_assigned_order_ids'] ?? []),
       notificationMessage: json['notification_message'] ?? '',
     );
   }

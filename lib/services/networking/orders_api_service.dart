@@ -6,7 +6,6 @@ import '../../controllers/Client/client_controller.dart';
 import '../../controllers/Client/timer_service.dart';
 import '../../models/Orders/change_status_model.dart';
 import '../../models/Orders/list_order_model.dart';
-import '../../models/Orders/unassign_order_tome_model.dart';
 import '../../models/Orders/update_order_response_model.dart';
 
 abstract class OrdersApiService {
@@ -29,16 +28,17 @@ abstract class OrdersApiService {
   Future<UnAssignToVehicleModel> postUnAssignToVehicleApi(
       {required String token, required int vehicleId});
 
-  Future<AssignOrderToMeDataModel> postAssignOrderToMeApi({
+  Future<AssignUnAssignOrderToMeDataModel> postAssignOrderToMeApi({
     required String token,
     required int orderId,
     required bool? confirm,
   });
 
-  Future<UnAssignOrderToMeDataModel> postUnAssignOrderToMeApi({
+  Future<AssignUnAssignOrderToMeDataModel> postUnAssignOrderToMeApi({
     required String token,
     required int orderId,
     required String note,
+    required bool? confirm,
   });
 
   Future<ChangeStatusModel> postChangeStatusApi({
@@ -179,7 +179,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   }
 
   @override
-  Future<AssignOrderToMeDataModel> postAssignOrderToMeApi({
+  Future<AssignUnAssignOrderToMeDataModel> postAssignOrderToMeApi({
     required String token,
     required int orderId,
     required bool? confirm,
@@ -196,14 +196,14 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     }
 
     final response =
-        await ApiMethodsDelivery.postRequest<AssignOrderToMeDataModel>(
+        await ApiMethodsDelivery.postRequest<AssignUnAssignOrderToMeDataModel>(
             urlPath: 'orders/assign_to_me',
             token: token,
             client: clientController.client,
             timerService: timerService,
             isGlobalTimer: true,
             body: body,
-            fromJson: AssignOrderToMeDataModel.fromJson);
+            fromJson: AssignUnAssignOrderToMeDataModel.fromJson);
 
     return response;
   }
@@ -278,25 +278,33 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
   }
 
   @override
-  Future<UnAssignOrderToMeDataModel> postUnAssignOrderToMeApi({
+  Future<AssignUnAssignOrderToMeDataModel> postUnAssignOrderToMeApi({
     required String token,
     required int orderId,
+    required bool? confirm,
     required String note,
   }) async {
     clientController.reOpenClient();
 
+    Map<String, dynamic> body = {
+      'order_id': orderId,
+      'unassign_note': note,
+      'confirm': confirm,
+    };
+
+    if (confirm == null) {
+      body.remove('confirm');
+    }
+
     final response =
-        await ApiMethodsDelivery.postRequest<UnAssignOrderToMeDataModel>(
+        await ApiMethodsDelivery.postRequest<AssignUnAssignOrderToMeDataModel>(
             urlPath: 'orders/unassign_from_me',
             token: token,
             client: clientController.client,
             timerService: timerService,
             isGlobalTimer: true,
-            body: {
-              'order_id': orderId,
-              'unassign_note': note,
-            },
-            fromJson: UnAssignOrderToMeDataModel.fromJson);
+            body: body,
+            fromJson: AssignUnAssignOrderToMeDataModel.fromJson);
 
     return response;
   }

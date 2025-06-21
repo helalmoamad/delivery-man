@@ -116,7 +116,7 @@ class InDeliveryCenterButtons extends StatelessWidget {
         AppButton.normalButton(
           title: 'UnAssign Order'.tr,
           height: 40,
-          titleSize: 13,
+          titleSize: 15,
           backgroundColor: AppColors.secondary,
           onPress: () async {
             AppDialogs.showAppDialogWidget(
@@ -155,10 +155,39 @@ class InDeliveryCenterButtons extends StatelessWidget {
                           backgroundColor: AppColors.primaryDark,
                           onPress: () async {
                             Get.back();
-                            await ordersController.unAssignOrderToMe(
+                            await ordersController
+                                .unAssignOrderToMe(
                               token: GlobalFunctions.getToken(),
-                              orderId: orderId,
+                              orderId: order.id!,
                               note: noteKey.text,
+                              confirm: null,
+                            )
+                                .then(
+                              (value) {
+                                if (ordersController.unAssignOrderToMeData!
+                                        .data!.otherAssignedCount! >
+                                    0) {
+                                  AppDialogs.showConfirmationDialog(
+                                    // ignore: use_build_context_synchronously
+                                    context: context,
+                                    title: ordersController
+                                            .unAssignOrderToMeData!
+                                            .data!
+                                            .notificationMessage ??
+                                        '',
+                                    onConfirm: () async {
+                                      Get.back();
+                                      /////////////////////
+                                      ordersController.unAssignOrderToMe(
+                                        token: GlobalFunctions.getToken(),
+                                        orderId: order.id!,
+                                        note: noteKey.text,
+                                        confirm: true,
+                                      );
+                                    },
+                                  );
+                                }
+                              },
                             );
                           },
                         ),

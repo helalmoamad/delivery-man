@@ -3,7 +3,6 @@ import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import '../models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import '../models/Orders/list_order_model.dart';
-import '../models/Orders/unassign_order_tome_model.dart';
 import '../models/Orders/update_order_response_model.dart';
 import '../services/networking/orders_api_service.dart';
 import '../shared/errors/failures.dart';
@@ -86,12 +85,14 @@ class OrdersRepository {
     );
   }
 
-  Future<Either<FailureDelivery, AssignOrderToMeDataModel>> assignOrderToMe({
+  Future<Either<FailureDelivery, AssignUnAssignOrderToMeDataModel>>
+      assignOrderToMe({
     required String token,
     required int orderId,
     required bool? confirm,
   }) async {
-    return RepoNetworkRequest.makeNetworkRequest<AssignOrderToMeDataModel>(
+    return RepoNetworkRequest.makeNetworkRequest<
+        AssignUnAssignOrderToMeDataModel>(
       networkInfo: networkInfo,
       request: () => ordersApiService.postAssignOrderToMeApi(
         token: token,
@@ -101,18 +102,21 @@ class OrdersRepository {
     );
   }
 
-  Future<Either<FailureDelivery, UnAssignOrderToMeDataModel>>
+  Future<Either<FailureDelivery, AssignUnAssignOrderToMeDataModel>>
       unAssignOrderToMe({
     required String token,
     required int orderId,
     required String note,
+    required bool? confirm,
   }) async {
-    return RepoNetworkRequest.makeNetworkRequest<UnAssignOrderToMeDataModel>(
+    return RepoNetworkRequest.makeNetworkRequest<
+        AssignUnAssignOrderToMeDataModel>(
       networkInfo: networkInfo,
       request: () => ordersApiService.postUnAssignOrderToMeApi(
         token: token,
         orderId: orderId,
         note: note,
+        confirm: confirm,
       ),
     );
   }

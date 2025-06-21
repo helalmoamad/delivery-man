@@ -23,7 +23,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../../models/Orders/list_order_model.dart';
-import '../../models/Orders/unassign_order_tome_model.dart';
 import '../../models/Orders/upload_voice_model.dart';
 import '../../providers/Orders_providers.dart/get_details_provider.dart';
 import '../../providers/Orders_providers.dart/get_order_list_provider.dart';
@@ -67,7 +66,7 @@ class OrdersController extends GetxController {
 
   late AssignOrderToMeProvider assignOrderToMeProvider =
       Get.find<AssignOrderToMeProvider>();
-  late AssignOrderToMeDataModel assignOrderToMeData;
+  late AssignUnAssignOrderToMeDataModel assignOrderToMeData;
 
   late ChangeOrderStatusProvider changeOrderStatusProvider =
       Get.find<ChangeOrderStatusProvider>();
@@ -664,8 +663,10 @@ class OrdersController extends GetxController {
     });
   }
 
-  Future<void> unAssignToVehicle(
-      {required String token, required int vehicleId}) async {
+  Future<void> unAssignToVehicle({
+    required String token,
+    required int vehicleId,
+  }) async {
     showUnAssignedCircleIndicator();
     final failureOrAssignToVehicle = await unAssignToVehicleProvider.call(
         token: token, vehicleId: vehicleId);
@@ -747,18 +748,20 @@ class OrdersController extends GetxController {
     );
   }
 
-  UnAssignOrderToMeDataModel? unAssignOrderToMeData;
+  AssignUnAssignOrderToMeDataModel? unAssignOrderToMeData;
 
   Future<void> unAssignOrderToMe({
     required String token,
     required int orderId,
     required String note,
+    required bool? confirm,
   }) async {
     showAssignUnAssignOrderCircleIndicator();
     final failureOrAssignToVehicle = await unAssignOrderToMeProvider.call(
       token: token,
       orderId: orderId,
       note: note,
+      confirm: confirm,
     );
 
     failureOrAssignToVehicle.fold(
@@ -771,20 +774,58 @@ class OrdersController extends GetxController {
       },
       (data) async {
         unAssignOrderToMeData = data;
-
         hideAssignUnAssignOrderCircleIndicator();
-        SnackBarWidgets.showSuccessSnackBar(
-            'Process Completed Successfuly'.tr, '');
 
-        Get.close(1);
+        ///////////////////////////////////
+        if (confirm == null) {
+          if (data.data!.otherAssignedCount == 0) {
+            SnackBarWidgets.showSuccessSnackBar(
+              'Process Completed Successfuly'.tr,
+              '',
+            );
+            Get.close(1);
+            await const Duration(milliseconds: 500).delay().then(
+              (value) async {
+                // await GlobalFunctions.setisForAssignOrderToMe(
+                //     isForAssignOrderToMe: true);
+                Get.offAllNamed(Routes.orderssPage);
+              },
+            );
+          }
+        } else {
+          if (data.data!.otherAssignedCount! > 0) {
+            SnackBarWidgets.showSuccessSnackBar(
+              data.data!.notificationMessage ?? '',
+              '',
+            );
+            Get.close(1);
+            await const Duration(milliseconds: 500).delay().then(
+              (value) async {
+                // await GlobalFunctions.setisForAssignOrderToMe(
+                //     isForAssignOrderToMe: true);
+                Get.offAllNamed(Routes.orderssPage);
+              },
+            );
+          } else {
+            SnackBarWidgets.showFailureSnackBar(
+              data.data!.notificationMessage ?? '',
+              '',
+            );
+          }
+        }
 
-        await const Duration(milliseconds: 5).delay().then(
-          (value) {
-            myOrdersData!.data!.data!
-                .removeWhere((element) => element.id == orderId);
-            update();
-          },
-        );
+        // SnackBarWidgets.showSuccessSnackBar(
+        //     'Process Completed Successfuly'.tr, '');
+
+        // Get.close(1);
+
+        // await const Duration(milliseconds: 5).delay().then(
+        //   (value) {
+        //     myOrdersData!.data!.data!
+        //         .removeWhere((element) => element.id == orderId);
+        //     update();
+        //   },
+        // );
       },
     );
   }
