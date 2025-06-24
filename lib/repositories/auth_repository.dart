@@ -2,10 +2,9 @@ import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/models/Auth/chat_login_model.dart'
     show ChatLoginModel;
-import 'package:delivery_man_app/models/Auth/send_otp_model.dart'
-    show SendOtpResponseModel;
+import 'package:delivery_man_app/models/Auth/send_otp_model.dart';
 import 'package:delivery_man_app/models/Auth/verify_otp_model.dart'
-    show VerifyOtpResponseModel;
+    show OtpVerificationResponse;
 import 'package:delivery_man_app/repositories/repo_network_request.dart';
 import '../models/Auth/fcm_token_model.dart';
 import '../models/Auth/login_model.dart';
@@ -50,7 +49,7 @@ class AuthRepository {
     );
   }
 
-  Future<Either<FailureDelivery, SendOtpResponseModel>> postsendOtp({
+  Future<Either<FailureDelivery, OtpResponse>> postsendOtp({
     required String phone,
     required int isViaWhatsapp,
   }) async {
@@ -63,7 +62,7 @@ class AuthRepository {
     );
   }
 
-  Future<Either<FailureDelivery, VerifyOtpResponseModel>> postVerifyOtp({
+  Future<Either<FailureDelivery, OtpVerificationResponse>> postVerifyOtp({
     required String verificationId,
     required String otp,
   }) async {

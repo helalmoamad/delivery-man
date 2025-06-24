@@ -1,9 +1,8 @@
 import 'package:delivery_man_app/models/Auth/chat_login_model.dart'
     show ChatLoginModel;
-import 'package:delivery_man_app/models/Auth/send_otp_model.dart'
-    show SendOtpResponseModel;
+import 'package:delivery_man_app/models/Auth/send_otp_model.dart';
 import 'package:delivery_man_app/models/Auth/verify_otp_model.dart'
-    show VerifyOtpResponseModel;
+    show OtpVerificationResponse;
 import 'package:delivery_man_app/services/networking/api_config/api_methods.dart';
 import '../../controllers/Client/client_controller.dart';
 import '../../controllers/Client/timer_service.dart';
@@ -20,12 +19,12 @@ abstract class AuthApiService {
 
   Future<LogOutModel> postLogoutApi({required String token});
 
-  Future<SendOtpResponseModel> sendOtpApi({
+  Future<OtpResponse> sendOtpApi({
     required String phone,
     required int isViaWhatsapp,
   });
 
-  Future<VerifyOtpResponseModel> verifyOtpApi({
+  Future<OtpVerificationResponse> verifyOtpApi({
     required String verificationId,
     required String otp,
   });
@@ -100,44 +99,49 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
   }
 
   @override
-  Future<SendOtpResponseModel> sendOtpApi({
+  Future<OtpResponse> sendOtpApi({
     required String phone,
     required int isViaWhatsapp,
   }) async {
     clientController.reOpenClient();
 
-    final response = await ApiMethodsDelivery.getRequest<SendOtpResponseModel>(
-      urlPath:
-          'auth/phone/send_otp?phone=$phone&is_via_whatsapp=$isViaWhatsapp',
-      isMarketUrl: true,
+    final response = await ApiMethodsDelivery.postRequest<OtpResponse>(
+      urlPath: 'users/get_otp',
       token: '',
       client: clientController.client,
       timerService: timerService,
       isGlobalTimer: true,
       isForOtp: true,
-      fromJson: SendOtpResponseModel.fromJson,
+      body: {
+        'mobile_phone': phone,
+        'is_via_whatsapp': isViaWhatsapp == 1 ? true : false,
+      },
+      fromJson: OtpResponse.fromJson,
     );
 
     return response;
   }
 
   @override
-  Future<VerifyOtpResponseModel> verifyOtpApi({
+  Future<OtpVerificationResponse> verifyOtpApi({
     required String verificationId,
     required String otp,
   }) async {
     clientController.reOpenClient();
 
     final response =
-        await ApiMethodsDelivery.getRequest<VerifyOtpResponseModel>(
-      urlPath: 'auth/phone/verify_otp?verificationId=$verificationId&otp=$otp',
-      isMarketUrl: true,
+        await ApiMethodsDelivery.postRequest<OtpVerificationResponse>(
+      urlPath: 'users/check_and_login',
       token: '',
       client: clientController.client,
       timerService: timerService,
       isGlobalTimer: true,
       isForOtp: true,
-      fromJson: VerifyOtpResponseModel.fromJson,
+      body: {
+        'session_info': verificationId,
+        'otp_code': otp,
+      },
+      fromJson: OtpVerificationResponse.fromJson,
     );
 
     return response;

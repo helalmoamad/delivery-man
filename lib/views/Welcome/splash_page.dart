@@ -33,7 +33,7 @@ class _SplashPageState extends State<SplashPage> {
   goToHomeScreen() {
     GlobalFunctions.getIsLoggedIn() == true
         ? Get.offNamed(Routes.orderssPage)
-        : Get.offNamed(Routes.loginPage);
+        : Get.offNamed(Routes.insertNumberPage);
   }
 
   @override

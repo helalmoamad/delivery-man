@@ -26,15 +26,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
 
   @override
   void initState() {
-    sendOtp();
     super.initState();
-  }
-
-  void sendOtp() async {
-    await authController.sendOtp(
-      phone: GlobalFunctions.getMobilePhone(),
-      isViaWhatsapp: 1,
-    );
   }
 
   @override
@@ -79,7 +71,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       child: TextWidget(
                         text: otpController.isResendAvailable.value
                             ? "Didn't receive the code?".tr
-                            : "Resend code in ${otpController.secondsRemaining.value}s",
+                            : "${'Resend code in'.tr} ${otpController.secondsRemaining.value}${'second'.tr}",
                         color: AppColors.grey,
                         fontSize: 13,
                         fontWeight: FontWeight.bold,

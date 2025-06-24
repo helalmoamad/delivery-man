@@ -1,6 +1,8 @@
 import 'package:delivery_man_app/controllers/OTP/otp_binding.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_bindings.dart';
 import 'package:delivery_man_app/controllers/QR/qr_binding.dart';
+import 'package:delivery_man_app/views/Auth/choose_otp_method.dart';
+import 'package:delivery_man_app/views/Auth/insert_number_page.dart';
 import 'package:delivery_man_app/views/Auth/otp_verification_page.dart';
 import 'package:delivery_man_app/views/Chat/chat_page.dart' show ChatPage;
 import 'package:delivery_man_app/views/DrawerPages/info_for_developer/info_for_developer_page.dart';
@@ -17,6 +19,10 @@ import '../views/Welcome/splash_page.dart';
 class Routes {
   static const splashPage = '/splashPage';
   static const loginPage = '/loginPage';
+
+  static const insertNumberPage = '/insertNumberPage';
+  static const chooseOtpMethod = '/chooseOtpMethod';
+
   static const orderssPage = '/orderssPage';
   static const ordersDetailsPage = '/ordersDetailsPage';
   static const myOrdersPage = '/myOrderssPage';
@@ -38,6 +44,21 @@ class AppRoutes {
       name: Routes.loginPage,
       page: () => LoginPage(),
       binding: AuthBinding(),
+      transition: Transition.fade,
+      transitionDuration: const Duration(milliseconds: 500),
+    ),
+    /////////////////////////
+    GetPage(
+      name: Routes.insertNumberPage,
+      page: () => InsertNumberPage(),
+      binding: AuthBinding(),
+      transition: Transition.fade,
+      transitionDuration: const Duration(milliseconds: 500),
+    ),
+    /////////////////////////
+    GetPage(
+      name: Routes.chooseOtpMethod,
+      page: () => ChooseOtpMethod(),
       transition: Transition.fade,
       transitionDuration: const Duration(milliseconds: 500),
     ),

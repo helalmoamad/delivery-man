@@ -155,4 +155,14 @@ const Map<String, String> en = {
   'note should not be empty': 'note should not be empty',
   'uk': 'uk',
   'invite': 'invite',
+  'Enter Phone Number': 'Enter Phone Number',
+  'Phone Number': 'Phone Number',
+  'Verification Methods': 'Verification Methods',
+  "Phone Verification": "Phone Verification",
+  "We sent to you a code please enter it":
+      "We sent to you a code please enter it",
+  "Didn't receive the code?": "Didn't receive the code?",
+  'Resend code in': 'Resend code in',
+  'second': 'second',
+  'Resend Code': 'Resend Code',
 };

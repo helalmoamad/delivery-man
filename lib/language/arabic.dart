@@ -153,4 +153,13 @@ const Map<String, String> ar = {
   'note should not be empty': 'الملاحظة لا يجب ان تكون فارغة',
   'uk': "غ م",
   'invite': 'دعوة',
+  'Enter Phone Number': 'ادخل رقم الهاتف',
+  'Phone Number': 'رقم الهاتف',
+  'Verification Methods': 'طرق التوثيق',
+  "Phone Verification": "التحقق من رقم الهاتف",
+  "We sent to you a code please enter it": "لقد أرسلنا لك رمزًا يرجى إدخاله",
+  "Didn't receive the code?": "لم تستلم الرمز؟",
+  'Resend code in': "إعادة إرسال الرمز في",
+  'second': "ثانية",
+  'Resend Code': 'إعادة إرسال الرمز',
 };

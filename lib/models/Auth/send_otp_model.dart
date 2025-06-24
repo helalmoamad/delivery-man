@@ -1,41 +1,64 @@
-class SendOtpResponseModel {
-  final bool isSuccessful;
-  final bool hasContent;
-  final int code;
-  final String message;
-  final String? detailedError;
-  final SendOtpDataModel? data;
+// class SendOtpResponseModel {
+//   final bool isSuccessful;
+//   final bool hasContent;
+//   final int code;
+//   final String message;
+//   final String? detailedError;
+//   final SendOtpDataModel? data;
 
-  SendOtpResponseModel({
-    required this.isSuccessful,
-    required this.hasContent,
-    required this.code,
+//   SendOtpResponseModel({
+//     required this.isSuccessful,
+//     required this.hasContent,
+//     required this.code,
+//     required this.message,
+//     this.detailedError,
+//     this.data,
+//   });
+
+//   factory SendOtpResponseModel.fromJson(Map<String, dynamic> json) {
+//     return SendOtpResponseModel(
+//       isSuccessful: json['isSuccessful'],
+//       hasContent: json['hasContent'],
+//       code: json['code'],
+//       message: json['message'],
+//       detailedError: json['detailed_error'],
+//       data:
+//           json['data'] != null ? SendOtpDataModel.fromJson(json['data']) : null,
+//     );
+//   }
+// }
+
+// class SendOtpDataModel {
+//   final String verificationId;
+
+//   SendOtpDataModel({required this.verificationId});
+
+//   factory SendOtpDataModel.fromJson(Map<String, dynamic> json) {
+//     return SendOtpDataModel(
+//       verificationId: json['verificationId'],
+//     );
+//   }
+// }
+class OtpResponse {
+  final String message;
+  final String sessionInfo;
+
+  OtpResponse({
     required this.message,
-    this.detailedError,
-    this.data,
+    required this.sessionInfo,
   });
 
-  factory SendOtpResponseModel.fromJson(Map<String, dynamic> json) {
-    return SendOtpResponseModel(
-      isSuccessful: json['isSuccessful'],
-      hasContent: json['hasContent'],
-      code: json['code'],
-      message: json['message'],
-      detailedError: json['detailed_error'],
-      data:
-          json['data'] != null ? SendOtpDataModel.fromJson(json['data']) : null,
+  factory OtpResponse.fromJson(Map<String, dynamic> json) {
+    return OtpResponse(
+      message: json['message'] ?? '',
+      sessionInfo: json['session_info'] ?? '',
     );
   }
-}
 
-class SendOtpDataModel {
-  final String verificationId;
-
-  SendOtpDataModel({required this.verificationId});
-
-  factory SendOtpDataModel.fromJson(Map<String, dynamic> json) {
-    return SendOtpDataModel(
-      verificationId: json['verificationId'],
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'message': message,
+      'session_info': sessionInfo,
+    };
   }
 }

@@ -1,14 +1,11 @@
 import 'dart:async';
-
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
-import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/models/Auth/chat_login_model.dart';
 import 'package:delivery_man_app/models/Auth/send_otp_model.dart'
-    show SendOtpResponseModel;
-import 'package:delivery_man_app/models/Auth/verify_otp_model.dart'
-    show VerifyOtpResponseModel;
+    show OtpResponse;
+import 'package:delivery_man_app/models/Auth/verify_otp_model.dart';
 import 'package:delivery_man_app/providers/Auth_providers/chat_login_provider.dart'
     show ChatLoginProvider;
 import 'package:delivery_man_app/providers/Auth_providers/send_otp_provider.dart'
@@ -37,6 +34,11 @@ class AuthController extends GetxController {
   bool isLogin = false;
   bool isObscure = true;
 
+  String countryCode = '+963';
+
+  String currentPhoneNumber = '';
+  String otpMethod = 'whatsapp';
+
   SharedPreferences prefs = Get.find<SharedPreferences>();
 
   late LoginProvider loginProvider = Get.find<LoginProvider>();
@@ -52,6 +54,11 @@ class AuthController extends GetxController {
   late ChatLoginProvider chatLoginProvider = Get.find<ChatLoginProvider>();
 
   late UserDataModel userData;
+
+  void chooseOtpMethod({required String method}) {
+    otpMethod = method;
+    update();
+  }
 
   ///////////////////
   void changeIsObscure() {
@@ -110,44 +117,47 @@ class AuthController extends GetxController {
   }) async {
     showCircleIndicator();
     final failureOrLogin = await setFcmTokenProvider.call(
-      token: userData.accessToken ?? '',
+      token: verifyOtpData?.data?.authToken ?? '',
       fcmToken: fcmToken,
     );
     failureOrLogin.fold(
       (failure) {
         HandlingFailures.networkErrorrHandling(
             failure: failure,
-            hideCircleIndicator: hideCircleIndicator,
+            hideCircleIndicator: hideVerifyOtpCircleIndicator,
             showNoInternetPage: () {});
       },
       (data) async {
-        print(
-            "SDDDDDDDDDDDDDDDDDDDDDDDDDSSSSSSSSSSSSSSSS33333333333333333333333.");
-
         isLogin = true;
         Future.wait([
-          GlobalFunctions.setToken(token: userData.accessToken!),
-          GlobalFunctions.setUserId(id: userData.id!),
-          GlobalFunctions.setName(name: userData.name!),
-          GlobalFunctions.setEmail(email: userData.email!),
-          GlobalFunctions.setMobilePhone(mobilePhone: userData.mobilePhone!),
+          GlobalFunctions.setToken(token: verifyOtpData?.data?.authToken ?? ''),
+          GlobalFunctions.setUserId(id: verifyOtpData!.data!.id!),
+          GlobalFunctions.setName(name: verifyOtpData!.data!.name!),
+          GlobalFunctions.setEmail(email: verifyOtpData!.data!.email!),
+          GlobalFunctions.setMobilePhone(
+              mobilePhone: verifyOtpData!.data!.mobilePhone!),
           GlobalFunctions.setAssignVehicleToUserId(
-              assignToUserId: userData.assignedVehicle == null
+              assignToUserId: verifyOtpData!.data!.assignedVehicle == null
                   ? -1
-                  : userData.assignedVehicle!.assignToUserId ?? -1),
+                  : verifyOtpData!.data!.assignedVehicle!.assignToUserId ?? -1),
           GlobalFunctions.setAssignedVehicleId(
-              assignedVehicleId: userData.assignedVehicle == null
+              assignedVehicleId: verifyOtpData!.data!.assignedVehicle == null
                   ? -1
-                  : userData.assignedVehicle!.id ?? -1),
+                  : verifyOtpData!.data!.assignedVehicle!.id ?? -1),
           GlobalFunctions.setAssignedVehicleName(
-              assignedVehicleName: userData.assignedVehicle == null
+              assignedVehicleName: verifyOtpData!.data!.assignedVehicle == null
                   ? ''
-                  : userData.assignedVehicle!.name ?? ''),
+                  : verifyOtpData!.data!.assignedVehicle!.name ?? ''),
           GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
         ]);
-        hideCircleIndicator();
-        Get.offAllNamed(Routes.orderssPage);
-        SnackBarWidgets.showSuccessSnackBar('Login Succeeded'.tr, '');
+        hideVerifyOtpCircleIndicator();
+        ///////////////////////////////////////////
+        await chatLogin(
+          mobilePhone: GlobalFunctions.getMobilePhone(),
+          otpIdToken: verifyOtpData!.idToken ?? '',
+          name: GlobalFunctions.getName(),
+          originalUserId: GlobalFunctions.getUserId(),
+        );
       },
     );
   }
@@ -214,7 +224,7 @@ class AuthController extends GetxController {
     update();
   }
 
-  SendOtpResponseModel? sendOtpData;
+  OtpResponse? sendOtpData;
 
   Future<void> sendOtp({
     required String phone,
@@ -235,7 +245,7 @@ class AuthController extends GetxController {
       (data) async {
         sendOtpData = data;
         GlobalFunctions.setVerificationId(
-          verificationId: sendOtpData!.data!.verificationId,
+          verificationId: sendOtpData!.sessionInfo,
         );
         hideSendOtpCircleIndicator();
       },
@@ -257,7 +267,7 @@ class AuthController extends GetxController {
     update();
   }
 
-  VerifyOtpResponseModel? verifyOtpData;
+  OtpVerificationResponse? verifyOtpData;
 
   Future<void> verifyOtp({
     required String verificationId,
@@ -276,14 +286,27 @@ class AuthController extends GetxController {
       },
       (data) async {
         verifyOtpData = data;
-        hideVerifyOtpCircleIndicator();
-        ////////////////////
-        await chatLogin(
-          mobilePhone: GlobalFunctions.getMobilePhone(),
-          otpIdToken: verifyOtpData!.data!.idToken,
-          name: GlobalFunctions.getName(),
-          originalUserId: GlobalFunctions.getUserId(),
+        await PushNotificationService.getToken().then(
+          (fcmToken) async {
+            GetIt.I<PrefsRepository>().setFcmToken(fcmToken ?? "");
+
+            if (fcmToken != null) {
+              ////////////////////////
+              await sendFcmTokenApi(fcmToken: fcmToken);
+            } else {
+              hideVerifyOtpCircleIndicator();
+              SnackBarWidgets.showFailureSnackBar('Get fcm token failed', '');
+            }
+          },
         );
+        // hideVerifyOtpCircleIndicator();
+        ////////////////////
+        // await chatLogin(
+        //   mobilePhone: GlobalFunctions.getMobilePhone(),
+        //   otpIdToken: verifyOtpData!.idToken ?? '',
+        //   name: GlobalFunctions.getName(),
+        //   originalUserId: GlobalFunctions.getUserId(),
+        // );
       },
     );
   }
@@ -344,9 +367,10 @@ class AuthController extends GetxController {
         GetIt.I<ChatBloc>().add(GetOrderRecipientIdEvent(
             originalUserId: GlobalFunctions.getUserId().toString(),
             orderId: GetIt.I<PrefsRepository>().orderDetailsId.toString()));
-        Get.back();
 
         hideChatLoginCircleIndicator();
+        SnackBarWidgets.showSuccessSnackBar('Login Succeeded'.tr, '');
+        Get.offAllNamed(Routes.orderssPage);
       },
     );
   }

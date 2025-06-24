@@ -100,6 +100,7 @@ class ApiMethodsDelivery {
     T Function(Map<String, dynamic>)? fromJson,
     bool isMarketUrl = false,
     bool isChatUrl = false,
+    bool isForOtp = false,
   }) async {
     final uri = Uri.parse(
         '${isChatUrl ? ApiConstantsDelivery.chatUrl : isMarketUrl ? ApiConstantsDelivery.marketUrl : ApiConstantsDelivery.deliveryUrl}/api/${ApiConstantsDelivery.version}/$urlPath');
@@ -167,6 +168,7 @@ class ApiMethodsDelivery {
         timerService: timerService,
         isGlobalTimer: isGlobalTimer,
         urlPath: urlPath,
+        isForOtp: isForOtp,
         isGet: false,
       );
     } finally {
