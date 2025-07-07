@@ -38,21 +38,14 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
   }
 
   void getAllData() async {
-    print(
-        "DDDDDDDDDDDDDDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSssss---------${GlobalFunctions.getIsFromNotifiForNewOrder()}");
-
     if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
       String token = GlobalFunctions.getToken();
       //////////////////////////////////////////////////////////
-      print(
-          "DDDDDDDDDDDDDDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSssss");
       await ordersController.getOrderDetailsData(
         token: token,
         orderId: int.parse(GlobalFunctions.getOrderId() ?? '-1'),
         isForMyOrder: false,
       );
-      print(
-          "DDDDDDDDDDDDDDDDDDDDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSssss++++");
 
       GetIt.I<ChatBloc>().add(GetOrderRecipientIdEvent(
           originalUserId: GlobalFunctions.getUserId().toString(),
@@ -196,8 +189,6 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
                                                 name: receiverName)),
                                       )
                                       .user;
-                                  print(
-                                      "DDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEEEE${chat.id ?? ""}");
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) => SinglePageChat(

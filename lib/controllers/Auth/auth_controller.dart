@@ -364,9 +364,6 @@ class AuthController extends GetxController {
             .setMyChatPhoto(chatLoginData!.data!.photoPath ?? '');
         await GlobalFunctions.setChatToken(
             chatToken: chatLoginData!.data!.accessToken ?? '');
-        GetIt.I<ChatBloc>().add(GetOrderRecipientIdEvent(
-            originalUserId: GlobalFunctions.getUserId().toString(),
-            orderId: GetIt.I<PrefsRepository>().orderDetailsId.toString()));
 
         hideChatLoginCircleIndicator();
         SnackBarWidgets.showSuccessSnackBar('Login Succeeded'.tr, '');
