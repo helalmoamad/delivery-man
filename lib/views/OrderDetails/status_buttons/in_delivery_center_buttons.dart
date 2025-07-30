@@ -107,103 +107,105 @@ class InDeliveryCenterButtons extends StatelessWidget {
           },
         ),
         //////////////////////
-        GlobalFunctions.getUserId() == order.assignToUserId
+        GlobalFunctions.getUserId() != order.assignToUserId
             ? const SizedBox(
                 height: 10,
               )
-            : Container(),
-        ////////////////////////
-        AppButton.normalButton(
-          title: 'UnAssign Order'.tr,
-          height: 40,
-          titleSize: 15,
-          backgroundColor: AppColors.secondary,
-          onPress: () async {
-            AppDialogs.showAppDialogWidget(
-              context: context,
-              title: 'Enter The Note'.tr,
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Form(
-                    key: noteFormKey,
-                    child: Column(
-                      children: [
-                        CustomTextField(
-                          textInputType: TextInputType.text,
-                          controller: noteKey,
-                          hintText: '',
-                          labelText: 'Note'.tr,
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'note should not be empty'.tr;
-                            }
-                          },
-                          prefixIcon: null,
-                          suffixIcon: null,
-                        ),
-                        /////////////////////
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        /////////////////////
-                        AppButton.normalButton(
-                          title: 'Confirm The Process'.tr,
-                          shadow: false,
-                          height: 35,
-                          titleColor: AppColors.white,
-                          backgroundColor: AppColors.primaryDark,
-                          onPress: () async {
-                            Get.back();
-                            await ordersController
-                                .unAssignOrderToMe(
-                              token: GlobalFunctions.getToken(),
-                              orderId: order.id!,
-                              note: noteKey.text,
-                              confirm: null,
-                            )
-                                .then(
-                              (value) {
-                                if (ordersController.unAssignOrderToMeData!
-                                        .data!.otherAssignedCount! >
-                                    0) {
-                                  AppDialogs.showConfirmationDialog(
-                                    // ignore: use_build_context_synchronously
-                                    context: context,
-                                    title: ordersController
-                                            .unAssignOrderToMeData!
-                                            .data!
-                                            .notificationMessage ??
-                                        '',
-                                    onConfirm: () async {
-                                      Get.back();
-                                      /////////////////////
-                                      ordersController.unAssignOrderToMe(
-                                        token: GlobalFunctions.getToken(),
-                                        orderId: order.id!,
-                                        note: noteKey.text,
-                                        confirm: true,
-                                      );
+            :
+            ////////////////////////
+            AppButton.normalButton(
+                title: 'UnAssign Order'.tr,
+                height: 40,
+                titleSize: 15,
+                backgroundColor: AppColors.secondary,
+                onPress: () async {
+                  AppDialogs.showAppDialogWidget(
+                    context: context,
+                    title: 'Enter The Note'.tr,
+                    actions: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Form(
+                          key: noteFormKey,
+                          child: Column(
+                            children: [
+                              CustomTextField(
+                                textInputType: TextInputType.text,
+                                controller: noteKey,
+                                hintText: '',
+                                labelText: 'Note'.tr,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'note should not be empty'.tr;
+                                  }
+                                },
+                                prefixIcon: null,
+                                suffixIcon: null,
+                              ),
+                              /////////////////////
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              /////////////////////
+                              AppButton.normalButton(
+                                title: 'Confirm The Process'.tr,
+                                shadow: false,
+                                height: 35,
+                                titleColor: AppColors.white,
+                                backgroundColor: AppColors.primaryDark,
+                                onPress: () async {
+                                  Get.back();
+                                  await ordersController
+                                      .unAssignOrderToMe(
+                                    token: GlobalFunctions.getToken(),
+                                    orderId: order.id!,
+                                    note: noteKey.text,
+                                    confirm: null,
+                                  )
+                                      .then(
+                                    (value) {
+                                      if (ordersController
+                                              .unAssignOrderToMeData!
+                                              .data!
+                                              .otherAssignedCount! >
+                                          0) {
+                                        AppDialogs.showConfirmationDialog(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          title: ordersController
+                                                  .unAssignOrderToMeData!
+                                                  .data!
+                                                  .notificationMessage ??
+                                              '',
+                                          onConfirm: () async {
+                                            Get.back();
+                                            /////////////////////
+                                            ordersController.unAssignOrderToMe(
+                                              token: GlobalFunctions.getToken(),
+                                              orderId: order.id!,
+                                              note: noteKey.text,
+                                              confirm: true,
+                                            );
+                                          },
+                                        );
+                                      }
                                     },
                                   );
-                                }
-                              },
-                            );
-                          },
+                                },
+                              ),
+                              /////////////////////
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              /////////////////////
+                            ],
+                          ),
                         ),
-                        /////////////////////
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        /////////////////////
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        )
+                      ),
+                    ],
+                  );
+                },
+              )
       ],
     );
   }

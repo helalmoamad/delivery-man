@@ -1,4 +1,5 @@
 import 'package:app_settings/app_settings.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/list_ex.dart';
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
@@ -593,6 +594,11 @@ class OrderDetails extends StatelessWidget {
               title: 'Payment Status'.tr,
               value: products![productsIndex].paymentStatus.toString());
         }
+        /* if (index == 6) {
+          return OrderDetailsWidget(
+              title: 'وون',
+              value: products![productsIndex].paymentStatus.toString());
+        }*/
         return null;
       },
     );
@@ -601,7 +607,9 @@ class OrderDetails extends StatelessWidget {
   Widget productsSection(
       final List<ProductModel>? products, int productsIndex) {
     return ProductsWidget(
-      img: products![productsIndex].productDetails!.images![0].toString(),
+      img: products![productsIndex].productDetails!.images.isNullOrEmpty
+          ? (products[productsIndex].productDetails!.image ?? "")
+          : products![productsIndex].productDetails!.images![0].toString(),
       title: products[productsIndex].productDetails!.name.toString(),
       price: products[productsIndex].productDetails!.priceFormatted.toString(),
       quantity: products[productsIndex].qty.toString(),

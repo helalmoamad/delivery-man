@@ -8,6 +8,13 @@ import '../../../controllers/Client/timer_service.dart';
 import 'request_config.dart';
 
 class ApiMethodsDelivery {
+  static void printLongText(String text) {
+    final pattern = RegExp('.{1,800}', dotAll: true);
+    for (final match in pattern.allMatches(text)) {
+      debugPrint(match.group(0));
+    }
+  }
+
   static Future<T> getRequest<T>({
     required String urlPath,
     required String token,
@@ -25,6 +32,11 @@ class ApiMethodsDelivery {
     final Completer<Response> completer = Completer<Response>();
 
     try {
+      debugPrint('\n\x1B[34m══════════════════════════════════════════════');
+      debugPrint('🔵 [API URL]      : ${uri.toString()}');
+      debugPrint(
+          '\x1B[33m🟡 [HEADERS]      : {"Content-type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token", "Connection": "keep-alive"}');
+      // لا يوجد body في GET
       timerService.startTimer(
         isGlobalTimer: isGlobalTimer,
         duration: Duration(seconds: RequestConfigDelivery.timeoutSeconds),
@@ -63,7 +75,12 @@ class ApiMethodsDelivery {
       );
 
       final response = await completer.future;
-      debugPrint('/////1///////');
+      debugPrint('\x1B[32m🟢 [RESPONSE]     : ${response.statusCode}');
+      debugPrint('\x1B[33m[RESPONSE HEADERS]: ${response.headers}');
+      debugPrint('\x1B[32m[RESPONSE BODY]   :');
+      ApiMethodsDelivery.printLongText(response.body);
+      debugPrint(
+          '\x1B[34m══════════════════════════════════════════════\x1B[0m\n');
       /////////////////store request info//////////////////////////////////
       await RequestConfigDelivery.storeRequestInfo(
         uri: uri,
@@ -82,6 +99,12 @@ class ApiMethodsDelivery {
         isForOtp: isForOtp,
         isGet: true,
       );
+    } catch (error, stack) {
+      debugPrint('\x1B[31m🔴 [ERROR]        : ' + error.toString());
+      debugPrint('Stack: ' + stack.toString());
+      debugPrint(
+          '\x1B[34m══════════════════════════════════════════════\x1B[0m\n');
+      rethrow;
     } finally {
       if (timerService.isTimerActive(isGlobalTimer: isGlobalTimer)) {
         timerService.stopTimer(isGlobalTimer: isGlobalTimer);
@@ -119,6 +142,10 @@ class ApiMethodsDelivery {
     final Completer<Response> completer = Completer<Response>();
 
     try {
+      debugPrint('\n\x1B[34m══════════════════════════════════════════════');
+      debugPrint('🔵 [API URL]      : ${uri.toString()}');
+      debugPrint('\x1B[33m🟡 [HEADERS]      : ' + headers.toString());
+      debugPrint('\x1B[35m🟣 [BODY]         : ' + json.encode(body));
       timerService.startTimer(
         isGlobalTimer: isGlobalTimer,
         duration: Duration(seconds: RequestConfigDelivery.timeoutSeconds),
@@ -152,7 +179,12 @@ class ApiMethodsDelivery {
       );
 
       final response = await completer.future;
-      debugPrint('/////1///////');
+      debugPrint('\x1B[32m🟢 [RESPONSE]     : ${response.statusCode}');
+      debugPrint('\x1B[33m[RESPONSE HEADERS]: ${response.headers}');
+      debugPrint('\x1B[32m[RESPONSE BODY]   :');
+      ApiMethodsDelivery.printLongText(response.body);
+      debugPrint(
+          '\x1B[34m══════════════════════════════════════════════\x1B[0m\n');
       /////////////////store request info//////////////////////////////////
       await RequestConfigDelivery.storeRequestInfo(
         uri: uri,
@@ -171,6 +203,12 @@ class ApiMethodsDelivery {
         isForOtp: isForOtp,
         isGet: false,
       );
+    } catch (error, stack) {
+      debugPrint('\x1B[31m🔴 [ERROR]        : ' + error.toString());
+      debugPrint('Stack: ' + stack.toString());
+      debugPrint(
+          '\x1B[34m══════════════════════════════════════════════\x1B[0m\n');
+      rethrow;
     } finally {
       if (timerService.isTimerActive(isGlobalTimer: isGlobalTimer)) {
         timerService.stopTimer(isGlobalTimer: isGlobalTimer);

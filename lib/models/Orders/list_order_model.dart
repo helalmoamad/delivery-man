@@ -297,6 +297,7 @@ class OrderProductDetails {
   final dynamic slug;
   final dynamic price;
   final List<String>? images;
+  final String? image;
   final Rating? rating;
   final dynamic details;
   final bool? inStock;
@@ -319,6 +320,7 @@ class OrderProductDetails {
     required this.thumbnail,
     required this.shareLink,
     required this.offerPrice,
+    required this.image,
     required this.isFavourite,
     required this.priceFormatted,
     required this.offerPriceFormatted,
@@ -333,6 +335,7 @@ class OrderProductDetails {
         images: json["images"] == null
             ? []
             : List<String>.from(json["images"]!.map((x) => x)),
+        image: json["image"] ?? '',
         rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
         details: json["details"] ?? '',
         inStock: json["in_stock"] ?? '',
@@ -354,6 +357,7 @@ class OrderProductDetails {
         "rating": rating?.toJson(),
         "details": details,
         "in_stock": inStock,
+        "image": image,
         "thumbnail": thumbnail,
         "share_link": shareLink,
         "offer_price": offerPrice,

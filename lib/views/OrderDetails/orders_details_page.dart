@@ -46,10 +46,11 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
         orderId: int.parse(GlobalFunctions.getOrderId() ?? '-1'),
         isForMyOrder: false,
       );
-
-      GetIt.I<ChatBloc>().add(GetOrderRecipientIdEvent(
-          originalUserId: GlobalFunctions.getUserId().toString(),
-          orderId: ordersController.myOrderIdInMarket.toString()));
+      if ((ordersController.myOrderIdInMarket) > 0) {
+        GetIt.I<ChatBloc>().add(GetOrderRecipientIdEvent(
+            originalUserId: GlobalFunctions.getUserId().toString(),
+            orderId: ordersController.myOrderIdInMarket.toString()));
+      }
     }
   }
 
