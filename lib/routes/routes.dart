@@ -9,6 +9,7 @@ import 'package:delivery_man_app/views/DrawerPages/info_for_developer/info_for_d
 import 'package:delivery_man_app/views/DrawerPages/info_for_developer/more_info_page.dart';
 import 'package:delivery_man_app/views/DrawerPages/scan_qr_page.dart';
 import 'package:delivery_man_app/views/MyOrders/my_orders_page.dart';
+import 'package:delivery_man_app/views/Returned%20orders/returned_orders-page.dart';
 import 'package:get/get.dart';
 import '../controllers/Auth/auth_binding.dart';
 import '../views/Auth/login_page.dart';
@@ -31,6 +32,8 @@ class Routes {
   static const moreInfoPage = '/moreInfoPage';
   static const chatPage = '/chatPage';
   static const otpVerificationPage = '/OtpVerificationPage';
+  static const returnedOrders = '/returnedOrders';
+
 }
 
 class AppRoutes {
@@ -86,6 +89,17 @@ class AppRoutes {
       transitionDuration: const Duration(milliseconds: 0),
     ),
     ///////
+    GetPage(
+      name: Routes.returnedOrders,
+      page: () => ReturnedOrdersPage(),
+      bindings: [
+        OrdersBinding(),
+        AuthBinding(),
+      ],
+      transition: Transition.fade,
+      transitionDuration: const Duration(milliseconds: 0),
+    ),
+    /////////////////////////
     GetPage(
       name: Routes.ordersDetailsPage,
       page: () => const OrdersDetailsPage(),

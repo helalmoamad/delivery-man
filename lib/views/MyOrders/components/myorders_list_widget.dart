@@ -8,10 +8,10 @@ import 'package:delivery_man_app/shared/widgets/order_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class MyOrderList extends StatelessWidget {
   final OrdersController ordersController;
-
   const MyOrderList({super.key, required this.ordersController});
 
   @override
@@ -40,6 +40,8 @@ class MyOrderList extends StatelessWidget {
                       ordersController.myOrderIdForDetails = orders[index].id!;
                       ordersController.myOrderIdInMarket =
                           orders[index].originalOrderId!;
+                        ordersController.currentOrder = orders[index];
+
                       GetIt.I<PrefsRepository>().setOrderDetailsId(
                           orders[index].originalOrderId!.toString());
                       await GlobalFunctions.setIsFromNotifiForNewOrder(

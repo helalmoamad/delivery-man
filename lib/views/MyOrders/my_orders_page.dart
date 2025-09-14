@@ -97,17 +97,27 @@ class MyOrdersPage extends StatelessWidget {
                         child: CustomNavBar(
                           isColored1: false,
                           isColored2: true,
+                          isColored3: false,
                           coloredIcon1: 'assets/pictures/all orders red.png',
                           coloredIcon2: 'assets/pictures/my orders red.png',
+                          coloredIcon3: 'assets/pictures/Return-Icon red.png',
                           text1: 'All Orders'.tr,
                           text2: 'MyOrders'.tr,
+                          text3: 'Returned Orders'.tr,
                           unColoredIcon1: 'assets/pictures/all orders grey.png',
                           unColoredIcon2: 'assets/pictures/my orders grey.png',
+                          unColoredIcon3: 'assets/pictures/return grey.png',
+
                           onTap1: () {
                             ordersController.myOrderStatus = '';
                             Get.offAllNamed(Routes.orderssPage);
                           },
                           onTap2: () {},
+                          onTap3: () {
+                            ordersController.myOrderStatus = '';
+                            Get.offAllNamed(Routes.returnedOrders);
+                          },
+
                         )),
                     ///////////////////////////
                   ],

@@ -78,6 +78,7 @@ class _OrdersDetailsPageState extends State<MyOrderStatusWidget> {
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
               return InkWell(
+                key: Key('orderStatus_${widget.ordersController.orderStatusData[index + 9]}'),
                 onTap: () async {
                   widget.httpClientController.closeSecondaryClient();
                   widget.timerService.stopTimer(isGlobalTimer: false);

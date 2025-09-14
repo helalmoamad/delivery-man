@@ -1,4 +1,5 @@
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/models/Orders/list_order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
@@ -12,11 +13,13 @@ import 'components/order_details.dart';
 
 class OrderDetailsWithStatusButtons extends StatelessWidget {
   final OrdersController ordersController = Get.find<OrdersController>();
-  OrderDetailsWithStatusButtons({super.key});
+  late OrderDataModel order;
+  OrderDetailsWithStatusButtons({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
     String status;
+
     if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
       status = (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
               GetIt.I<PrefsRepository>().myOrderIdForChat != null)
@@ -38,15 +41,30 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
             OrderDetails(),
             //////////////////////
             if (status == OrderStatuses.inDeliveryCenter ||
-                    // status == OrderStatuses.shipped ||
-                    status == OrderStatuses.outForDelivery
-                // status == OrderStatuses.delivered||
-                // status == OrderStatuses.partialReturn||
-                // status == OrderStatuses.returned ||
+                // status == OrderStatuses.shipped ||
+                status == OrderStatuses.outForDelivery ||
+                status == OrderStatuses.delivered ||
+                 //status == OrderStatuses.returnedToLocation ||
                 // status == OrderStatuses.failed ||
                 // status == OrderStatuses.canceled ||
                 // status == OrderStatuses.canceledArchived
-                )
+                
+                status == OrderStatuses.returnedToDeliveryCenter)
+
+              // centeres
+              ////////////////////
+              ///
+              ///
+              ///
+              ///
+              ///
+              ///
+              ///
+              ///
+
+
+              ////////////////////////////////////////////////////////////////////////////////////
+
               Container(
                 width: double.infinity,
                 height: 100,
@@ -67,8 +85,12 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                   child: Center(
-                    child:
-                        GlobalFunctions.chooseStatusButtons(inputText: status),
+                    child: GlobalFunctions.chooseStatusButtons(
+                        inputText: status,
+                        isNotAssigned:
+                            order.assignToUserId == "" ? true : false,
+                        hasParentOrderId:
+                            order.orderParentId != null ? true : false),
                   ),
                 ),
               ),

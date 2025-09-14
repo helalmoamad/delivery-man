@@ -1,4 +1,3 @@
-import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
@@ -6,6 +5,7 @@ import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/Auth/auth_controller.dart';
+import '../../controllers/Orders/orders_controller.dart';
 import '../constants/color_constants.dart';
 import 'app_dialogs.dart';
 

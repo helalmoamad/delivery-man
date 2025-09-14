@@ -2,6 +2,8 @@
 //
 //     final getOrderForChat = getOrderForChatFromJson(jsonString);
 
+import 'package:delivery_man_app/models/Locations/Avilable_Returned_Location.dart';
+
 class GetOrderForChat {
   final bool? isSuccessful;
   final bool? hasContent;
@@ -101,6 +103,7 @@ class ListOrderDataModel {
 
 class OrderDataModel {
   final int? id;
+  final int? orderParentId;
   final int? originalOrderId;
   final dynamic journeyId;
   final dynamic assignToUserId;
@@ -127,9 +130,11 @@ class OrderDataModel {
   final String? deliveryTime;
   final String? note;
   final String? createdAt;
+  final List<AvailableReturnLocation>? availableReturnLocation;
 
   OrderDataModel({
     this.id,
+    this.orderParentId,
     this.originalOrderId,
     required this.journeyId,
     required this.assignToUserId,
@@ -156,10 +161,12 @@ class OrderDataModel {
     required this.createdAt,
     this.deliveryTime,
     this.note,
+    this.availableReturnLocation
   });
 
   factory OrderDataModel.fromJson(Map<String, dynamic> json) => OrderDataModel(
         id: json["id"],
+        orderParentId: json['parent_order_id'] ?? null,
         originalOrderId: json["original_order_id"],
         journeyId: json["journey_id"] ?? '',
         assignToUserId: json["assign_to_user_id"] ?? '',
@@ -184,7 +191,7 @@ class OrderDataModel {
             : List<ProductModel>.from(
                 json["details"]!.map((x) => ProductModel.fromJson(x))),
         shippingAddress: json["shipping_address"] ?? '',
-        shippingAddressData: json["shipping_address_data"] == null
+        shippingAddressData: (json["shipping_address_data"] == null || json["shipping_address_data"] is List )
             ? null
             : ShippingAddressData.fromJson(json["shipping_address_data"]),
         billingAddress: json["billing_address"] ?? '',
@@ -194,6 +201,12 @@ class OrderDataModel {
         deliveryTime: json["delivery_time"] ?? '',
         note: json["note"] ?? '',
         createdAt: json["created_at"] ?? '',
+        availableReturnLocation: json['available_return_locations'] != null &&
+              (json['available_return_locations'] as List).isNotEmpty
+          ? (json['available_return_locations'] as List)
+              .map((e) => AvailableReturnLocation.fromJson(e))
+              .toList()
+          : []
       );
 }
 
@@ -219,52 +232,54 @@ class ProductModel {
   final dynamic priceAfterDiscount;
   final dynamic refundRequestStatus;
 
-  ProductModel({
-    required this.id,
-    required this.qty,
-    required this.tax,
-    required this.price,
-    required this.odooId,
-    required this.variant,
-    required this.discount,
-    required this.orderId,
-    required this.productId,
-    required this.discountType,
-    required this.odooOrderId,
-    required this.paymentStatus,
-    required this.refundRequest,
-    required this.deliveryStatus,
-    required this.isOdooProduct,
-    required this.productDetails,
-    required this.isStockDecreased,
-    required this.shippingMethodId,
-    required this.priceAfterDiscount,
-    required this.refundRequestStatus,
-  });
+  ProductModel(
+      {required this.id,
+      required this.qty,
+      required this.tax,
+      required this.price,
+      required this.odooId,
+      required this.variant,
+      required this.discount,
+      required this.orderId,
+      required this.productId,
+      required this.discountType,
+      required this.odooOrderId,
+      required this.paymentStatus,
+      required this.refundRequest,
+      required this.deliveryStatus,
+      required this.isOdooProduct,
+      required this.productDetails,
+      required this.isStockDecreased,
+      required this.shippingMethodId,
+      required this.priceAfterDiscount,
+      required this.refundRequestStatus,
+      });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
-        id: json["id"] ?? '',
-        qty: json["qty"] ?? '',
-        tax: json["tax"] ?? '',
-        price: json["price"] ?? '',
-        odooId: json["odoo_id"] ?? '',
-        variant: json["variant"] ?? '',
-        discount: json["discount"] ?? '',
-        orderId: json["order_id"] ?? '',
-        productId: json["product_id"] ?? '',
-        discountType: json["discount_type"] ?? '',
-        odooOrderId: json["odoo_order_id"] ?? '',
-        paymentStatus: json["payment_status"] ?? '',
-        refundRequest: json["refund_request"] ?? '',
-        deliveryStatus: json["delivery_status"] ?? '',
-        isOdooProduct: json["is_odoo_product"],
-        productDetails: json["product_details"] == null
-            ? null
-            : OrderProductDetails.fromJson(json["product_details"]),
-        isStockDecreased: json["is_stock_decreased"] ?? '',
-        shippingMethodId: json["shipping_method_id"] ?? '',
-        priceAfterDiscount: json["price_after_discount"] ?? '',
-        refundRequestStatus: json["refund_request_status"] ?? '',
+      id: json["id"] ?? '',
+      qty: json["qty"] ?? '',
+      tax: json["tax"] ?? '',
+      price: json["price"] ?? '',
+      odooId: json["odoo_id"] ?? '',
+      variant: json["variant"] ?? '',
+      discount: json["discount"] ?? '',
+      orderId: json["order_id"] ?? '',
+      productId: json["product_id"] ?? '',
+      discountType: json["discount_type"] ?? '',
+      odooOrderId: json["odoo_order_id"] ?? '',
+      paymentStatus: json["payment_status"] ?? '',
+      refundRequest: json["refund_request"] ?? '',
+      deliveryStatus: json["delivery_status"] ?? '',
+      isOdooProduct: json["is_odoo_product"],
+      productDetails: (json["product_details"] == null ||
+              (json["product_details"] is List &&
+                  (json["product_details"] as List).isEmpty))
+          ? null
+          : OrderProductDetails.fromJson(json["product_details"]),
+      isStockDecreased: json["is_stock_decreased"] ?? '',
+      shippingMethodId: json["shipping_method_id"] ?? '',
+      priceAfterDiscount: json["price_after_discount"] ?? '',
+      refundRequestStatus: json["refund_request_status"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -338,11 +353,11 @@ class OrderProductDetails {
         image: json["image"] ?? '',
         rating: json["rating"] == null ? null : Rating.fromJson(json["rating"]),
         details: json["details"] ?? '',
-        inStock: json["in_stock"] ?? '',
+        inStock: json["in_stock"] ?? false,
         thumbnail: json["thumbnail"] ?? '',
         shareLink: json["share_link"] ?? '',
         offerPrice: json["offer_price"] ?? '',
-        isFavourite: json["is_favourite"] ?? '',
+        isFavourite: json["is_favourite"] ?? false,
         priceFormatted: json["price_formatted"] ?? '',
         offerPriceFormatted: json["offer_price_formatted"] ?? '',
       );

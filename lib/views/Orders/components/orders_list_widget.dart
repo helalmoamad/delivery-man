@@ -37,6 +37,7 @@ class OrderList extends StatelessWidget {
                     index: index,
                     onTapViewDetails: () async {
                       ordersController.orderIdForDetails = orders[index].id!;
+                      ordersController.currentOrder = orders[index];
                       await GlobalFunctions.setIsFromNotifiForNewOrder(
                           isFromNotifiForNewOrder: false);
                       GetIt.I<PrefsRepository>().setMyOrderIdForChat("");

@@ -11,6 +11,11 @@ import '../../models/Orders/update_order_response_model.dart';
 abstract class OrdersApiService {
   Future<ListOrderModel> getListOrderDataApi(
       {required String token, required String status, required int offset});
+
+
+  Future<ListOrderModel> getListReturnedOrderDataApi(
+      {required String token, required String status, required int offset});
+
   Future<ListOrderModel> getMyOrdersDataApi(
       {required String token, required String status, required int offset});
 
@@ -19,6 +24,7 @@ abstract class OrdersApiService {
   Future<List<dynamic>> getOrderStatusDataApi(
     String token,
   );
+
 
   Future<UpdateOrderResponseModel> getOrderDetailsApi({
     required String token,
@@ -47,6 +53,7 @@ abstract class OrdersApiService {
     required int orderId,
     required double? amount,
     required String? note,
+    int? originalLocId,
     required List<ProductModel>? returnedProducts,
   });
 
@@ -75,6 +82,25 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
 
     final response = await ApiMethodsDelivery.getRequest<ListOrderModel>(
         urlPath: 'orders?order_status=$status&limit=5&page=$offset',
+        token: token,
+        client: clientController.secondaryClient,
+        timerService: timerService,
+        isGlobalTimer: false,
+        fromJson: ListOrderModel.fromJson);
+
+    return response;
+  }
+
+
+  @override
+  Future<ListOrderModel> getListReturnedOrderDataApi(
+      {required String token,
+      required String status,
+      required int offset}) async {
+    clientController.reOpenSecondaryClient();
+
+    final response = await ApiMethodsDelivery.getRequest<ListOrderModel>(
+        urlPath: 'orders/returns?limit=5&page=$offset',
         token: token,
         client: clientController.secondaryClient,
         timerService: timerService,
@@ -215,6 +241,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     required int orderId,
     required double? amount,
     required String? note,
+    int? originalLocId,
     required List<ProductModel>? returnedProducts,
   }) async {
     clientController.reOpenClient();
@@ -224,6 +251,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       'status': status,
       'received_amount': amount,
       'note': note,
+      'original_location_id': originalLocId,
       'returned_products': returnedProducts == null
           ? null
           : json.encode(
@@ -232,6 +260,10 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
 
     if (returnedProducts == null) {
       changeStatusJson.remove('returned_products');
+    }
+
+    if (originalLocId == null) {
+      changeStatusJson.remove('original_location_id');
     }
 
     if (amount == null) {

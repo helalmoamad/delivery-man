@@ -204,7 +204,7 @@ class AuthController extends GetxController {
           prefs.remove('email'),
           GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
         ]);
-        Get.offAllNamed(Routes.loginPage);
+        Get.offAllNamed(Routes.insertNumberPage);
         hideLogoutCircleIndicator();
       },
     );

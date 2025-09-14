@@ -10,6 +10,7 @@ import 'package:delivery_man_app/models/Orders/change_status_model.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/assign_order_tome_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_received_amount_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_status.dart';
+import 'package:delivery_man_app/providers/Orders_providers.dart/getReturnedOrders.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/get_my_orders_for_chat_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/get_my_orders_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/unassign_to_vehicle_provider.dart';
@@ -48,16 +49,19 @@ class OrdersController extends GetxController {
   bool isGetOrderStatusNoInternetConnection = false;
 
   bool isAnAssignedCircleShown = false;
-
+  bool isInit = false;
   bool isAssignUnAssignOrderCircleShown = false;
 
   bool isChangeOrderStatusCircleShown = false;
 
   bool isMyOrderPage = false;
+  int? orginalLocationId;
 
   String previousRoute = '';
 
   ListOrderModel? ordersData;
+  OrderDataModel? currentOrder;
+
   late List<dynamic> orderStatusData;
 
   late UnAssignToVehicleProvider unAssignToVehicleProvider =
@@ -90,12 +94,16 @@ class OrdersController extends GetxController {
   GetListOrderDataProvider getListOrderDataProvider =
       Get.find<GetListOrderDataProvider>();
 
+  GetListReturnedOrderDataProvider getListReturnedOrderDataProvider =
+      Get.find<GetListReturnedOrderDataProvider>();
+
   GetOrderStatusDataProvider getOrderStatusDataProvider =
       Get.find<GetOrderStatusDataProvider>();
 
   late ScrollController orderScrollController;
   int orderPaginationOffset = 2;
   bool orderNoMoreItems = false;
+  bool orderReturnedNoMoreItems = false;
 
   AudioRecorder? record;
   AudioPlayer? audioPlayer;
@@ -108,7 +116,7 @@ class OrdersController extends GetxController {
 
   bool isGetMyOrdersNoInternetConnection = false;
   bool isGetMyOrdersCircleShown = false;
-
+  bool fromReturnedOrders = false;
   bool isGetMyOrderStatusCircleShown = false;
   bool isGetMyOrderStatusNoInternetConnection = false;
 
@@ -212,40 +220,87 @@ class OrdersController extends GetxController {
   void onInit() async {
     super.onInit();
     debugPrint('Order Controller Init');
+
     String token = GlobalFunctions.getToken();
-    if (Get.currentRoute == Routes.orderssPage) {
+    print("token: **** $token  ***");
+    final currentRoute = Get.currentRoute;
+    final previousRoute = Get.previousRoute;
+
+    // الطلبات الحرة
+    if (currentRoute == Routes.orderssPage) {
       isMyOrderPage = false;
       orderScrollController = ScrollController();
-      if (Get.previousRoute == Routes.myOrdersPage) {
+
+      if (previousRoute == Routes.myOrdersPage ||
+          previousRoute == Routes.returnedOrders) {
         httpClientController.closeSecondaryClient();
         timerService.stopTimer(isGlobalTimer: false);
       }
-      // await getOrderStatusData(token: token, isForAllOrders: true);
+
       orderStatus = OrderStatuses.inDeliveryCenter;
       await getListOrderData(token: token, status: orderStatus, offset: 1);
+
       orderScrollController.addListener(() async {
         if (orderScrollController.position.maxScrollExtent ==
             orderScrollController.offset) {
-          debugPrint('scrollController');
+          debugPrint('scrollController (orders)');
           await getListOrderWithPaginationData(
               token: token, status: orderStatus);
         }
       });
     }
 
-    if (Get.currentRoute == Routes.myOrdersPage) {
-      isMyOrderPage = true;
-      myOrderScrollController = ScrollController();
-      myOrderStatusScrollController = ItemScrollController();
-      if (Get.previousRoute == Routes.orderssPage) {
+    // الطلبات المرتجعة
+    else if (currentRoute == Routes.returnedOrders) {
+      isMyOrderPage = false;
+      if (isInit == false) {
+                isInit = true;
+
+        orderScrollController = ScrollController();
+        myOrderStatusScrollController = ItemScrollController();
+      }
+
+      if (previousRoute == Routes.myOrdersPage ||
+          previousRoute == Routes.orderssPage) {
         httpClientController.closeSecondaryClient();
         timerService.stopTimer(isGlobalTimer: false);
       }
+
+      orderStatus = OrderStatuses.delivered;
+      await getListReturnedOrderData(
+          token: token, status: orderStatus, offset: 1);
+
+      orderScrollController.addListener(() async {
+        if (orderScrollController.position.maxScrollExtent ==
+            orderScrollController.offset) {
+          debugPrint('scrollController (returned)');
+          await getListReturnedOrderWithPaginationData(
+              token: token, status: orderStatus);
+        }
+      });
+    }
+
+    // طلباتي
+    else if (currentRoute == Routes.myOrdersPage) {
+      isMyOrderPage = true;
+      if (isInit == false) {
+        isInit = true;
+        myOrderScrollController = ScrollController();
+        myOrderStatusScrollController = ItemScrollController();
+      }
+
+      if (previousRoute == Routes.orderssPage ||
+          previousRoute == Routes.returnedOrders) {
+        httpClientController.closeSecondaryClient();
+        timerService.stopTimer(isGlobalTimer: false);
+      }
+
       await getOrderStatusData(token: token, isForAllOrders: false);
+
       myOrderScrollController.addListener(() async {
         if (myOrderScrollController.position.maxScrollExtent ==
             myOrderScrollController.offset) {
-          debugPrint('scrollController');
+          debugPrint('scrollController (myOrders)');
           await getMyOrdersWithPaginationData(
               token: token, status: myOrderStatus);
         }
@@ -256,9 +311,7 @@ class OrdersController extends GetxController {
     }
 
     onNotifiNavigation();
-    ///////////////////
     autoCheckConnection();
-    ////////////////////
   }
 
   @override
@@ -400,10 +453,11 @@ class OrdersController extends GetxController {
     myOrderStatus = status;
     if (index != selectedMyOrderStatus) {
       selectedMyOrderStatus = index;
-
+      await const Duration(milliseconds: 5000).delay();
       isForAssignToMe
           ? null
           : myOrderStatusScrollController.jumpTo(index: index);
+      print("myOrderStatus: $myOrderStatus");
       if (isForChat) {
         await getMyOrderForChatData(token: token, id: id, offset: 1);
       } else {
@@ -562,6 +616,30 @@ class OrdersController extends GetxController {
     });
   }
 
+  ///////////////////////////////////
+  Future<void> getListReturnedOrderData({
+    required String token,
+    required String status,
+    required int offset,
+  }) async {
+    showGetOrdersCircleIndicator();
+    orderPaginationOffset = 2;
+    orderReturnedNoMoreItems = false;
+    final failureOrGetOrdersData = await getListReturnedOrderDataProvider.call(
+        token: token, status: status, offset: offset);
+    failureOrGetOrdersData.fold((failure) {
+      HandlingFailures.networkErrorrHandling(
+        failure: failure,
+        hideCircleIndicator: hideGetOrdersCircleIndicator,
+        showNoInternetPage: showGetOrdersNoInternetPage,
+      );
+    }, (getOrdersData) {
+      ordersData = getOrdersData;
+      hideGetOrdersCircleIndicator();
+      hideGetOrdersNoInternetPage();
+    });
+  }
+
   bool isGetOrderWithPaginationData = true;
 ///////////////////////////////////
   Future<void> getListOrderWithPaginationData({
@@ -592,6 +670,46 @@ class OrdersController extends GetxController {
             ordersData!.data!.data!.addAll(getOrdersData.data!.data!);
           }
           isGetOrderWithPaginationData = true;
+          update();
+        });
+      }
+    } else {
+      debugPrint(
+          '////////////////// Wait for request ////////////////////////////');
+    }
+  }
+
+///////////////////////////////////
+  bool isGetReturnedOrderWithPaginationData = true;
+
+  Future<void> getListReturnedOrderWithPaginationData({
+    required String token,
+    required String status,
+  }) async {
+    if (isGetReturnedOrderWithPaginationData == true) {
+      if (orderReturnedNoMoreItems) {
+        debugPrint('No More Items');
+      } else {
+        isGetReturnedOrderWithPaginationData = false;
+        final failureOrGetOrdersData = await getListReturnedOrderDataProvider
+            .call(token: token, status: status, offset: orderPaginationOffset);
+        failureOrGetOrdersData.fold((failure) {
+          HandlingFailures.networkErrorrHandling(
+            failure: failure,
+            hideCircleIndicator: () {},
+            showNoInternetPage: () {},
+          );
+          isGetReturnedOrderWithPaginationData = true;
+        }, (getOrdersData) {
+          if (getOrdersData.data!.data!.isEmpty) {
+            orderReturnedNoMoreItems = true;
+            debugPrint('No More Items');
+          } else {
+            orderPaginationOffset++;
+            ordersData!.data!.total = getOrdersData.data!.total;
+            ordersData!.data!.data!.addAll(getOrdersData.data!.data!);
+          }
+          isGetReturnedOrderWithPaginationData = true;
           update();
         });
       }
@@ -715,13 +833,19 @@ class OrdersController extends GetxController {
               '',
             );
             Get.close(1);
-            await const Duration(milliseconds: 500).delay().then(
-              (value) async {
-                // await GlobalFunctions.setisForAssignOrderToMe(
-                //     isForAssignOrderToMe: true);
-                Get.offAllNamed(Routes.myOrdersPage);
-              },
-            );
+            await const Duration(milliseconds: 1000)
+                .delay()
+                .then((value) async {
+              // await GlobalFunctions.setisForAssignOrderToMe(
+              //     isForAssignOrderToMe: true);
+
+              Get.offAllNamed(Routes.myOrdersPage);
+              if (previousRoute == '/returnedOrders') {
+                await chooseMyOrderStatus(
+                    status: OrderStatuses.inDeliveryCenter,
+                    index: selectedMyOrderStatus + 2);
+              }
+            });
           }
         } else {
           if (data.data!.otherUnassignedCount! > 0) {
@@ -843,12 +967,14 @@ class OrdersController extends GetxController {
     required String token,
     required String status,
     required int orderId,
+    int? originalLocId,
     double? amount,
     String? note,
     List<ProductModel>? returnedProducts,
   }) async {
     showChangeOrderStatusCircleIndicator();
     final failureOrData = await changeOrderStatusProvider.call(
+      originalLocId: originalLocId,
       token: token,
       orderId: orderId,
       status: status,
@@ -865,6 +991,8 @@ class OrdersController extends GetxController {
             showNoInternetPage: () {});
       },
       (data) async {
+        orginalLocationId = null;
+
         hideChangeOrderStatusCircleIndicator();
         SnackBarWidgets.showSuccessSnackBar(
             'Changing Order Status Succeeded'.tr, '');
@@ -908,7 +1036,16 @@ class OrdersController extends GetxController {
         } else if (status == OrderStatuses.partialReturn) {
           await chooseMyOrderStatus(
               status: status, index: selectedMyOrderStatus + 5);
-        } else {
+        }
+        /////////////////////////////////////
+        ///
+        else if (status == OrderStatuses.returnedToDeliveryCenter) {
+          await chooseMyOrderStatus(
+              status: status, index: selectedMyOrderStatus + 7);
+        }
+
+        /////////////////////////////////////
+        else {
           await chooseMyOrderStatus(
               status: status, index: selectedMyOrderStatus + 1);
         }
@@ -1078,6 +1215,8 @@ class OrdersController extends GetxController {
     required bool isForMyOrder,
   }) async {
     showGetOrderDetailsCircleIndicator();
+    print(
+        "📦 ddddddddddfff%%%%%%%%%%%%%%%%%%%%%ffffffffeeeeeewwtyrtujuety&&&&&&&&&&&&&& Order Details Response:");
 
     final failureOrGetOrderDetailsData =
         await getOrderDetailsProvider.call(token: token, orderId: orderId);
@@ -1090,6 +1229,8 @@ class OrdersController extends GetxController {
             : () {},
       );
     }, (data) async {
+      print("📦 Order Details Response: ${data.data}");
+
       if (!GlobalFunctions.getIsFromNotifiForNewOrder()) {
         if (isForMyOrder) {
           OrderDataModel item = myOrdersData!.data!.data!
@@ -1108,6 +1249,9 @@ class OrdersController extends GetxController {
         orderDetails = data.data;
       }
       ///////////////////////////////////////////////////
+      ///
+      print("📦 Order Details Response: ${data.data}");
+
       hideGetOrderDetailsCircleIndicator();
       GlobalFunctions.getIsFromNotifiForNewOrder()
           ? hideGetOrderDetailsNoInternetPage()

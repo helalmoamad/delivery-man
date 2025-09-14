@@ -12,4 +12,9 @@ class OrderStatuses {
   static const String failed = 'failed';
   static const String canceled = 'canceled';
   static const String canceledArchived = 'canceled_archived';
+  static const String returnedToDeliveryCenter = 'out_for_return';
+    static const String approved = 'approved';
+  static const String returnedToLocation = 'returned_to_location';
+
+
 }

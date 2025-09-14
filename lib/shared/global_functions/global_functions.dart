@@ -1,5 +1,11 @@
 import 'dart:convert';
+import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/views/OrderDetails/status_buttons/InDeliveryCenterFromReturnButtons.dart';
+import 'package:delivery_man_app/views/OrderDetails/status_buttons/InTransitButtons.dart';
+import 'package:delivery_man_app/views/OrderDetails/status_buttons/OutForDeleveryFromReturn.dart';
+import 'package:delivery_man_app/views/OrderDetails/status_buttons/OutForReturnButtons.dart';
 import 'package:delivery_man_app/views/OrderDetails/status_buttons/out_for_delivery_buttons.dart';
+import 'package:delivery_man_app/views/OrderDetails/status_buttons/shipped_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -267,6 +273,27 @@ class GlobalFunctions {
           break;
         }
 
+      case OrderStatuses.returnedToDeliveryCenter:
+        {
+          text = 'Out for return'.tr;
+          break;
+        }
+      case OrderStatuses.approved:
+        {
+          text = 'Approved'.tr;
+          break;
+        }
+      case OrderStatuses.returnedToLocation:
+        {
+          text = 'Rturned to location'.tr;
+          break;
+        }
+      // case OrderStatuses.inTransit:
+      //   {
+      //     text = 'In Transt'.tr;
+      //     break;
+      //   }
+
       default:
         {
           text = 'New Status';
@@ -277,25 +304,58 @@ class GlobalFunctions {
     return text;
   }
 
-  static Widget chooseStatusButtons({required String inputText}) {
+  static Widget chooseStatusButtons(
+      {required String inputText,
+      required bool isNotAssigned,
+      required bool hasParentOrderId}) {
     switch (inputText) {
+      case OrderStatuses.returnedToDeliveryCenter:
+        {
+          return OutForDeleveryFromReturnButtons();
+        }
+      // new cases
+
+      // case OrderStatuses.approved:
+      //   {
+      //     return InTransitButtons();
+      //   }
+
+      // case OrderStatuses.inTransit:
+      //   {
+      //     return ReturnButtons();
+      //   }
+
+      ////////////////////////
+
       case OrderStatuses.inDeliveryCenter:
         {
-          return InDeliveryCenterButtons();
+          if (hasParentOrderId) {
+            return SizedBox();
+          } else {
+            return InDeliveryCenterButtons();
+          }
         }
-
-      // case OrderStatuses.shipped:
-      //   {
-      //     return ShippedButtons();
-      //   }
 
       case OrderStatuses.outForDelivery:
         {
-          return OutForDeliveryButtons();
+          if (hasParentOrderId) {
+            return InDeliveryCenterFromReturnButtons();
+          } else {
+            return OutForDeliveryButtons();
+          }
         }
       case OrderStatuses.delivered:
         {
-          return DeliveredButtons();
+          if (isNotAssigned) {
+            return InDeliveryCenterButtons();
+          } else {
+            if (hasParentOrderId) {
+              return OutForReturnButtons();
+            } else {
+              // return DeliveredButtons();
+              return const SizedBox.shrink();
+            }
+          }
         }
 
       case OrderStatuses.partialReturn:

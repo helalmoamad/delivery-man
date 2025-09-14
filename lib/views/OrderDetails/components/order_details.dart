@@ -106,6 +106,19 @@ class OrderDetails extends StatelessWidget {
                   color: AppColors.primaryDark,
                 ),
               ),
+              if (order.orderStatus == OrderStatuses.returnedToDeliveryCenter)
+                Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsetsGeometry.only(top: 2, bottom: 5),
+                      child: TitleSectionWidget(
+                        title: 'Avilable returned locations'.tr,
+                        index: '',
+                      ),
+                    ),
+                    availableReturnedLocations(order),
+                  ],
+                ),
               //////////////////////////////////
               GetBuilder<OrdersController>(
                 builder: (_) {
@@ -145,7 +158,7 @@ class OrderDetails extends StatelessWidget {
                     itemCount: order.products!.length,
                     itemBuilder: (context, index) {
                       return buildProductsSection(
-                          order.products, index, status);
+                          order, order.products, index, status);
                     },
                     separatorBuilder: (context, index) {
                       return Padding(
@@ -172,6 +185,7 @@ class OrderDetails extends StatelessWidget {
                       ),
                     ),
               // ////////////////////////////////
+              
               order.returnedProducts!.isEmpty
                   ? Container()
                   : TitleSectionWidget(
@@ -194,7 +208,7 @@ class OrderDetails extends StatelessWidget {
                 itemCount: order.returnedProducts!.length,
                 itemBuilder: (context, index) {
                   return buildProductsSection(
-                      order.returnedProducts, index, status);
+                      order, order.returnedProducts, index, status);
                 },
                 separatorBuilder: (context, index) {
                   return Padding(
@@ -214,7 +228,7 @@ class OrderDetails extends StatelessWidget {
     );
   }
 
-  Widget buildProductsSection(
+  Widget buildProductsSection(OrderDataModel order,
       List<ProductModel>? products, int productsIndex, String status) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -613,6 +627,33 @@ class OrderDetails extends StatelessWidget {
       title: products[productsIndex].productDetails!.name.toString(),
       price: products[productsIndex].productDetails!.priceFormatted.toString(),
       quantity: products[productsIndex].qty.toString(),
+    );
+  }
+
+  Widget availableReturnedLocations(OrderDataModel order) {
+    return Padding(
+      padding: EdgeInsetsGeometry.only(top: 5, bottom: 5),
+      child: DropdownButtonFormField<int>(
+        decoration: InputDecoration(
+          labelText: "Chose a location".tr,
+          border: OutlineInputBorder(),
+        ),
+        items: order.availableReturnLocation!
+            .map((loc) => DropdownMenuItem<int>(
+                  value: loc.originalLocationId,
+                  child: Text(loc.name ?? ""),
+                ))
+            .toList(),
+        onChanged: (value) {
+          ordersController.orginalLocationId = value;
+        },
+        validator: (value) {
+          if (value == null) {
+            return "Chose a location".tr;
+          }
+          return null;
+        },
+      ),
     );
   }
 }

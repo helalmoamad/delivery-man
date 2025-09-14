@@ -5,6 +5,7 @@ import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_state.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/pages/single_page_chat.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/models/Orders/list_order_model.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
@@ -29,12 +30,21 @@ class OrdersDetailsPage extends StatefulWidget {
 
 class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
   final OrdersController ordersController = Get.find<OrdersController>();
+  late OrderDataModel order;
 
   @override
   void initState() {
     super.initState();
     //////////////
     getAllData();
+    /////////////
+    final args = Get.arguments;
+    if (args != null && args is OrderDataModel) {
+      order = args;
+      ordersController.currentOrder = order;
+    } else if (ordersController.currentOrder != null) {
+      order = ordersController.currentOrder!;
+    } else {}
   }
 
   void getAllData() async {
@@ -100,7 +110,7 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
                 onTapTry: () {
                   getAllData();
                 },
-                page: OrderDetailsWithStatusButtons(),
+                page: OrderDetailsWithStatusButtons(order: order),
               );
             },
           ),
@@ -144,7 +154,8 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
 
               return
                   // (status == OrderStatuses.shipped) ||
-                  (status == OrderStatuses.outForDelivery)
+                  (status == OrderStatuses.outForDelivery) ||
+                          (status == OrderStatuses.returnedToDeliveryCenter)
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

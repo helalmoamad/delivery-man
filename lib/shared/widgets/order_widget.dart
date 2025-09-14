@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 class OrderWidget extends StatelessWidget {
   final List<OrderDataModel> orders;
+
   final int index;
   final void Function() onTapViewDetails;
   const OrderWidget(
@@ -141,6 +142,7 @@ class OrderWidget extends StatelessWidget {
                 width: double.infinity,
                 color: AppColors.secondary,
                 child: InkWell(
+                  key: Key("showDetails_${orders[index].id}"),
                   onTap: onTapViewDetails,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

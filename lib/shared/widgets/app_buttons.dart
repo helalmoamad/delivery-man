@@ -13,9 +13,11 @@ class AppButton {
     bool shadow = true,
     double height = 50,
     double width = double.infinity,
+    Key? key1
   }) {
     return InkWell(
       onTap: onPress,
+      key: key1,
       child: Container(
         height: height,
         width: width,

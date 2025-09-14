@@ -55,6 +55,7 @@ const Map<String, String> en = {
   'Ready To Shipping': 'Ready To Shipping',
   'Shipped': 'Shipped',
   'Out For Delivery': 'Out For Delivery',
+  'Out for return': 'Out for return',
   'Partial Return': 'Partial Return',
   'Returned': 'Returned',
   'Failed': 'Failed',
@@ -165,4 +166,15 @@ const Map<String, String> en = {
   'Resend code in': 'Resend code in',
   'second': 'second',
   'Resend Code': 'Resend Code',
+  'Returned Orders': 'Returned',
+  'Convert To In Delivery Center': 'Convert To In Delivery Center',
+  'Convert To Out For Return': 'Convert To Out For Return',
+  'Convert To Out For Delivary': 'Convert To Out For Delivary',
+  'Approved': 'Approved',
+  'In Transt': 'In Transt',
+  'Convert To Return To Location': 'Convert To Return To Location',
+  'Chose a location': 'Chose a location',
+  'Avilable returned locations': 'Avilable returned locations',
+  'Please chose a location': 'Please chose a location',
+  'Rturned to location': 'Rturned to location'
 };

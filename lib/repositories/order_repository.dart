@@ -29,6 +29,21 @@ class OrdersRepository {
       ),
     );
   }
+  // return
+  Future<Either<FailureDelivery, ListOrderModel>> getListReturnedOrderData(
+      {required String token,
+      required String status,
+      required int offset}) async {
+    return RepoNetworkRequest.makeNetworkRequest<ListOrderModel>(
+      networkInfo: networkInfo,
+      isClientCloseFailure: true,
+      request: () => ordersApiService.getListReturnedOrderDataApi(
+        token: token,
+        status: status,
+        offset: offset,
+      ),
+    );
+  }
 
   Future<Either<FailureDelivery, ListOrderModel>> getMyOrdersData(
       {required String token,
@@ -127,12 +142,14 @@ class OrdersRepository {
     required int orderId,
     required double? amount,
     required String? note,
+    int? originalLocId,
     required List<ProductModel>? returnedProducts,
   }) async {
     return RepoNetworkRequest.makeNetworkRequestUnit(
       networkInfo: networkInfo,
       isClientCloseFailure: true,
       request: () => ordersApiService.postChangeStatusApi(
+        originalLocId : originalLocId,
         token: token,
         orderId: orderId,
         status: status,

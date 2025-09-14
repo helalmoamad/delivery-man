@@ -162,4 +162,16 @@ const Map<String, String> ar = {
   'Resend code in': "إعادة إرسال الرمز في",
   'second': "ثانية",
   'Resend Code': 'إعادة إرسال الرمز',
+  'Returned Orders': 'الطلبات المرتجعة',
+  'Out for return': 'خارج للإرجاع',
+  'Convert To In Delivery Center': 'تحويل الى في مركز التوصيل',
+  'Convert To Out For Return': 'تحويل الى خارج للارجاع',
+  'Convert To Out For Delivary': 'تحويل الى خارج للتوصيل',
+  'Approved': 'الموافقة',
+  'In Transt': 'في الانتقال',
+  'Convert To Return To Location': 'تحويل الى ارجاع الى الموقع',
+  'Chose a location': 'اختر موقع',
+  'Avilable returned locations': 'المواقع المتاحة للارجاع',
+  'Please choose a location': 'الرجاء اختيار موقع',
+  'Rturned to location': 'المعادة الى الموقع'
 };

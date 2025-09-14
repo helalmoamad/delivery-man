@@ -14,9 +14,11 @@ class ChangeOrderStatusProvider {
     required int orderId,
     required double? amount,
     required String? note,
+    int? originalLocId,
     required List<ProductModel>? returnedProducts,
   }) async {
     return await ordersRepository.changeStatus(
+      originalLocId: originalLocId,
       token: token,
       orderId: orderId,
       status: status,

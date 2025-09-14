@@ -1,4 +1,3 @@
-import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
@@ -7,17 +6,18 @@ import 'package:delivery_man_app/shared/widgets/app_dialogs.dart';
 import 'package:delivery_man_app/shared/widgets/circle_indecator_widget.dart';
 import 'package:delivery_man_app/shared/widgets/custom_navbar.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
+import 'package:delivery_man_app/views/Returned%20orders/returnedOrdersList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../controllers/Orders/orders_controller.dart';
 import '../../shared/global_functions/global_functions.dart';
 import '../../shared/handling_errors.dart/handling_errors.dart';
 import '../../shared/widgets/custom_app_bar.dart';
 import '../../shared/widgets/custom_drawer.dart';
-import 'components/orders_list_widget.dart';
 
-class OrdersPage extends StatelessWidget {
-  OrdersPage({super.key});
+class ReturnedOrdersPage extends StatelessWidget {
+  ReturnedOrdersPage({super.key});
   final OrdersController ordersController = Get.find<OrdersController>();
 
   @override
@@ -53,7 +53,7 @@ class OrdersPage extends StatelessWidget {
                     ordersController.isGetOrdersNoInternetConnection,
                 onTapTry: () async {
                   String token = GlobalFunctions.getToken();
-                  await ordersController.getListOrderData(
+                  await ordersController.getListReturnedOrderData(
                       token: token,
                       status: ordersController.orderStatus,
                       offset: 1);
@@ -65,7 +65,7 @@ class OrdersPage extends StatelessWidget {
                       onRefresh: () async {
                         debugPrint('refresh');
                         String token = GlobalFunctions.getToken();
-                        await ordersController.getListOrderData(
+                        await ordersController.getListReturnedOrderData(
                           token: token,
                           status: ordersController.orderStatus,
                           offset: 1,
@@ -73,17 +73,16 @@ class OrdersPage extends StatelessWidget {
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 55, top: 5),
-                        child: OrderList(ordersController: ordersController),
+                        child: ReturnedOrderList(ordersController: ordersController),
                       ),
                     ),
                     //////////////////////////////
                     Align(
                         alignment: Alignment.bottomCenter,
                         child: CustomNavBar(
-                          key: const Key("ReturnedOrders"),
-                          isColored1: true,
+                          isColored1: false,
                           isColored2: false,
-                          isColored3: false,
+                          isColored3: true,
                           coloredIcon1: 'assets/pictures/all orders red.png',
                           coloredIcon2: 'assets/pictures/my orders red.png',
                           coloredIcon3: 'assets/pictures/Return-Icon red.png',
@@ -93,20 +92,14 @@ class OrdersPage extends StatelessWidget {
                           unColoredIcon1: 'assets/pictures/all orders grey.png',
                           unColoredIcon2: 'assets/pictures/my orders grey.png',
                           unColoredIcon3: 'assets/pictures/return grey.png',
-                          onTap1: () {},
-                          onTap2: () {
+                          onTap1: () {
                             ordersController.myOrderStatus = '';
+                            Get.offAllNamed(Routes.orderssPage);
+                          },
+                          onTap2: () {
                             Get.offAllNamed(Routes.myOrdersPage);
                           },
-                          onTap3: () {
-                            ordersController.myOrderStatus = '';
-                            ordersController.previousRoute = Get.currentRoute;
-                            Get.offAllNamed(Routes.returnedOrders);
-                            print(
-                                "Previous Route: ${ordersController.previousRoute}");
-                            print("Current Route: ${Get.currentRoute}");
-                          },
-                          key3: const Key('returnedOrdersButton'),
+                          onTap3: () {},
                         )),
                     ///////////////////////////
                     GlobalFunctions.getAssignVehicleToUserId() == -1
@@ -150,7 +143,7 @@ class OrdersPage extends StatelessWidget {
 
   AppBar buildAppBar(BuildContext context) {
     return customAppBar(
-      title: 'All Orders'.tr,
+      title: 'Returned Orders'.tr,
       button: GetBuilder<OrdersController>(
         builder: (_) {
           return AppButton.normalButton(
