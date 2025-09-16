@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app_bindings.dart';
 import 'background_service/background_service.dart';
@@ -49,8 +50,11 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
+late ItemScrollController myOrderStatusScrollController;
 bool isDependencyInitialized = false;
+bool isAssignToMeForReturnOrder = false;
 Future<void> main() async {
+  myOrderStatusScrollController = ItemScrollController();
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: ".env");
