@@ -94,7 +94,10 @@ class PushNotificationService {
 
     FirebaseMessaging.onMessage.listen(
       (message) {
-        if (message.data["type"] == "message") {
+        print(
+            "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${message.data}GGGGGGGGGGGGg");
+
+        if (notificationIsChat(message.data["type"])) {
           showNotificationFromChat(message);
           return;
         }
@@ -114,6 +117,8 @@ class PushNotificationService {
             NotificationDetails(
               android: AndroidNotificationDetails(
                 androidChannel.id,
+                priority: Priority.max,
+                importance: Importance.max,
                 androidChannel.name,
                 channelDescription: androidChannel.description,
                 color: AppColors.primaryDark,
@@ -172,7 +177,7 @@ class PushNotificationService {
 
   @pragma('vm:entry-point')
   static Future<void> backgroundTerminateHandler(RemoteMessage message) async {
-    if (message.data["type"] == "message") {
+    if (notificationIsChat(message.data["type"])) {
       showNotificationFromChat(message);
       return;
     }
@@ -399,6 +404,19 @@ class PushNotificationService {
     return token;
   }
 
+  static bool notificationIsChat(String? typeMessage) {
+    return typeMessage == "RefuseCallEvent" ||
+        typeMessage == "VoiceCallEvent" ||
+        typeMessage == "VideoCallEvent" ||
+        typeMessage == "AnswerCallEvent" ||
+        typeMessage == "ChannelDeletedEvent" ||
+        typeMessage == "UpdatingMessageEvent" ||
+        typeMessage == "ChannelUpdatedEvent" ||
+        typeMessage == "ChannelWatchedEvent" ||
+        typeMessage == "ChannelReceivedEvent" ||
+        typeMessage == "message";
+  }
+
   @pragma('vm:entry-point')
   static void showNotificationFromChat(RemoteMessage? remoteMessages) async {
     if (!main.isDependencyInitialized) {
@@ -410,6 +428,7 @@ class PushNotificationService {
 
     Map<String, dynamic> remoteMessage = remoteMessages?.data ?? {};
     remoteMessage = jsonDecode(remoteMessage["data"]);
+
     if (remoteMessage['type'] == 'RefuseCallEvent') {
       Map<String, dynamic> data = remoteMessage;
       GetIt.I<PrefsRepository>().saveRequestsData(
@@ -582,8 +601,10 @@ class PushNotificationService {
                             : 'File',
             NotificationDetails(
               android: AndroidNotificationDetails(
+                priority: Priority.max,
                 androidChannel.id,
                 androidChannel.name,
+                importance: Importance.max,
                 tag: myMessage.channel?.id,
                 groupKey: myMessage.channel?.id,
                 setAsGroupSummary: true,

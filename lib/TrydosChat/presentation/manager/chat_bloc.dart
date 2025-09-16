@@ -820,7 +820,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       },
       (r) {
         isFailedTheFirstTime.remove('GetOrderRecipientIdEvent');
-        List<Chat> newChats = List.of(state.chats);
+        List<Chat> newChats = [];
+        print(
+            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${r.data!.chatParticipant?.messages?.length}");
         //    newChats.removeWhere((element) => element.isPrivate ?? false);
         //bool changed = false;
         /*  List<Chat> chats = List.of(state.chats);
@@ -871,6 +873,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               ...(/*changed ?*/ newChats /*: state.chats*/),
               ...state.pinnedChats
             ]),
+
             getOrderRecipientIdStatus: GetOrderRecipientIdStatus.success,
           ),
         );

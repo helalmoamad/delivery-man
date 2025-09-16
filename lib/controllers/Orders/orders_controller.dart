@@ -252,7 +252,6 @@ class OrdersController extends GetxController {
     // الطلبات المرتجعة
     else if (currentRoute == Routes.returnedOrders) {
       isMyOrderPage = false;
-
       orderScrollController = ScrollController();
       if (previousRoute == Routes.myOrdersPage ||
           previousRoute == Routes.orderssPage) {
