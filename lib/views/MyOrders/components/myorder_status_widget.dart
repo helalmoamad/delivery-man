@@ -1,5 +1,6 @@
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/main.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
@@ -72,13 +73,13 @@ class _OrdersDetailsPageState extends State<MyOrderStatusWidget> {
       child: SizedBox(
           height: 35,
           child: ScrollablePositionedList.separated(
-            itemScrollController:
-                widget.ordersController.myOrderStatusScrollController,
+            itemScrollController: myOrderStatusScrollController,
             itemCount: widget.ordersController.orderStatusData.length - 9,
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
               return InkWell(
-                key: Key('orderStatus_${widget.ordersController.orderStatusData[index + 9]}'),
+                key: Key(
+                    'orderStatus_${widget.ordersController.orderStatusData[index + 9]}'),
                 onTap: () async {
                   widget.httpClientController.closeSecondaryClient();
                   widget.timerService.stopTimer(isGlobalTimer: false);

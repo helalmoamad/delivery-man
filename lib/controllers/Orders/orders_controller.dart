@@ -4,6 +4,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/background_service/background_service.dart';
+import 'package:delivery_man_app/main.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import 'package:delivery_man_app/models/Orders/change_status_model.dart';
@@ -136,8 +137,6 @@ class OrdersController extends GetxController {
 
   List<ProductModel> returnedProductsList = [];
 
-  late ItemScrollController myOrderStatusScrollController;
-
   final HttpClientService httpClientController = Get.find<HttpClientService>();
   final TimerService timerService = Get.find<TimerService>();
 
@@ -219,7 +218,7 @@ class OrdersController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    debugPrint('Order Controller Init');
+    debugPrint('Order Controller Init  ccddddddddddddddddddd');
 
     String token = GlobalFunctions.getToken();
     print("token: **** $token  ***");
@@ -253,13 +252,7 @@ class OrdersController extends GetxController {
     // الطلبات المرتجعة
     else if (currentRoute == Routes.returnedOrders) {
       isMyOrderPage = false;
-      if (isInit == false) {
-        isInit = true;
-
-        orderScrollController = ScrollController();
-        myOrderStatusScrollController = ItemScrollController();
-      }
-
+      orderScrollController = ScrollController();
       if (previousRoute == Routes.myOrdersPage ||
           previousRoute == Routes.orderssPage) {
         httpClientController.closeSecondaryClient();
@@ -283,12 +276,8 @@ class OrdersController extends GetxController {
     // طلباتي
     else if (currentRoute == Routes.myOrdersPage) {
       isMyOrderPage = true;
-      if (isInit == false) {
-        isInit = true;
-        myOrderScrollController = ScrollController();
-        myOrderStatusScrollController = ItemScrollController();
-      }
 
+      myOrderScrollController = ScrollController();
       if (previousRoute == Routes.orderssPage ||
           previousRoute == Routes.returnedOrders) {
         httpClientController.closeSecondaryClient();
@@ -446,18 +435,13 @@ class OrdersController extends GetxController {
     required String status,
     required int index,
     String id = "",
-    bool isForAssignToMe = false,
     bool isForChat = false,
   }) async {
     String token = GlobalFunctions.getToken();
     myOrderStatus = status;
     if (index != selectedMyOrderStatus) {
       selectedMyOrderStatus = index;
-      await const Duration(milliseconds: 5000).delay();
-      isForAssignToMe
-          ? null
-          : myOrderStatusScrollController.jumpTo(index: index);
-      print("myOrderStatus: $myOrderStatus");
+
       if (isForChat) {
         await getMyOrderForChatData(token: token, id: id, offset: 1);
       } else {
@@ -838,13 +822,8 @@ class OrdersController extends GetxController {
                 .then((value) async {
               // await GlobalFunctions.setisForAssignOrderToMe(
               //     isForAssignOrderToMe: true);
-
+              isAssignToMeForReturnOrder = true;
               Get.offAllNamed(Routes.myOrdersPage);
-              if (previousRoute == '/returnedOrders') {
-                await chooseMyOrderStatus(
-                    status: OrderStatuses.inDeliveryCenter,
-                    index: selectedMyOrderStatus + 2);
-              }
             });
           }
         } else {
@@ -972,6 +951,7 @@ class OrdersController extends GetxController {
     String? note,
     List<ProductModel>? returnedProducts,
   }) async {
+    print("myOrderStatusdeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
     showChangeOrderStatusCircleIndicator();
     final failureOrData = await changeOrderStatusProvider.call(
       originalLocId: originalLocId,
@@ -1061,6 +1041,11 @@ class OrdersController extends GetxController {
     required int offset,
   }) async {
     showGetMyOrdersCircleIndicator();
+    if (isAssignToMeForReturnOrder) {
+      Future.delayed(const Duration(milliseconds: 300),
+          () => chooseMyOrderStatus(status: OrderStatuses.delivered, index: 2));
+      isAssignToMeForReturnOrder = false;
+    }
     myOrderPaginationOffset = 2;
     myOrderNoMoreItems = false;
     final failureOrGetOrdersData = await getMyOrdersProvider.call(

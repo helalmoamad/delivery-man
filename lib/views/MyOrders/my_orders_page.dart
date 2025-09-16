@@ -1,6 +1,8 @@
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/main.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
+import 'package:delivery_man_app/shared/constants/order_statuses.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/handling_errors.dart/handling_errors.dart';
 import 'package:delivery_man_app/shared/widgets/custom_drawer.dart';
@@ -19,6 +21,8 @@ class MyOrdersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final OrdersController ordersController = Get.find<OrdersController>();
+
     return SafeArea(
       // ignore: deprecated_member_use
       child: WillPopScope(
@@ -107,7 +111,6 @@ class MyOrdersPage extends StatelessWidget {
                           unColoredIcon1: 'assets/pictures/all orders grey.png',
                           unColoredIcon2: 'assets/pictures/my orders grey.png',
                           unColoredIcon3: 'assets/pictures/return grey.png',
-
                           onTap1: () {
                             ordersController.myOrderStatus = '';
                             Get.offAllNamed(Routes.orderssPage);
@@ -117,7 +120,6 @@ class MyOrdersPage extends StatelessWidget {
                             ordersController.myOrderStatus = '';
                             Get.offAllNamed(Routes.returnedOrders);
                           },
-
                         )),
                     ///////////////////////////
                   ],
