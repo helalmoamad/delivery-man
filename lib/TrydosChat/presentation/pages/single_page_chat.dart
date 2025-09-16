@@ -959,6 +959,8 @@ class _SinglePageChatState extends ThemeState<SinglePageChat> {
                                                                           .toString()]!
                                                                       .reversed
                                                                       .toList();
+                                                              print(
+                                                                  "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX${chatState.newSortedChatsByDate![chat.id]!.length}");
 
                                                               if (messages[
                                                                       index]

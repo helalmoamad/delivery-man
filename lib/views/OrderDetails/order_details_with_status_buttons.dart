@@ -13,7 +13,7 @@ import 'components/order_details.dart';
 
 class OrderDetailsWithStatusButtons extends StatelessWidget {
   final OrdersController ordersController = Get.find<OrdersController>();
-  late OrderDataModel order;
+  OrderDataModel? order;
   OrderDetailsWithStatusButtons({super.key, required this.order});
 
   @override
@@ -44,11 +44,11 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
                 // status == OrderStatuses.shipped ||
                 status == OrderStatuses.outForDelivery ||
                 status == OrderStatuses.delivered ||
-                 //status == OrderStatuses.returnedToLocation ||
+                //status == OrderStatuses.returnedToLocation ||
                 // status == OrderStatuses.failed ||
                 // status == OrderStatuses.canceled ||
                 // status == OrderStatuses.canceledArchived
-                
+
                 status == OrderStatuses.returnedToDeliveryCenter)
 
               // centeres
@@ -61,7 +61,6 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
               ///
               ///
               ///
-
 
               ////////////////////////////////////////////////////////////////////////////////////
 
@@ -88,9 +87,9 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
                     child: GlobalFunctions.chooseStatusButtons(
                         inputText: status,
                         isNotAssigned:
-                            order.assignToUserId == "" ? true : false,
+                            order?.assignToUserId == "" ? true : false,
                         hasParentOrderId:
-                            order.orderParentId != null ? true : false),
+                            order?.orderParentId != null ? true : false),
                   ),
                 ),
               ),

@@ -30,7 +30,7 @@ class OrdersDetailsPage extends StatefulWidget {
 
 class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
   final OrdersController ordersController = Get.find<OrdersController>();
-  late OrderDataModel order;
+  OrderDataModel? order;
 
   @override
   void initState() {
