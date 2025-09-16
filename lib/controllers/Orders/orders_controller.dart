@@ -254,7 +254,7 @@ class OrdersController extends GetxController {
     else if (currentRoute == Routes.returnedOrders) {
       isMyOrderPage = false;
       if (isInit == false) {
-                isInit = true;
+        isInit = true;
 
         orderScrollController = ScrollController();
         myOrderStatusScrollController = ItemScrollController();
