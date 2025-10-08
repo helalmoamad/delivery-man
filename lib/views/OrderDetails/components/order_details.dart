@@ -2,6 +2,9 @@ import 'package:app_settings/app_settings.dart';
 import 'package:delivery_man_app/TrydosChat/chat_utils/list_ex.dart';
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
+import 'package:delivery_man_app/main.dart';
+import 'package:delivery_man_app/message_error_log/PagesMonitor.dart';
+import 'package:delivery_man_app/message_error_log/device_info_util.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/widgets/app_buttons.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
@@ -13,6 +16,7 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../models/Orders/list_order_model.dart';
 import '../../../shared/constants/color_constants.dart';
@@ -29,6 +33,18 @@ class OrderDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PagesMonitor.addPageToList(page: "OrderDetails");
+    FlutterError.onError = (details) async {
+      FlutterError.presentError(details);
+      final log = await DeviceInfoHelper.createErrorLog(
+          errorType: "Flutter Error",
+          lastFourPageVisited: lastFourPageVisited,
+          errorPath: lastFourPageVisited.last ?? "",
+          lastApiRequest: '');
+      await errorSender.sendError(log);
+      await Sentry.captureException(details.exception,
+          stackTrace: details.stack);
+    };
     int orderId;
     String status;
     bool isForMyOrder;
@@ -185,7 +201,7 @@ class OrderDetails extends StatelessWidget {
                       ),
                     ),
               // ////////////////////////////////
-              
+
               order.returnedProducts!.isEmpty
                   ? Container()
                   : TitleSectionWidget(
@@ -273,7 +289,7 @@ class OrderDetails extends StatelessWidget {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: order.note!.isEmpty ? 16 : 17,
+      itemCount: order.note!.isEmpty ? 15 : 16,
       itemBuilder: (context, index) {
         if (index == 0) {
           return OrderDetailsWidget(
@@ -360,22 +376,22 @@ class OrderDetails extends StatelessWidget {
                     : order.shippingAddressData!.country.toString(),
           );
         }
+        // if (index == 9) {
+        //   return OrderDetailsWidget(
+        //     title: 'Phone'.tr,
+        //     value: !ordersController.isMyOrderPage
+        //         ? '* * * * * * * *'
+        //         : order.shippingAddressData == null
+        //             ? 'No Data Now'.tr
+        //             : order.shippingAddressData!.phone.toString() == ''
+        //                 ? 'No Data Now'.tr
+        //                 : order.shippingAddressData!.phone.toString(),
+        //     height: !ordersController.isMyOrderPage ? 37 : 60,
+        //     widget:
+        //         !ordersController.isMyOrderPage ? null : phoneButtons(order),
+        //   );
+        // }
         if (index == 9) {
-          return OrderDetailsWidget(
-            title: 'Phone'.tr,
-            value: !ordersController.isMyOrderPage
-                ? '* * * * * * * *'
-                : order.shippingAddressData == null
-                    ? 'No Data Now'.tr
-                    : order.shippingAddressData!.phone.toString() == ''
-                        ? 'No Data Now'.tr
-                        : order.shippingAddressData!.phone.toString(),
-            height: !ordersController.isMyOrderPage ? 37 : 60,
-            widget:
-                !ordersController.isMyOrderPage ? null : phoneButtons(order),
-          );
-        }
-        if (index == 10) {
           return OrderDetailsWidget(
             title: 'Email'.tr,
             value: !ordersController.isMyOrderPage
@@ -387,7 +403,7 @@ class OrderDetails extends StatelessWidget {
                         : order.shippingAddressData!.email.toString(),
           );
         }
-        if (index == 11) {
+        if (index == 10) {
           return OrderDetailsWidget(
             title: 'Order Amount'.tr,
             value: order.orderAmountFormatted == null
@@ -397,7 +413,7 @@ class OrderDetails extends StatelessWidget {
                     : order.orderAmountFormatted.toString(),
           );
         }
-        if (index == 12) {
+        if (index == 11) {
           return OrderDetailsWidget(
             title: 'Received Amount'.tr,
             value: order.receivedAmount == ''
@@ -405,7 +421,7 @@ class OrderDetails extends StatelessWidget {
                 : order.receivedAmount.toString(),
           );
         }
-        if (index == 13) {
+        if (index == 12) {
           return OrderDetailsWidget(
             title: 'Created At'.tr,
             value: order.createdAt == ''
@@ -414,7 +430,7 @@ class OrderDetails extends StatelessWidget {
                     DateTime.parse(order.createdAt.toString()).toLocal()),
           );
         }
-        if (index == 14) {
+        if (index == 13) {
           return OrderDetailsWidget(
             title: 'Delivery Time'.tr,
             value: order.deliveryTime == ''
@@ -422,7 +438,7 @@ class OrderDetails extends StatelessWidget {
                 : order.deliveryTime.toString(),
           );
         }
-        if (index == 15 && order.note!.isNotEmpty) {
+        if (index == 14 && order.note!.isNotEmpty) {
           return OrderDetailsWidget(
             title: 'Note'.tr,
             value: order.note == '' ? 'No Data Now'.tr : order.note.toString(),
@@ -430,7 +446,7 @@ class OrderDetails extends StatelessWidget {
           );
         }
         if (order.note!.isNotEmpty) {
-          if (index == 16) {
+          if (index == 15) {
             return OrderDetailsWidget(
               title: 'COD Amount'.tr,
               color: AppColors.lightGray,
@@ -443,7 +459,7 @@ class OrderDetails extends StatelessWidget {
             );
           }
         } else {
-          if (index == 15) {
+          if (index == 16) {
             return OrderDetailsWidget(
               title: 'COD Amount'.tr,
               color: AppColors.lightGray,

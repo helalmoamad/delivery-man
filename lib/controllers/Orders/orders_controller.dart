@@ -822,7 +822,11 @@ class OrdersController extends GetxController {
                 .then((value) async {
               // await GlobalFunctions.setisForAssignOrderToMe(
               //     isForAssignOrderToMe: true);
-              isAssignToMeForReturnOrder = true;
+              if (previousRoute == Routes.returnedOrders) {
+                isAssignToMeForReturnOrder = true;
+              } else {
+                isAssignToMeForReturnOrder = false;
+              }
               Get.offAllNamed(Routes.myOrdersPage);
             });
           }

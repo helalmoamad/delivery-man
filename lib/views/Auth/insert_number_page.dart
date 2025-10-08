@@ -1,5 +1,8 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:delivery_man_app/controllers/Auth/auth_controller.dart';
+import 'package:delivery_man_app/main.dart';
+import 'package:delivery_man_app/message_error_log/PagesMonitor.dart';
+import 'package:delivery_man_app/message_error_log/device_info_util.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/helpers/screen_size_utils.dart';
@@ -9,6 +12,7 @@ import 'package:delivery_man_app/shared/widgets/custom_text_field.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class InsertNumberPage extends StatelessWidget {
   InsertNumberPage({super.key});
@@ -20,6 +24,18 @@ class InsertNumberPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PagesMonitor.addPageToList(page: "InsertNumberPage");
+    FlutterError.onError = (details) async {
+      FlutterError.presentError(details);
+      final log = await DeviceInfoHelper.createErrorLog(
+          errorType: "Flutter Error",
+          lastFourPageVisited: lastFourPageVisited,
+          errorPath: lastFourPageVisited.last ?? "",
+          lastApiRequest: '');
+      await errorSender.sendError(log);
+      await Sentry.captureException(details.exception,
+          stackTrace: details.stack);
+    };
     return SafeArea(
       child: Scaffold(
         body: GetBuilder<AuthController>(

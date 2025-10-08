@@ -82,6 +82,12 @@ dependencies:
   flutter_inappwebview: 6.1.5
   cupertino_icons: ^1.0.2
   country_code_picker: ^3.0.0
+  # ///////////////////////
+  device_info_plus: 9.1.0  
+  crypto: ^3.0.0
+  sentry_flutter: 8.14.2
+  # smartlook: 4.0.1
+
 
 dev_dependencies:
   flutter_test:
@@ -132,3 +138,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+dependency_overrides:
+  package_info_plus: 8.0.2

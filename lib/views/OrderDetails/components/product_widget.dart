@@ -1,5 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:delivery_man_app/main.dart';
+import 'package:delivery_man_app/message_error_log/PagesMonitor.dart';
+import 'package:delivery_man_app/message_error_log/device_info_util.dart';
 import 'package:flutter/material.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../../../shared/constants/color_constants.dart';
 import '../../../shared/widgets/text_widget.dart';
@@ -16,6 +20,18 @@ class ProductsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PagesMonitor.addPageToList(page: "ProductsWidget");
+    FlutterError.onError = (details) async {
+      FlutterError.presentError(details);
+      final log = await DeviceInfoHelper.createErrorLog(
+          errorType: "Flutter Error",
+          lastFourPageVisited: lastFourPageVisited,
+          errorPath: lastFourPageVisited.last ?? "",
+          lastApiRequest: '');
+      await errorSender.sendError(log);
+      await Sentry.captureException(details.exception,
+          stackTrace: details.stack);
+    };
     return Container(
         padding: const EdgeInsets.only(top: 0, left: 0, right: 0),
         height: 130,

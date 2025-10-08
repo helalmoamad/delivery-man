@@ -42,6 +42,9 @@ class GlobalFunctions {
     await prefs.setString('token', token);
   }
 
+  static Future<void> removeToken() async {
+    await prefs.remove('token');
+  }
   static String getToken() {
     String? token = prefs.getString('token') ?? '';
 
@@ -90,7 +93,7 @@ class GlobalFunctions {
 
   static int getUserId() {
     int? userId = prefs.getInt('userId');
-    return userId!;
+    return userId ?? 0;
   }
 
   static Future<void> setMobilePhone({required String mobilePhone}) async {

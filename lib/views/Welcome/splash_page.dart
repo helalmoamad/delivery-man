@@ -4,12 +4,16 @@ import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart'
     show ChatBloc;
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
 import 'package:delivery_man_app/controllers/Auth/auth_controller.dart';
+import 'package:delivery_man_app/main.dart';
+import 'package:delivery_man_app/message_error_log/PagesMonitor.dart';
+import 'package:delivery_man_app/message_error_log/device_info_util.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/global_functions/push_notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import '../../routes/routes.dart';
 import '../../shared/constants/color_constants.dart';
 import '../../shared/helpers/screen_size_utils.dart';
@@ -28,6 +32,18 @@ class _SplashPageState extends State<SplashPage> {
     Timer(const Duration(seconds: 3), () {
       goToHomeScreen();
     });
+    PagesMonitor.addPageToList(page: "SplashPage");
+    FlutterError.onError = (details) async {
+      FlutterError.presentError(details);
+      final log = await DeviceInfoHelper.createErrorLog(
+          errorType: "Flutter Error",
+          lastFourPageVisited: lastFourPageVisited,
+          errorPath: lastFourPageVisited.last ?? "",
+          lastApiRequest: '');
+      await errorSender.sendError(log);
+      await Sentry.captureException(details.exception,
+          stackTrace: details.stack);
+    };
   }
 
   goToHomeScreen() {

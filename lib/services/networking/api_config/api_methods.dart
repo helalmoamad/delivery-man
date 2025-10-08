@@ -1,13 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:delivery_man_app/main.dart';
+import 'package:delivery_man_app/message_error_log/device_info_util.dart';
+import 'package:delivery_man_app/message_error_log/errorLogModel.dart';
 import 'package:delivery_man_app/services/networking/api_config/api_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../controllers/Client/timer_service.dart';
 import 'request_config.dart';
 
 class ApiMethodsDelivery {
+  static late Map<String, dynamic> deviceInfo;
+
   static void printLongText(String text) {
     final pattern = RegExp('.{1,800}', dotAll: true);
     for (final match in pattern.allMatches(text)) {
@@ -26,6 +32,8 @@ class ApiMethodsDelivery {
     bool isForOtp = false,
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("lastApi", urlPath);
     final uri = Uri.parse(
         '${isChatUrl ? ApiConstantsDelivery.chatUrl : isMarketUrl ? ApiConstantsDelivery.marketUrl : ApiConstantsDelivery.deliveryUrl}/api/${ApiConstantsDelivery.version}/$urlPath');
 
@@ -82,6 +90,26 @@ class ApiMethodsDelivery {
       debugPrint(
           '\x1B[34m══════════════════════════════════════════════\x1B[0m\n');
       /////////////////store request info//////////////////////////////////
+      ///
+      if (response.statusCode == 401) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('token');
+        navigatorKey.currentState?.pushNamedAndRemoveUntil(
+          "/insertNumberPage",
+          (route) => false,
+        );
+
+        throw Exception("Unauthorized - Redirected to login");
+      }
+
+      if (response.statusCode != 200) {
+        await errorSender.sendError(await DeviceInfoHelper.createErrorLog(
+            errorType: 'BackEnd Error',
+            lastFourPageVisited: lastFourPageVisited,
+            errorPath: uri.toString(),
+            lastApiRequest: uri.toString(),
+            messageFromBackend: response.body));
+      }
       await RequestConfigDelivery.storeRequestInfo(
         uri: uri,
         token: token,
@@ -104,6 +132,7 @@ class ApiMethodsDelivery {
       debugPrint('Stack: ' + stack.toString());
       debugPrint(
           '\x1B[34m══════════════════════════════════════════════\x1B[0m\n');
+
       rethrow;
     } finally {
       if (timerService.isTimerActive(isGlobalTimer: isGlobalTimer)) {
@@ -125,6 +154,10 @@ class ApiMethodsDelivery {
     bool isChatUrl = false,
     bool isForOtp = false,
   }) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.setString("lastApi", urlPath);
+
     final uri = Uri.parse(
         '${isChatUrl ? ApiConstantsDelivery.chatUrl : isMarketUrl ? ApiConstantsDelivery.marketUrl : ApiConstantsDelivery.deliveryUrl}/api/${ApiConstantsDelivery.version}/$urlPath');
 
@@ -185,6 +218,27 @@ class ApiMethodsDelivery {
       ApiMethodsDelivery.printLongText(response.body);
       debugPrint(
           '\x1B[34m══════════════════════════════════════════════\x1B[0m\n');
+
+      if (response.statusCode == 401) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('token');
+
+        navigatorKey.currentState?.pushNamedAndRemoveUntil(
+          "/insertNumberPage",
+          (route) => false,
+        );
+
+        throw Exception("Unauthorized - Redirected to login");
+      }
+      if (response.statusCode != 200) {
+        await errorSender.sendError(await DeviceInfoHelper.createErrorLog(
+            errorType: 'BackEnd Error',
+            lastFourPageVisited: lastFourPageVisited,
+            errorPath: uri.toString(),
+            lastApiRequest: uri.toString(),
+            messageFromBackend: response.body));
+      }
+
       /////////////////store request info//////////////////////////////////
       await RequestConfigDelivery.storeRequestInfo(
         uri: uri,
@@ -208,6 +262,12 @@ class ApiMethodsDelivery {
       debugPrint('Stack: ' + stack.toString());
       debugPrint(
           '\x1B[34m══════════════════════════════════════════════\x1B[0m\n');
+      await errorSender.sendError(await DeviceInfoHelper.createErrorLog(
+        errorType: 'BackEnd Error',
+        lastFourPageVisited: lastFourPageVisited,
+        errorPath: uri.toString(),
+        lastApiRequest: uri.toString(),
+      ));
       rethrow;
     } finally {
       if (timerService.isTimerActive(isGlobalTimer: isGlobalTimer)) {

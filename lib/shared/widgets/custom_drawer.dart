@@ -2,6 +2,7 @@ import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/widgets/text_widget.dart';
+import 'package:delivery_man_app/views/Tester/convertToTester.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/Auth/auth_controller.dart';
@@ -121,6 +122,27 @@ class CustomDrawer extends StatelessWidget {
                   ///////////////////
                   await authController.logOut(token: token);
                 },
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.textsms,
+              color: AppColors.primaryDark,
+            ),
+            title: TextWidget(
+                text: 'Tester'.tr,
+                color: AppColors.blackDark,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                textAlign: TextAlign.start,
+                maxline: 1),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        const ConvertToTesterScreen()),
               );
             },
           ),
