@@ -89,6 +89,7 @@ class OrdersController extends GetxController {
   int orderIdForDetails = 0;
   int myOrderIdForDetails = 0;
   int myOrderIdInMarket = 0;
+  int myParentOrderIdInMarket = 0;
   String orderStatus = '';
   int selectedOrderStatus = 0;
 
@@ -196,10 +197,11 @@ class OrdersController extends GetxController {
       await GlobalFunctions.setIsFromNotifiForNewOrder(
           isFromNotifiForNewOrder: true);
       PushNotificationService.handleOpenChatPageFromNotificationInBackground(
-          GlobalFunctions.getOrderId());
+          GlobalFunctions.getOrderId(), GlobalFunctions.getParentOrderId());
       return;
     }
     GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
+    GetIt.I<PrefsRepository>().setMyParentOrderIdForChat("");
     if (GlobalFunctions.getNotifiType() == NotificationsTypes.newOrder ||
         GlobalFunctions.getNotifiType() ==
             NotificationsTypes.orderRequiresAssingment ||

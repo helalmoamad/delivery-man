@@ -59,6 +59,7 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
       if ((ordersController.myOrderIdInMarket) > 0) {
         GetIt.I<ChatBloc>().add(GetOrderRecipientIdEvent(
             originalUserId: GlobalFunctions.getUserId().toString(),
+            parentOrderId: ordersController.myParentOrderIdInMarket.toString(),
             orderId: ordersController.myOrderIdInMarket.toString()));
       }
     }
@@ -68,10 +69,16 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
   Widget build(BuildContext context) {
     String status;
     if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
-      status = (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
-              GetIt.I<PrefsRepository>().myOrderIdForChat != null)
-          ? OrderStatuses.outForDelivery
-          : OrderStatuses.inDeliveryCenter;
+      status = (GetIt.I<PrefsRepository>().myParentOrderIdForChat != "" &&
+              GetIt.I<PrefsRepository>().myParentOrderIdForChat != null)
+          ? OrderStatuses.returnedToDeliveryCenter
+          : (GetIt.I<PrefsRepository>().myParentOrderIdForChat != "" &&
+                  GetIt.I<PrefsRepository>().myParentOrderIdForChat != null)
+              ? OrderStatuses.returnedToDeliveryCenter
+              : (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
+                      GetIt.I<PrefsRepository>().myOrderIdForChat != null)
+                  ? OrderStatuses.outForDelivery
+                  : OrderStatuses.inDeliveryCenter;
     } else {
       if (ordersController.previousRoute == Routes.myOrdersPage) {
         status = ordersController.myOrderStatus;
@@ -145,7 +152,12 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
             if (ordersController.previousRoute == Routes.myOrdersPage ||
                 GlobalFunctions.getIsFromNotifiForNewOrder()) {
               String status = "";
-              if (GlobalFunctions.getIsFromNotifiForNewOrder() &&
+              if ((GlobalFunctions.getIsFromNotifiForNewOrder() &&
+                  GetIt.I<PrefsRepository>().myParentOrderIdForChat != "" &&
+                  GetIt.I<PrefsRepository>().myParentOrderIdForChat != null)) {
+                ordersController.myOrderStatus =
+                    OrderStatuses.returnedToDeliveryCenter;
+              } else if (GlobalFunctions.getIsFromNotifiForNewOrder() &&
                   (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
                       GetIt.I<PrefsRepository>().myOrderIdForChat != null)) {
                 ordersController.myOrderStatus = OrderStatuses.outForDelivery;
@@ -250,6 +262,9 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
                                                       GlobalFunctions
                                                               .getUserId()
                                                           .toString(),
+                                                  parentOrderId: ordersController
+                                                      .myParentOrderIdInMarket
+                                                      .toString(),
                                                   orderId: ordersController
                                                       .myOrderIdInMarket
                                                       .toString()));

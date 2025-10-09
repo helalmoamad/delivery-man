@@ -102,12 +102,15 @@ class ReadAllMessagesEvent extends ChatEvent {
 class GetOrderRecipientIdEvent extends ChatEvent {
   final String originalUserId;
   final String orderId;
+  final String parentOrderId;
   const GetOrderRecipientIdEvent(
-      {required this.originalUserId, required this.orderId});
+      {required this.originalUserId,
+      required this.orderId,
+      required this.parentOrderId});
 
   @override
   // TODO: implement props
-  List<Object?> get props => [originalUserId, orderId];
+  List<Object?> get props => [originalUserId, orderId, parentOrderId];
 }
 
 class UpdateProfileInChatEvent extends ChatEvent {

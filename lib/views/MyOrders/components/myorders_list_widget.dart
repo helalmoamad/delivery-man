@@ -5,6 +5,7 @@ import 'package:delivery_man_app/message_error_log/PagesMonitor.dart';
 import 'package:delivery_man_app/message_error_log/device_info_util.dart';
 import 'package:delivery_man_app/routes/routes.dart';
 import 'package:delivery_man_app/services/service_provider.dart';
+import 'package:delivery_man_app/shared/constants/order_statuses.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/shared/widgets/empty_data_widget.dart';
 import 'package:delivery_man_app/shared/widgets/order_widget.dart';
@@ -20,7 +21,7 @@ class MyOrderList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     PagesMonitor.addPageToList(page: "MyOrderList");
+    PagesMonitor.addPageToList(page: "MyOrderList");
     FlutterError.onError = (details) async {
       FlutterError.presentError(details);
       final log = await DeviceInfoHelper.createErrorLog(
@@ -54,15 +55,27 @@ class MyOrderList extends StatelessWidget {
                     index: index,
                     onTapViewDetails: () async {
                       ordersController.myOrderIdForDetails = orders[index].id!;
-                      ordersController.myOrderIdInMarket =
-                          orders[index].originalOrderId!;
-                        ordersController.currentOrder = orders[index];
+
+                      if (orders[index].orderStatus ==
+                          OrderStatuses.returnedToDeliveryCenter) {
+                        ordersController.myOrderIdInMarket =
+                            orders[index].originalOrderId!;
+                        ordersController.myParentOrderIdInMarket =
+                            orders[index].orderParentId!;
+                      } else {
+                        ordersController.myOrderIdInMarket =
+                            orders[index].originalOrderId!;
+                        ordersController.myParentOrderIdInMarket = 0;
+                      }
+
+                      ordersController.currentOrder = orders[index];
 
                       GetIt.I<PrefsRepository>().setOrderDetailsId(
                           orders[index].originalOrderId!.toString());
                       await GlobalFunctions.setIsFromNotifiForNewOrder(
                           isFromNotifiForNewOrder: false);
                       GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
+                      GetIt.I<PrefsRepository>().setMyParentOrderIdForChat("");
                       ordersController.previousRoute = Get.currentRoute;
                       Get.toNamed(
                         Routes.ordersDetailsPage,

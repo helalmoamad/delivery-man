@@ -57,6 +57,7 @@ class OrderList extends StatelessWidget {
                       await GlobalFunctions.setIsFromNotifiForNewOrder(
                           isFromNotifiForNewOrder: false);
                       GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
+                      GetIt.I<PrefsRepository>().setMyParentOrderIdForChat("");
 
                       ordersController.previousRoute = Get.currentRoute;
                       Get.toNamed(Routes.ordersDetailsPage);

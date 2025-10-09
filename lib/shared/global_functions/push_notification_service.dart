@@ -66,13 +66,23 @@ class PushNotificationService {
         .then(
       (value) async {
         try {
-          if (((int.tryParse(value?.notificationResponse?.payload ?? "") ?? 0) <
+          if (((int.tryParse((value?.notificationResponse?.payload ?? "")
+                      .split("@")
+                      .first) ??
+                  0) <
               1)) {
             return;
           }
           await prefs.setString('notifi_type', "chat");
+          await prefs.setString(
+              'parent_order_id',
+              (value?.notificationResponse?.payload ?? "").split("@").length < 2
+                  ? ""
+                  : (value?.notificationResponse?.payload ?? "")
+                      .split("@")
+                      .last);
           await prefs.setString('order_id',
-              (value?.notificationResponse?.payload ?? "").toString());
+              (value?.notificationResponse?.payload ?? "").split("@").first);
         } catch (e) {}
       },
     );
@@ -82,10 +92,14 @@ class PushNotificationService {
         if (event.data["type"] == "message") {
           Map remoteMessage = jsonDecode(event.data['data']);
           String orderId = (remoteMessage['order_id'] ?? "").toString();
-          handleOpenChatPageFromNotificationInBackground(orderId);
+          String parentOrderId =
+              (remoteMessage['parent_order_id'] ?? "").toString();
+          handleOpenChatPageFromNotificationInBackground(
+              orderId, parentOrderId);
           return;
         }
         GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
+        GetIt.I<PrefsRepository>().setMyParentOrderIdForChat("");
         handleMessageBackForGroundOnTap(event);
       },
     );
@@ -155,11 +169,16 @@ class PushNotificationService {
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (details) {
-        if ((int.tryParse(details.payload ?? "") ?? 0) > 0) {
-          handleOpenChatPageFromNotificationInBackground(details.payload);
+        if ((int.tryParse((details.payload ?? "").split("@").first) ?? 0) > 0) {
+          handleOpenChatPageFromNotificationInBackground(
+              (details.payload ?? "").split("@").first,
+              (details.payload ?? "").split("@").length < 2
+                  ? ""
+                  : (details.payload ?? "").split("@").last);
           return;
         }
         GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
+        GetIt.I<PrefsRepository>().setMyParentOrderIdForChat("");
 
         final message = RemoteMessage.fromMap(
           jsonDecode(details.payload!),
@@ -193,9 +212,12 @@ class PushNotificationService {
 
   @pragma('vm:entry-point')
   static void handleOpenChatPageFromNotificationInBackground(
-      String? orderId) async {
+      String? orderId, String? parentOrderId) async {
     GetIt.I<PrefsRepository>().setMyOrderIdForChat(orderId ?? "");
+    GetIt.I<PrefsRepository>().setMyParentOrderIdForChat(parentOrderId ?? "");
     ordersController.myOrderIdInMarket = int.tryParse(orderId ?? "") ?? 0;
+    ordersController.myParentOrderIdInMarket =
+        int.tryParse(parentOrderId ?? "") ?? 0;
     DealWithMessagesStoredFromBackground();
     DealWithChatsToDeleteFromBackground();
     DealWithChatsToEditStoredFromBackground();
@@ -204,11 +226,12 @@ class PushNotificationService {
     DealWithMessageWatchStatusStoredFromBackground();
 
     Future.delayed(Duration(milliseconds: 600),
-        () => navigationToOrderPageForChat(orderId));
+        () => navigationToOrderPageForChat(orderId, parentOrderId));
   }
 
   @pragma('vm:entry-point')
-  static void navigationToOrderPageForChat(String? orderId) async {
+  static void navigationToOrderPageForChat(
+      String? orderId, String? parentOrderId) async {
     await GlobalFunctions.setIsFromNotifiForNewOrder(
         isFromNotifiForNewOrder: true);
     debugPrint(
@@ -362,6 +385,8 @@ class PushNotificationService {
 
           await GlobalFunctions.setOrderId(
               orderId: message.data['order_id'] ?? '0');
+          await GlobalFunctions.setParentOrderId(
+              parentOrderId: message.data['parent_order_id'] ?? '0');
 
           if (Get.currentRoute != Routes.ordersDetailsPage) {
             Get.toNamed(Routes.ordersDetailsPage);
@@ -583,6 +608,8 @@ class PushNotificationService {
         String prevMessageId =
             (remoteMessage['prev_message_id'] ?? "").toString();
         String orderId = (remoteMessage['order_id'] ?? "").toString();
+        String parentOrderId =
+            (remoteMessage['parent_order_id'] ?? "").toString();
         String orderGroupId =
             (remoteMessage['order_group_id'] ?? "").toString();
         String type = myMessage.messageType!.name.toString();
@@ -614,7 +641,7 @@ class PushNotificationService {
                 icon: '@mipmap/ic_launcher',
               ),
             ),
-            payload: orderId);
+            payload: '$orderId@$parentOrderId');
       }
     }
   }

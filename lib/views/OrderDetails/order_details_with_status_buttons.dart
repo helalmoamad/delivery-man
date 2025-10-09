@@ -21,10 +21,13 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
     String status;
 
     if (GlobalFunctions.getIsFromNotifiForNewOrder()) {
-      status = (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
-              GetIt.I<PrefsRepository>().myOrderIdForChat != null)
-          ? OrderStatuses.outForDelivery
-          : OrderStatuses.inDeliveryCenter;
+      status = (GetIt.I<PrefsRepository>().myParentOrderIdForChat != "" &&
+              GetIt.I<PrefsRepository>().myParentOrderIdForChat != null)
+          ? OrderStatuses.returnedToDeliveryCenter
+          : (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
+                  GetIt.I<PrefsRepository>().myOrderIdForChat != null)
+              ? OrderStatuses.outForDelivery
+              : OrderStatuses.inDeliveryCenter;
     } else {
       if (ordersController.previousRoute == Routes.myOrdersPage) {
         status = ordersController.myOrderStatus;

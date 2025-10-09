@@ -45,6 +45,7 @@ class GlobalFunctions {
   static Future<void> removeToken() async {
     await prefs.remove('token');
   }
+
   static String getToken() {
     String? token = prefs.getString('token') ?? '';
 
@@ -187,6 +188,16 @@ class GlobalFunctions {
 
   static Future<void> setOrderId({required String orderId}) async {
     await prefs.setString('order_id', orderId);
+  }
+
+  static Future<void> setParentOrderId({required String parentOrderId}) async {
+    await prefs.setString('parent_order_id', parentOrderId);
+  }
+
+  static String? getParentOrderId() {
+    String? orderId = prefs.getString('parent_order_id');
+
+    return orderId;
   }
 
   static String? getOrderId() {

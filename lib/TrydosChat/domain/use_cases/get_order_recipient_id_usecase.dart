@@ -22,10 +22,13 @@ class GetOrderRecipientIdUseCase
 class GetOrderRecipientIdParams {
   final String? orderId;
   final String? originalUserId;
-  const GetOrderRecipientIdParams({this.orderId, this.originalUserId});
+  final String? parentOrderId;
+  const GetOrderRecipientIdParams(
+      {this.orderId, this.originalUserId, this.parentOrderId});
 
   Map<String, dynamic> get map => {
         'order_id': orderId,
+        'parent_order_id': parentOrderId,
         'delivery_user_id': originalUserId,
-      };
+      }..removeWhere((key, value) => (value == "" || value == null));
 }

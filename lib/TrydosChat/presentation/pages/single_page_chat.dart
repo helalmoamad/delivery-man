@@ -150,6 +150,7 @@ class _SinglePageChatState extends ThemeState<SinglePageChat> {
     autoScrollController = AutoScrollController();
     callsBloc.add(GetMissedCallCountEvent());
     GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
+    GetIt.I<PrefsRepository>().setMyParentOrderIdForChat("");
     chatBloc.add(ReadAllMessagesEvent(widget.chatId.toString()));
     chatBloc.add(AddUserConntctSatuseEvent(
         userConnectedStatuse: " ", chatId: widget.chatId));

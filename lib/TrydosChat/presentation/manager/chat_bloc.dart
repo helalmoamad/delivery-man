@@ -807,12 +807,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       getOrderRecipientIdStatus: GetOrderRecipientIdStatus.loading,
     ));
     final response = await getOrderRecipientIdUseCase(GetOrderRecipientIdParams(
-        orderId: event.orderId, originalUserId: event.originalUserId));
+        orderId: event.orderId,
+        originalUserId: event.originalUserId,
+        parentOrderId: event.parentOrderId == "0" ? "" : event.parentOrderId));
     response.fold(
       (l) {
         if (!isFailedTheFirstTime.contains('GetOrderRecipientIdEvent')) {
           add(GetOrderRecipientIdEvent(
-              orderId: event.orderId, originalUserId: event.originalUserId));
+              orderId: event.orderId,
+              originalUserId: event.originalUserId,
+              parentOrderId: event.parentOrderId));
           isFailedTheFirstTime.add('GetOrderRecipientIdEvent');
         }
         emit(state.copyWith(
@@ -821,26 +825,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       (r) {
         isFailedTheFirstTime.remove('GetOrderRecipientIdEvent');
         List<Chat> newChats = [];
-        print(
-            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD${r.data!.chatParticipant?.messages?.length}");
-        //    newChats.removeWhere((element) => element.isPrivate ?? false);
-        //bool changed = false;
-        /*  List<Chat> chats = List.of(state.chats);
-        chats.addAll(state.pinnedChats);
-//        debugPrint('long : ${r.contacts?.length}');
-
-        int index = chats.indexWhere((element) =>
-            element.channelMembers
-                ?.firstWhere(
-                    (element) =>
-                        element.userId == r.data?.recipient?.id.toString(),
-                    orElse: () => ChannelMember(userId: -1))
-                .userId !=
-            -1);
-        debugPrint('index : $index');*/
-        // if (index == -1) {
-        //   debugPrint('new chat');
-        //  changed = true;
         String uuid = const Uuid().v4();
         newChats.insert(
             0,

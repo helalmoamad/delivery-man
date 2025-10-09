@@ -899,4 +899,14 @@ class PrefsRepositoryImpl extends PrefsRepository {
   Future<bool> setTagsInUrlToFilter(List<String> tags) {
     return _preferences.setStringList(PrefsKey.tagsFilters, tags);
   }
+
+  @override
+  // TODO: implement myParentOrderIdForChat
+  String? get myParentOrderIdForChat =>
+      _preferences.getString(PrefsKey.parentOrderId) ?? '';
+
+  @override
+  Future<bool> setMyParentOrderIdForChat(String id) {
+    return _preferences.setString(PrefsKey.parentOrderId, id);
+  }
 }

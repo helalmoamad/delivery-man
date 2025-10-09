@@ -12,6 +12,7 @@ abstract class PrefsRepository {
   int? get myChatId;
 
   String? get myOrderIdForChat;
+  String? get myParentOrderIdForChat;
   int? get userCountryIsAvailable;
 
   String? get myMarketId;
@@ -137,6 +138,7 @@ abstract class PrefsRepository {
   Future<bool> setChatToEditFromBackground(String chat);
 
   Future<bool> setMyOrderIdForChat(String id);
+  Future<bool> setMyParentOrderIdForChat(String id);
 
   Future<bool> setFcmToken(String url);
   Future<bool> setStoryUrl(String url);

@@ -55,10 +55,13 @@ class OrderDetails extends StatelessWidget {
       isForMyOrder = false;
       orderId = int.parse(GlobalFunctions.getOrderId() ?? '-1');
       order = ordersController.orderDetails!;
-      status = (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
-              GetIt.I<PrefsRepository>().myOrderIdForChat != null)
-          ? OrderStatuses.outForDelivery
-          : OrderStatuses.inDeliveryCenter;
+      status = (GetIt.I<PrefsRepository>().myParentOrderIdForChat != "" &&
+              GetIt.I<PrefsRepository>().myParentOrderIdForChat != null)
+          ? OrderStatuses.returnedToDeliveryCenter
+          : (GetIt.I<PrefsRepository>().myOrderIdForChat != "" &&
+                  GetIt.I<PrefsRepository>().myOrderIdForChat != null)
+              ? OrderStatuses.outForDelivery
+              : OrderStatuses.inDeliveryCenter;
     } else {
       if (ordersController.previousRoute == Routes.myOrdersPage) {
         isForMyOrder = true;
