@@ -1048,7 +1048,7 @@ class OrdersController extends GetxController {
   }) async {
     showGetMyOrdersCircleIndicator();
     if (isAssignToMeForReturnOrder) {
-      Future.delayed(const Duration(milliseconds: 300),
+      Future.delayed(const Duration(milliseconds: 1300),
           () => chooseMyOrderStatus(status: OrderStatuses.delivered, index: 2));
       isAssignToMeForReturnOrder = false;
     }

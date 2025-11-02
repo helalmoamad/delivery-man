@@ -132,10 +132,11 @@ const Map<String, String> en = {
   'Info For Developer': 'Info For Developer',
   'More Info': 'More Info',
   'Share': 'Share',
+  'Quantity': 'Quantity',
   'Delete All Data': 'Delete All Data',
   'Are you sure you want delete to all data ?':
       'Are you sure you want delete to all data ?',
-  'No Data Now': 'No Data Now',
+  'No Data Now': 'No Data',
   'Received Amount': 'Received Amount',
   'Add Received Amount': 'Add Received Amount',
   'Process Completed Successfuly': 'Process Completed Successfuly',

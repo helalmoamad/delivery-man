@@ -25,9 +25,9 @@ class ReturnedOrderList extends StatelessWidget {
     FlutterError.onError = (details) async {
       FlutterError.presentError(details);
       final log = await DeviceInfoHelper.createErrorLog(
-          errorType: "Flutter Error",
+          errorType: "Type:${details.exception.runtimeType.toString()} ${details.exceptionAsString().toString()}",
           lastFourPageVisited: lastFourPageVisited,
-          errorPath: lastFourPageVisited.last ?? "",
+          errorPath: details.stack.toString(),
           lastApiRequest: '');
       await errorSender.sendError(log);
       await Sentry.captureException(details.exception,
@@ -86,7 +86,7 @@ class ReturnedOrderList extends StatelessWidget {
         }
       },
       separatorBuilder: (context, index) {
-        return const SizedBox(height: 10);
+        return const SizedBox();
       },
     );
   }

@@ -65,7 +65,7 @@ class OrderList extends StatelessWidget {
               } else {
                 if (orders.length > 4) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.only(bottom: 20, top: 2),
                     child: Center(
                       child: ordersController.orderNoMoreItems
                           ? Text('No More Items'.tr)
@@ -79,7 +79,7 @@ class OrderList extends StatelessWidget {
             },
             separatorBuilder: (context, index) {
               return const SizedBox(
-                height: 10,
+                height: 1,
               );
             },
           );

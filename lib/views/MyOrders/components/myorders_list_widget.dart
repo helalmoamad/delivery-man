@@ -98,7 +98,6 @@ class MyOrderList extends StatelessWidget {
             },
             separatorBuilder: (context, index) {
               return const SizedBox(
-                height: 10,
               );
             },
           );

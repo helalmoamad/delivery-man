@@ -129,13 +129,13 @@ class ChooseOtpMethod extends StatelessWidget {
             titleSize: 15,
             title: 'Confirm'.tr,
             onPress: () async {
-              Get.toNamed(Routes.otpVerificationPage);
               ////////////////////////////////////////////////////
               await authController.sendOtp(
                 phone: authController.countryCode +
                     authController.currentPhoneNumber,
                 isViaWhatsapp: authController.otpMethod == 'whatsapp' ? 1 : 0,
               );
+              Get.toNamed(Routes.otpVerificationPage);
             },
           ),
           ///////

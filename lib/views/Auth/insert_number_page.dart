@@ -120,7 +120,7 @@ class InsertNumberPage extends StatelessWidget {
                 if (!RegExp(r'^\d+$').hasMatch(value)) {
                   return 'Phone number must contain only digits';
                 }
-                if (value.length <= 8) {
+                if (value.length <= 7) {
                   return 'Phone number must be more than 8 digits';
                 }
                 return null;

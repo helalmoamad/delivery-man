@@ -10,7 +10,7 @@ AppBar customAppBar({
     elevation: 5,
     shadowColor: AppColors.lightGray,
     centerTitle: false,
-    backgroundColor: AppColors.white,
+    backgroundColor: const Color.fromARGB(255, 238, 243, 226),
     title: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

@@ -163,40 +163,101 @@ class OrdersPage extends StatelessWidget {
     );
   }
 
-  AppBar buildAppBar(BuildContext context) {
-    return customAppBar(
-      title: 'All Orders'.tr,
-      button: GetBuilder<OrdersController>(
-        builder: (_) {
-          return AppButton.normalButton(
-            title: GlobalFunctions.getAssignVehicleToUserId() == -1
-                ? 'Assign to vehicle'.tr
-                : '${'UnAssign'.tr} ${GlobalFunctions.getAssignVehicleToUserId() != -1 ? GlobalFunctions.getAssignedVehicleName() : ''}',
-            height: 40,
-            titleSize: 13,
-            backgroundColor: GlobalFunctions.getAssignVehicleToUserId() == -1
-                ? AppColors.secondary
-                : AppColors.darkGrey,
-            onPress: () async {
-              if (GlobalFunctions.getAssignVehicleToUserId() == -1) {
-                Get.toNamed(Routes.scanQRPage);
-              } else {
-                AppDialogs.showConfirmationDialog(
-                  context: context,
-                  title:
-                      'Are you sure you want to unassign to the vehicle ?'.tr,
-                  onConfirm: () async {
-                    Get.back();
-                    await ordersController.unAssignToVehicle(
-                        token: GlobalFunctions.getToken(),
-                        vehicleId: GlobalFunctions.getAssignedVehicleId());
+  // AppBar buildAppBar(BuildContext context) {
+  //   return customAppBar(
+  //     title: 'All Orders'.tr,
+  //     button: GetBuilder<OrdersController>(
+  //       builder: (_) {
+  //         return AppButton.normalButton(
+  //           title: GlobalFunctions.getAssignVehicleToUserId() == -1
+  //               ? 'Assign to vehicle'.tr
+  //               : '${'UnAssign'.tr} ${GlobalFunctions.getAssignVehicleToUserId() != -1 ? GlobalFunctions.getAssignedVehicleName() : ''}',
+  //           height: 25,
+  //           titleSize: 13,
+  //           backgroundColor: GlobalFunctions.getAssignVehicleToUserId() == -1
+  //               ? const Color.fromARGB(255, 255, 36, 2)
+  //               : const Color.fromARGB(255, 23, 151, 11),
+  //           onPress: () async {
+  //             if (GlobalFunctions.getAssignVehicleToUserId() == -1) {
+  //               Get.toNamed(Routes.scanQRPage);
+  //             } else {
+  //               AppDialogs.showConfirmationDialog(
+  //                 context: context,
+  //                 title:
+  //                     'Are you sure you want to unassign to the vehicle ?'.tr,
+  //                 onConfirm: () async {
+  //                   Get.back();
+  //                   await ordersController.unAssignToVehicle(
+  //                       token: GlobalFunctions.getToken(),
+  //                       vehicleId: GlobalFunctions.getAssignedVehicleId());
+  //                 },
+  //               );
+  //             }
+  //           },
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
+   AppBar buildAppBar(BuildContext context) {
+  return customAppBar(
+    title: 'All Orders'.tr,
+    button: GetBuilder<OrdersController>(
+      builder: (_) {
+        bool isAssigned = GlobalFunctions.getAssignVehicleToUserId() != -1;
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Transform.scale(
+              scale: 1.2,
+              child: SizedBox(
+                height: 25, 
+                child: Switch(
+                  value: isAssigned,
+                  onChanged: (value) async {
+                    if (!value) {
+                      AppDialogs.showConfirmationDialog(
+                        context: context,
+                        title:
+                            'Are you sure you want to unassign to the vehicle ?'
+                                .tr,
+                        onConfirm: () async {
+                          Get.back();
+                          await ordersController.unAssignToVehicle(
+                            token: GlobalFunctions.getToken(),
+                            vehicleId: GlobalFunctions.getAssignedVehicleId(),
+                          );
+                        },
+                      );
+                    } else {
+                      Get.toNamed(Routes.scanQRPage);
+                    }
                   },
-                );
-              }
-            },
-          );
-        },
-      ),
-    );
-  }
+                  activeColor: const Color.fromARGB(255, 23, 151, 11),
+                  inactiveThumbColor: const Color.fromARGB(255, 255, 36, 2),
+                ),
+              ),
+            ),
+            SizedBox(height: 2,),
+            Text(
+              isAssigned
+                  ? '${'UnAssign'.tr} ${GlobalFunctions.getAssignedVehicleName()}'
+                  : 'Assign to vehicle'.tr,
+              style: TextStyle(
+                fontSize: 12,
+                color: isAssigned
+                    ? const Color.fromARGB(255, 23, 151, 11)
+                    : const Color.fromARGB(255, 255, 36, 2),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+}
 }

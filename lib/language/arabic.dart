@@ -97,7 +97,7 @@ const Map<String, String> ar = {
   'Changing Order Status Succeeded': 'تم تغيير حالة الطلب بنجاح',
   'The order status will be changed to "shipped"':
       'سيتم تحويل حالة الطلب لـ "تم الشحن"',
-  'The order  will be assigned to you': 'سيتم إسنادالطلب لك',
+  'The order  will be assigned to you': 'سيتم إسناد الطلب لك',
   'The order status will be changed to "Out For Delivery"':
       'سيتم تحويل حالة الطلب لـ "خارج للتوصيل"',
   'Audio recording will start': 'سيتم بدء تسجيل الصوت',
@@ -123,6 +123,7 @@ const Map<String, String> ar = {
   'Returned Products': 'المنتجات المعاده',
   'Order Products': 'منتجات الطلب',
   'Paid': 'تم الدفع',
+  'Quantity': 'الكمية',
   'Partial Paid': 'دفع جزئي',
   'UnPaid': 'لم يتم الدفع',
   'No Orders': 'لا يوجد طلبات',
@@ -133,7 +134,7 @@ const Map<String, String> ar = {
   'Delete All Data': 'حذف كل البيانات',
   'Are you sure you want delete to all data ?':
       'هل أنت متأكد من حذف كل البيانات ؟',
-  'No Data Now': 'لا يوجد بيانات حالياً',
+  'No Data Now': 'لا يوجد بيانات',
   'Received Amount': 'المبلغ المُستلَم',
   'Add Received Amount': 'إضافة المبلغ المُستلَم',
   'Process Completed Successfuly': 'تمت العملية بنجاح',

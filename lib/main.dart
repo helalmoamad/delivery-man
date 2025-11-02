@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:app_settings/app_settings.dart';
+import 'package:delivery_man_app/Connectivity_Plus/checkInterNetByConnectivity.dart';
 import 'package:delivery_man_app/TrydosChat/di/di_container.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
 import 'package:delivery_man_app/controllers/Auth/auth_controller.dart';
@@ -190,7 +191,6 @@ late ErrorSender errorSender;
 Future<void> main() async {
   myOrderStatusScrollController = ItemScrollController();
   WidgetsFlutterBinding.ensureInitialized();
-
   // send errors to backend
 
   ApiMethodsDelivery.deviceInfo =
@@ -260,19 +260,50 @@ Future<void> main() async {
       FlutterError.onError = (details) async {
         FlutterError.presentError(details);
         final log = await DeviceInfoHelper.createErrorLog(
-            errorType: "Flutter Error",
+          errorType: "Type:${details.exception.runtimeType.toString()} ${details.exceptionAsString().toString()}",
             lastFourPageVisited: lastFourPageVisited,
-            errorPath: lastFourPageVisited.last ?? "",
+          errorPath: details.stack.toString(),
             lastApiRequest: '');
         await errorSender.sendError(log);
         await Sentry.captureException(details.exception,
             stackTrace: details.stack);
       };
+      ConnectivityService.startListening();
 
       runApp(const MyApp());
     },
   );
 }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     SystemChrome.setPreferredOrientations([
+//       DeviceOrientation.portraitUp,
+//       DeviceOrientation.portraitDown,
+//     ]);
+
+//     return ServiceProvider(
+//       child: GetMaterialApp(
+//         navigatorKey: navigatorKey,
+
+//         title: 'Delivery Man',
+//         debugShowCheckedModeBanner: false,
+//         theme: Themes.lightTheme,
+//         //for language
+//         locale: Locale(GlobalFunctions.getLanLocal()),
+//         fallbackLocale: const Locale(LangConstants.ene),
+//         translations: LocalizationApp(),
+//         ////
+//         getPages: AppRoutes.routes,
+//         initialRoute: Routes.splashPage,
+//         initialBinding: AppBinding(),
+//       ),
+//     );
+//   }
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -284,21 +315,25 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
 
-    return ServiceProvider(
-      child: GetMaterialApp(
-        navigatorKey: navigatorKey,
+    return ConnectivityWrapper(
+      // ✅ أضفنا هذا السطر
+      child: ServiceProvider(
+        child: GetMaterialApp(
+          navigatorKey: navigatorKey,
+          title: 'Delivery Man',
+          debugShowCheckedModeBanner: false,
+          theme: Themes.lightTheme,
 
-        title: 'Delivery Man',
-        debugShowCheckedModeBanner: false,
-        theme: Themes.lightTheme,
-        //for language
-        locale: Locale(GlobalFunctions.getLanLocal()),
-        fallbackLocale: const Locale(LangConstants.ene),
-        translations: LocalizationApp(),
-        ////
-        getPages: AppRoutes.routes,
-        initialRoute: Routes.splashPage,
-        initialBinding: AppBinding(),
+          // اللغة
+          locale: Locale(GlobalFunctions.getLanLocal()),
+          fallbackLocale: const Locale(LangConstants.ene),
+          translations: LocalizationApp(),
+
+          // التوجيه
+          getPages: AppRoutes.routes,
+          initialRoute: Routes.splashPage,
+          initialBinding: AppBinding(),
+        ),
       ),
     );
   }

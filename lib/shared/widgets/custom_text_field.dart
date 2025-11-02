@@ -11,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final bool isObscure;
   final TextInputType textInputType;
   final int maxLines;
+  final int? maxLength;
   final bool isHintColor;
   final double contentPadding;
   // ignore: prefer_typing_uninitialized_variables
@@ -19,6 +20,7 @@ class CustomTextField extends StatelessWidget {
   final onChange;
   const CustomTextField(
       {Key? key,
+      this.maxLength,
       required this.controller,
       required this.hintText,
       required this.prefixIcon,
@@ -37,6 +39,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      maxLength: maxLength,
       controller: controller,
       keyboardType: textInputType,
       cursorColor: AppColors.blackDark,
