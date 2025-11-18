@@ -125,7 +125,7 @@ class OrderDetails extends StatelessWidget {
               //     color: AppColors.primaryDark,
               //   ),
               // ),
-              if (order.orderStatus == OrderStatuses.returnedToDeliveryCenter)
+              if (order.orderStatus == OrderStatuses.returnedToDeliveryCenter || order.orderStatus == OrderStatuses.onHold)
                 Column(
                   children: [
                     Padding(
@@ -311,13 +311,14 @@ Widget buildProductsSection(
                 ),
               ],
               image: DecorationImage(
-                image: NetworkImage(
-                  details.images.isNullOrEmpty
-                      ? (details.image ?? "")
-                      : details.images![0].toString(),
-                ),
-                fit: BoxFit.cover,
-              ),
+  image: details.images.isNullOrEmpty
+      ? (details.image != null && details.image!.isNotEmpty
+          ? NetworkImage(details.image!)
+          : const AssetImage('assets/pictures/image.jpg') as ImageProvider)
+      : NetworkImage(details.images![0].toString()),
+  fit: BoxFit.cover,
+),
+
             ),
           ),
           const SizedBox(width: 14),
@@ -340,9 +341,9 @@ Widget buildProductsSection(
                 const SizedBox(height: 8),
 
                 // المعلومات التفصيلية
-                infoRowWithIcon(Icons.price_check, 'Price'.tr, details.priceFormatted.toString()),
+                infoRowWithIcon(Icons.price_check, 'Price'.tr, (details.price * ordersController.currentOrder!.exchangerate).toStringAsFixed(0) + ordersController.currentOrder!.currencysymbol),
                 infoRowWithIcon(Icons.local_offer, 'Tax'.tr, product.tax.toString()),
-                infoRowWithIcon(Icons.discount, 'Discount'.tr, product.discount.toString()),
+                infoRowWithIcon(Icons.discount, 'Discount'.tr, (product.discount* ordersController.currentOrder!.exchangerate).toStringAsFixed(0) + ordersController.currentOrder!.currencysymbol),
                 infoRowWithIcon(Icons.attach_money, 'Price After Discount'.tr,
                     product.priceAfterDiscount.toString() == ''
                         ? 'No Data Now'.tr

@@ -174,7 +174,7 @@ const Map<String, String> en = {
   'Approved': 'Approved',
   'In Transt': 'In Transt',
   'Convert To Return To Location': 'Convert To Return To Location',
-  'Chose a location': 'Chose a location',
+  'Choose a location': 'Choose a location',
   'Avilable returned locations': 'Avilable returned locations',
   'Please chose a location': 'Please chose a location',
   'Rturned to location': 'Rturned to location'

@@ -15,9 +15,7 @@ class AppButton {
     double width = double.infinity,
     Key? key1,
   }) {
-    return Container(
-      margin: EdgeInsetsGeometry.all(1),
-      child: InkWell(
+    return  InkWell(
         onTap: onPress,
         key: key1,
         borderRadius: BorderRadius.circular(12),
@@ -56,7 +54,7 @@ class AppButton {
             ),
           ),
         ),
-      ),
+      
     );
   }
 }

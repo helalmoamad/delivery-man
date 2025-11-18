@@ -47,7 +47,7 @@ class OrderDetailsWithStatusButtons extends StatelessWidget {
                 // status == OrderStatuses.shipped ||
                 status == OrderStatuses.outForDelivery ||
                 status == OrderStatuses.delivered ||
-                //status == OrderStatuses.returnedToLocation ||
+                status == OrderStatuses.onHold ||
                 // status == OrderStatuses.failed ||
                 // status == OrderStatuses.canceled ||
                 // status == OrderStatuses.canceledArchived

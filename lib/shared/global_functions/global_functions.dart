@@ -376,6 +376,10 @@ class GlobalFunctions {
         {
           return PartialReturnButtons();
         }
+      case OrderStatuses.onHold:
+        {
+            return OutForDeleveryFromReturnButtons();
+        }
 
       case OrderStatuses.returned:
         {

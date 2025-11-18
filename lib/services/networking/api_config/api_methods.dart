@@ -104,7 +104,7 @@ class ApiMethodsDelivery {
 
       if (response.statusCode != 200) {
         await errorSender.sendError(await DeviceInfoHelper.createErrorLog(
-            errorType: 'BackEnd Error',
+            errorType: response.toString(),
             lastFourPageVisited: lastFourPageVisited,
             errorPath: uri.toString(),
             lastApiRequest: uri.toString(),
@@ -132,6 +132,12 @@ class ApiMethodsDelivery {
       debugPrint('Stack: ' + stack.toString());
       debugPrint(
           '\x1B[34m══════════════════════════════════════════════\x1B[0m\n');
+      await errorSender.sendError(await DeviceInfoHelper.createErrorLog(
+          errorType: error.toString(),
+          lastFourPageVisited: lastFourPageVisited,
+          errorPath: uri.toString(),
+          lastApiRequest: uri.toString(),
+          messageFromBackend: error.toString()));
 
       rethrow;
     } finally {
@@ -232,7 +238,7 @@ class ApiMethodsDelivery {
       }
       if (response.statusCode != 200) {
         await errorSender.sendError(await DeviceInfoHelper.createErrorLog(
-            errorType: 'BackEnd Error',
+            errorType: response.toString(),
             lastFourPageVisited: lastFourPageVisited,
             errorPath: uri.toString(),
             lastApiRequest: uri.toString(),
@@ -263,7 +269,7 @@ class ApiMethodsDelivery {
       debugPrint(
           '\x1B[34m══════════════════════════════════════════════\x1B[0m\n');
       await errorSender.sendError(await DeviceInfoHelper.createErrorLog(
-        errorType: 'BackEnd Error',
+        errorType: error.toString(),
         lastFourPageVisited: lastFourPageVisited,
         errorPath: uri.toString(),
         lastApiRequest: uri.toString(),

@@ -118,6 +118,9 @@ class OrderDataModel {
   final dynamic shippingAddressId;
   final dynamic orderGroupId;
   final dynamic verificationCode;
+    final dynamic exchangerate; //
+  final dynamic currencycode; //
+  final dynamic currencysymbol; //
   final dynamic sellerId;
   final List<ProductModel>? products;
   final List<ProductModel>? returnedProducts;
@@ -146,6 +149,9 @@ class OrderDataModel {
     required this.orderAmount,
     required this.orderAmountFormatted,
     required this.codAmount,
+    required this.exchangerate,
+    required this.currencycode,
+    required this.currencysymbol,
     required this.shippingAddressId,
     required this.orderGroupId,
     required this.verificationCode,
@@ -175,6 +181,9 @@ class OrderDataModel {
         orderStatusId: json["order_status_id"] ?? '',
         paymentMethod: json["payment_method"] ?? '',
         transactionRef: json["transaction_ref"] ?? '',
+        exchangerate: json["exchange_rate"] ?? '',
+        currencycode: json["currency_code"] ?? '',
+        currencysymbol: json["currency_symbol"] ?? '',
         orderAmount: json["order_amount"] ?? '',
         orderAmountFormatted: json["order_amount_formatted"] ?? '',
         codAmount: json["CODAmount"] ?? '',

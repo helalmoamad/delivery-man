@@ -171,7 +171,7 @@ const Map<String, String> ar = {
   'Approved': 'الموافقة',
   'In Transt': 'في الانتقال',
   'Convert To Return To Location': 'تحويل الى ارجاع الى الموقع',
-  'Chose a location': 'اختر موقع',
+  'Choose a location': 'اختر موقع',
   'Avilable returned locations': 'المواقع المتاحة للارجاع',
   'Please choose a location': 'الرجاء اختيار موقع',
   'Rturned to location': 'المعادة الى الموقع'

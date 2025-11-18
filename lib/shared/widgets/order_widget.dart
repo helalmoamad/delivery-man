@@ -443,7 +443,7 @@ class OrderWidget extends StatelessWidget {
                         const SizedBox(width: 4),
                         Expanded(
                           child: TextWidget(
-                            text: order.orderAmountFormatted.toString(),
+                            text: (order.orderAmount * order.exchangerate).toString() + order.currencysymbol.toString(),
                             color: Colors.grey.shade800,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
