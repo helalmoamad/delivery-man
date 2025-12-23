@@ -177,5 +177,20 @@ const Map<String, String> en = {
   'Choose a location': 'Choose a location',
   'Avilable returned locations': 'Avilable returned locations',
   'Please chose a location': 'Please chose a location',
-  'Rturned to location': 'Rturned to location'
+  'Rturned to location': 'Rturned to location',
+  'reject': 'reject',
+  'answer': 'answer',
+  'end_call': 'end call',
+  'did_no_answer': 'no answer',
+  'calling': 'calling',
+  'today': 'today',
+  'yesterday': 'yesterday',
+  'missed_call': 'missed call',
+  'income': 'income',
+  'Outcome': 'Outcome',
+  'everyone': 'everyone',
+  'only_me': 'only me',
+  'delete_message': 'delete message',
+  'delete': 'delete',
+  'have_orders': 'You have orders in delivery center or out for delivery'
 };

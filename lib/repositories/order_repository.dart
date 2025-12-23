@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
+import 'package:delivery_man_app/models/Orders/listDirectOrder.dart';
 import '../models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import '../models/Orders/list_order_model.dart';
 import '../models/Orders/update_order_response_model.dart';
@@ -41,6 +42,18 @@ class OrdersRepository {
         token: token,
         status: status,
         offset: offset,
+      ),
+    );
+  }
+
+
+    Future<Either<FailureDelivery, MyOrdersResponse>> getAllMyOrderData(
+      {required String token,}) async {
+    return RepoNetworkRequest.makeNetworkRequest<MyOrdersResponse>(
+      networkInfo: networkInfo,
+      isClientCloseFailure: true,
+      request: () => ordersApiService.getAllMyOrdersDataApi(
+        token: token,
       ),
     );
   }

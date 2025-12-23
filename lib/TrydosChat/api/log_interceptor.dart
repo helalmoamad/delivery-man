@@ -3,9 +3,11 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:delivery_man_app/TrydosChat/api/status_code_type.dart';
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/main.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
 
 enum _StatusType {
@@ -47,7 +49,7 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
       _StatusType statusType;
-      if (response.statusCode == StatusCode.operationSucceeded.code) {
+      if (response.statusCode == StatusCode.operationSucceeded.code || response.statusCode == 201) {
         statusType = _StatusType.succeed;
       } else {
         statusType = _StatusType.failed;
@@ -80,9 +82,14 @@ class LoggerInterceptor extends Interceptor with HandlingExceptionRequest {
                   .toString()
                   .contains("Unauth") ||
               jsonDecode(err.response.toString())["code"].toString() ==
-                  "401") &&
-          (err.requestOptions.path.contains("chating"))) {
+                  "401")) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('token');
         _prefsRepository.setChatToken("");
+        navigatorKey.currentState?.pushNamedAndRemoveUntil(
+          "/insertNumberPage",
+          (route) => false,
+        );
       }
     } catch (e) {
       log(e.toString());

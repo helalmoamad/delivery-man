@@ -4,7 +4,9 @@ import 'package:delivery_man_app/TrydosChat/chat_utils/use_case.dart';
 import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart'
     show ChatMessage;
 import 'package:delivery_man_app/TrydosChat/domain/repositories/chat_repository.dart';
+import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:injectable/injectable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @injectable
 class SendMessageUseCase extends UseCase<ChatMessage, SendMessageParams> {
@@ -47,7 +49,6 @@ class SendMessageParams {
         "message_type": messageType,
         "is_forward": isForward,
         "extra_fields": extraFields,
-        "image_original_width": imageWidth,
-        "image_original_Height": imageHeight,
+        "order_chat_participant_id": GlobalFunctions.getOrderChatParticipantId()
       };
 }

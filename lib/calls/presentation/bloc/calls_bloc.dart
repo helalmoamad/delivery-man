@@ -1,23 +1,21 @@
 import 'dart:async';
 
+import 'package:bloc/bloc.dart';
 import 'package:delivery_man_app/TrydosChat/chat_utils/use_case.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
-import 'package:delivery_man_app/TrydosChat/presentation/pages/chat_pages.dart';
+import 'package:delivery_man_app/calls/data/models/my_calls.dart';
+import 'package:delivery_man_app/calls/domain/useCase/delete_Message.dart';
 import 'package:delivery_man_app/calls/domain/useCase/get_agora_token_use_case.dart';
 import 'package:delivery_man_app/calls/domain/useCase/get_missed_call_count.dart';
 import 'package:delivery_man_app/calls/domain/useCase/get_my_calls.dart';
 import 'package:delivery_man_app/calls/domain/useCase/watch_missed_call.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-
-import '../../data/models/my_calls.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../domain/useCase/answer_call_usecase.dart';
-import '../../domain/useCase/delete_Message.dart';
 import '../../domain/useCase/reject_call_usecase.dart';
 import '../../domain/useCase/make_call_usecase.dart';
 
@@ -80,17 +78,15 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
     final response = await getMyCallsUseCase(NoParams());
     response.fold(
       (l) {
-        if (!isFailedTheFirstTime.contains('GetMyCall')) {
-          add(GetMyCallsEvent());
-          isFailedTheFirstTime.add('GetMyCall');
-        }
+        // if (ErrorManager.shouldRetry('GetMyCall', l.statusCode)) {
+        //   add(GetMyCallsEvent());
+        //   ErrorManager.incrementRetry('GetMyCall');
+        // }
 
         emit(state.copyWith(getMyCallsStatus: GetMyCallsStatus.failure));
       },
       (r) {
-        apisMustNotToRequest.add('GetMyCalls');
-
-        isFailedTheFirstTime.remove('GetMyCalls');
+        // ErrorManager.resetRetry('GetMyCalls');
 
         emit(state.copyWith(
             getMyCallsStatus: GetMyCallsStatus.success, callRegister: r.data));
@@ -245,7 +241,6 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   FutureOr<void> _onUserInteractWithCall(
       UserInteractWithCall event, Emitter<CallsState> emit) {
     emit(state.copyWith(
-        currentActiveCallId: null,
         stopRingToneReason: event.rejectIt
             ? StopRingToneReason.refuse
             : StopRingToneReason.accept));
@@ -259,7 +254,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
           messageId: event.messageId,
           channelId: event.channelId!,
           deleteForAll: event.deleteFromBoth == 1,
-          isDelete: 1,
+          isDelete: true,
           deletedByUserId: event.deleteFromId));
     } else {
       List<CallReg> callReg = state.callRegister!.map((e) {
@@ -281,7 +276,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
             messageId: event.messageId,
             channelId: event.channelId!,
             deleteForAll: event.deleteFromBoth == 0,
-            isDelete: 0,
+            isDelete: false,
             deletedByUserId: event.deleteFromId));
       } else {
         List<CallReg> callReg = state.callRegister!.map((e) {
@@ -313,7 +308,7 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
           messageId: event.messageId,
           channelId: event.channelId!,
           deleteForAll: event.deleteFromBoth == 1,
-          isDelete: 1,
+          isDelete: true,
           deletedByUserId: event.deleteFromId));
     } else {
       List<CallReg> callReg = state.callRegister!.map((e) {

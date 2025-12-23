@@ -4,6 +4,7 @@ import 'package:delivery_man_app/TrydosChat/chat_utils/use_case.dart';
 import 'package:delivery_man_app/calls/domain/repositories/calls_repository.dart';
 import 'package:injectable/injectable.dart';
 
+
 @injectable
 class DeleteMessageUseCase extends UseCase<bool, DeleteMessageParams> {
   final CallsRepository repository;

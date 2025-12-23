@@ -23,8 +23,8 @@ import '../models/my_chats_response_model.dart';
 @injectable
 class ChatRemoteDataSource {
   Future<MyContactsResponseModel> getContacts() {
-    GetClient<MyContactsResponseModel> getContacts =
-        GetClient<MyContactsResponseModel>(
+    PostClient<MyContactsResponseModel> getContacts =
+        PostClient<MyContactsResponseModel>(
       serverName: ServerName.chat,
       requestPrams: RequestConfig<MyContactsResponseModel>(
         endpoint: ChatEndPoints.getMyContactsEP,
@@ -122,7 +122,7 @@ class ChatRemoteDataSource {
       serverName: ServerName.chat,
       requestPrams: RequestConfig<GetOrderRecipientIdModel>(
         endpoint: ChatEndPoints.getOrderRecipientIdEP,
-        queryParameters: params,
+        data: params,
         response: ResponseValue<GetOrderRecipientIdModel>(fromJson: (response) {
           return GetOrderRecipientIdModel.fromJson(response);
 //return MyChatsResponseModel();

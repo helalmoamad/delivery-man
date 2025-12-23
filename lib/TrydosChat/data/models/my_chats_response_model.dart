@@ -476,7 +476,7 @@ class MessageContent {
   });
 
   factory MessageContent.fromJson(Map<String, dynamic> json) => MessageContent(
-        messageId: json["message_id"],
+        messageId: int.tryParse(json["message_id"].toString()),
         content: json["content"],
       );
 
@@ -542,16 +542,16 @@ class MessageStatus {
       );
 
   factory MessageStatus.fromJson(Map<String, dynamic> json) => MessageStatus(
-        id: json["id"],
-        userId: json["user_id"],
-        isDeleted: json["is_deleted"],
+        id: int.tryParse(json["id"].toString()),
+        userId: int.tryParse(json["user_id"].toString()),
+        isDeleted: (json["is_deleted"] == true) ? 1 : 0,
         deleteForAll: json["delete_for_all"],
         messageDeletedAt: json["message_deleted_at"] == null
             ? null
             : DateTime.parse(json["message_deleted_at"]),
         isSent: json["is_sent"],
         isReceived: json["is_received"],
-        isWatched: json["is_watched"],
+        isWatched: (json["is_watched"] == 1) ? true : false,
         watchedAt: json["watched_at"] == null
             ? null
             : DateTime.parse(json["watched_at"]),
@@ -630,10 +630,10 @@ class ChannelMember {
 
   factory ChannelMember.fromJson(Map<String, dynamic> json) => ChannelMember(
         channelId: json["channel_id"].toString(),
-        userId: json["user_id"],
+        userId: int.tryParse(json["user_id"].toString()),
         pin: json["pin"],
         archived: json["archived"],
-        mute: json["mute"],
+        mute: int.tryParse(json["mute"].toString()),
         user: json["user"] == null ? null : User.fromJson(json["user"]),
       );
 
@@ -661,7 +661,7 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        id: json["id"],
+        id: int.tryParse(json["id"].toString()),
         mobilePhone: json["mobile_phone"],
         photoPath: json["photo_path"],
         name: json["name"],

@@ -26,7 +26,7 @@ extension ScopeApi on String {
       '$_api/${current ? _currentVersion : _previousVersion}/messages/$this';
 
   String oederScope({bool current = false}) =>
-      '$_api/${current ? _currentVersion : _previousVersion}/order-chat-participants/$this';
+      '$_api/${current ? _currentVersion : _previousVersion}/orderChatParticipant/$this';
 
   String firebaseTokensScope({bool current = false}) =>
       '$_api/${current ? _currentVersion : _previousVersion}/firebase_tokens${this != '' ? '/$this' : ''}';
@@ -46,7 +46,7 @@ abstract class ChatEndPoints {
       '${userId}'.usersScope();
   static final saveContactsEP = 'save_contacts'.usersScope();
   static final myCallReg = 'my_calls'.channelsScope();
-  static final getOrderRecipientIdEP = "get-recipient".oederScope();
+  static final getOrderRecipientIdEP = "orderChatParticipant/get-recipient".channelsScope();
 
   ///! ----< No scope >----
   static final createUserEP = 'create_user'.noScope();
@@ -64,7 +64,7 @@ abstract class ChatEndPoints {
   static final deleteChatEP = 'destroy'.channelsScope();
   static final deleteMessage = 'destroy'.messagesScope();
   static final getDateTime = 'get_date_time'.channelsScope();
-  static final missedCallCount = 'missed_cals_of_user'.messagesScope();
+  static final missedCallCount = 'missed_calls_of_user'.messagesScope();
   static final watchMissedCall = 'wached_all_calls'.messagesScope();
 
   static String readAllMessagesEP(String channelId) =>

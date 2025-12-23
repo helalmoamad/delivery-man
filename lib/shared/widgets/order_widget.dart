@@ -479,7 +479,6 @@ class OrderWidget extends StatelessWidget {
               ),
             ),
 
-            /// أيقونة التفاصيل
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: GestureDetector(

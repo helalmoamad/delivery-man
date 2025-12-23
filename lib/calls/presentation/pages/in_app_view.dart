@@ -1,21 +1,20 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
-import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/pages/single_page_chat.dart';
 import 'package:delivery_man_app/calls/presentation/bloc/calls_bloc.dart';
+import 'package:delivery_man_app/message_error_log/PagesMonitor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:vibration/vibration.dart';
 
+
+// ignore: must_be_immutable
 class AgoraInAppWebView extends StatefulWidget {
   String type;
   String channelId;
@@ -42,7 +41,7 @@ class AgoraInAppWebView extends StatefulWidget {
 class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   late Uri source;
   Timer? timer;
-  AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   void playIncomingCall() {
     _audioPlayer.play(AssetSource('audio/incoming_call.mp3'), volume: 1);
@@ -59,6 +58,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   late ChatBloc chatBloc;
   @override
   void initState() {
+    PagesMonitor.addPageToList(page: 'AgoraInAppWebView');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     debugPrint("asdafsd{${widget.channelId}");
     debugPrint("asdafsd{${widget.messageId}");
@@ -98,14 +98,8 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      print(
-          "///////*************7777777777777777777777777///////////////////////////////////////////${error}");
-
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: error.toString(), lastPage: "Agora_In_AppWeb_View"));
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      //LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
 
     return BlocListener<CallsBloc, CallsState>(
@@ -116,7 +110,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         }
       },
       listenWhen: (p, c) => p.stopRingToneReason != c.stopRingToneReason,
-      child: WillPopScope(
+      child:
+          // ignore: deprecated_member_use
+          WillPopScope(
         onWillPop: () => Future.value(false),
         child: Scaffold(
           body: Stack(
@@ -151,7 +147,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     _audioPlayer.dispose();
                   }
                   if (url.toString().contains('callInProg')) {
-                    Timer.periodic(Duration(seconds: 7), (timer) {
+                    Timer.periodic(const Duration(seconds: 7), (timer) {
                       controller.stopLoading();
                       controller.dispose();
                       if (context.canPop() &&
@@ -247,12 +243,13 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                         "///////*111111111111111111111111111111111111*********${progress}**4444444444444444*7777777777777777777777777/////////////////////////////////////////*************");
 
                     if (progress < 100)
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     if (timer == null && !widget.isReceivingCall) {
-                      timer = Timer.periodic(Duration(seconds: 14), (timer) {
+                      timer =
+                          Timer.periodic(const Duration(seconds: 14), (timer) {
                         playWaitingCall();
                       });
-                      Future.delayed(Duration(seconds: 7), () {
+                      Future.delayed(const Duration(seconds: 7), () {
                         timer?.cancel();
                         if (_audioPlayer.state == PlayerState.playing) {
                           _audioPlayer.dispose();
@@ -260,10 +257,11 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       });
                     } else if (timer == null && widget.isReceivingCall) {
                       startVibration();
-                      timer = Timer.periodic(Duration(seconds: 2), (timer) {
+                      timer =
+                          Timer.periodic(const Duration(seconds: 2), (timer) {
                         playIncomingCall();
                       });
-                      Future.delayed(Duration(seconds: 7), () {
+                      Future.delayed(const Duration(seconds: 7), () {
                         timer?.cancel();
                         if (_audioPlayer.state == PlayerState.playing) {
                           _audioPlayer.dispose();

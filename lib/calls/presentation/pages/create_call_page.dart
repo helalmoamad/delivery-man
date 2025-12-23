@@ -3,22 +3,21 @@ import 'package:delivery_man_app/TrydosChat/chat_utils/build_context.dart';
 import 'package:delivery_man_app/TrydosChat/chat_utils/theme_state.dart';
 import 'package:delivery_man_app/TrydosChat/config/theme/my_color_scheme.dart';
 import 'package:delivery_man_app/TrydosChat/config/theme/typography.dart';
-import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
-import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/utils/responsive_padding.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_cached_network_image.dart';
-import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_text_widget.dart'
-    show MyTextWidget;
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_text_widget.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/widgets/trydos_loader.dart';
 import 'package:delivery_man_app/calls/presentation/bloc/calls_bloc.dart';
 import 'package:delivery_man_app/calls/presentation/widgets/call_status_widget.dart';
+import 'package:delivery_man_app/message_error_log/PagesMonitor.dart';
+import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 
 import '../widgets/no_image_widget.dart';
 
@@ -43,6 +42,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
   late ChatBloc chatBloc;
   @override
   void initState() {
+    PagesMonitor.addPageToList(page: 'CreateCallPage');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     if (GetIt.I<CallsBloc>().state.makeCallStatus == MakeCallStatus.endCall)
       Navigator.of(context).pop();
@@ -54,11 +54,8 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
   @override
   Widget build(BuildContext context) {
     FlutterError.onError = (FlutterErrorDetails error) {
-      chatBloc.add(SendErrorChatToServerEvent(
-          error: error.toString(), lastPage: "Create_Call_Page"));
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: error.toString());
+      //LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
     };
 
     GetIt.I<CallsBloc>().add(InitResponseRejectVideoCallEvent());
@@ -70,7 +67,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
           listener: (context, state) {
             if (state.makeCallStatus == MakeCallStatus.cancel) {
               Future.delayed(
-                Duration(seconds: 1),
+                const Duration(seconds: 1),
                 () {
                   Navigator.of(context).pop();
                 },
@@ -97,11 +94,11 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                         borderRadius:
                                             BorderRadius.circular(12.0),
                                         border: Border.all(
-                                            width: 1.0,
                                             color: const Color(0xff388cff)),
                                         boxShadow: [
                                           BoxShadow(
                                               color: colorScheme.white
+                                                  // ignore: deprecated_member_use
                                                   .withOpacity(0.35),
                                               offset: const Offset(0, 10),
                                               blurRadius: 30,
@@ -119,12 +116,10 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                   : NoImageWidget(
                                       width: 60.w,
                                       height: 80.h,
-                                      textStyle: context
-                                          .textTheme.bodyMedium?.br
-                                          .copyWith(
-                                              color: const Color(0xff6638FF),
-                                              letterSpacing: 0.18,
-                                              height: 1.33),
+                                      textStyle: TextStyle(
+                                        fontSize: 40.sp,
+                                        color: colorScheme.white,
+                                      ),
                                       name: widget.receiverName),
                               15.verticalSpace,
                               MyTextWidget(
@@ -135,11 +130,11 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                               80.verticalSpace,
                               state.makeCallStatus == MakeCallStatus.cancel
                                   ? CallStatusWidget(
-                                      text: "did_no_answer",
+                                      text: 'did_no_answer'.tr,
                                       iconUrl: 'assets/svg/end_call.svg',
-                                      textColor: Color(0xFFFF0000))
+                                      textColor: const Color(0xFFFF0000))
                                   : CallStatusWidget(
-                                      text: "calling",
+                                      text: 'calling'.tr,
                                       iconUrl: AppAssets.callingSvg,
                                       textColor: colorScheme.grey200,
                                     ),
@@ -172,7 +167,7 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                                 ),
                                 10.verticalSpace,
                                 MyTextWidget(
-                                  "end_call",
+                                  'end_call'.tr,
                                   style: textTheme.titleLarge?.lr
                                       .copyWith(color: const Color(0xffFF5F61)),
                                 ),
@@ -198,7 +193,11 @@ class _CreateCallPageState extends ThemeState<CreateCallPage> {
                     },
                     child: Transform(
                       alignment: Alignment.center,
-                      transform: (Matrix4.identity()..scale(-1.0, 1.0, 1.0)),
+                      transform: (Matrix4.identity()
+                        ..scale(
+                            GlobalFunctions.getLanLocal() == 'ar' ? -1.0 : 1.0,
+                            1.0,
+                            1.0)),
                       child: SvgPicture.asset(
                         AppAssets.backFromCallSvg,
                         height: 20,

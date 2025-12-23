@@ -5,12 +5,12 @@
 import 'dart:convert';
 
 import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart';
+import 'package:delivery_man_app/models/Chat/message.dart';
 
-MakeCallRemoteResponseModel makeCallRemoteResponseModelFromJson(String str) =>
-    MakeCallRemoteResponseModel.fromJson(json.decode(str));
 
-String makeCallRemoteResponseModelToJson(MakeCallRemoteResponseModel data) =>
-    json.encode(data.toJson());
+MakeCallRemoteResponseModel makeCallRemoteResponseModelFromJson(String str) => MakeCallRemoteResponseModel.fromJson(json.decode(str));
+
+String makeCallRemoteResponseModelToJson(MakeCallRemoteResponseModel data) => json.encode(data.toJson());
 
 class MakeCallRemoteResponseModel {
   bool? isSuccessful;
@@ -46,24 +46,23 @@ class MakeCallRemoteResponseModel {
         data: data ?? this.data,
       );
 
-  factory MakeCallRemoteResponseModel.fromJson(Map<String, dynamic> json) =>
-      MakeCallRemoteResponseModel(
-        isSuccessful: json["isSuccessful"],
-        hasContent: json["hasContent"],
-        code: json["code"],
-        message: json["message"],
-        detailedError: json["detailed_error"],
-        data: json["data"] == null ? null : Data.fromJson(json["data"]),
-      );
+  factory MakeCallRemoteResponseModel.fromJson(Map<String, dynamic> json) => MakeCallRemoteResponseModel(
+    isSuccessful: json["isSuccessful"],
+    hasContent: json["hasContent"],
+    code: json["code"],
+    message: json["message"],
+    detailedError: json["detailed_error"],
+    data: json["data"] == null ? null : Data.fromJson(json["data"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "isSuccessful": isSuccessful,
-        "hasContent": hasContent,
-        "code": code,
-        "message": message,
-        "detailed_error": detailedError,
-        "data": data?.toJson(),
-      };
+    "isSuccessful": isSuccessful,
+    "hasContent": hasContent,
+    "code": code,
+    "message": message,
+    "detailed_error": detailedError,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
@@ -85,14 +84,12 @@ class Data {
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        message: json["message"] == null
-            ? null
-            : ChatMessage.fromJson(json["message"]),
-        token: json["token"],
-      );
+    message: json["message"] == null ? null : ChatMessage.fromJson(json["message"]),
+    token: json["token"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "message": message?.toJson(),
-        "token": token,
-      };
+    "message": message?.toJson(),
+    "token": token,
+  };
 }

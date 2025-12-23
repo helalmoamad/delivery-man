@@ -25,7 +25,8 @@ class ReturnedOrderList extends StatelessWidget {
     FlutterError.onError = (details) async {
       FlutterError.presentError(details);
       final log = await DeviceInfoHelper.createErrorLog(
-          errorType: "Type:${details.exception.runtimeType.toString()} ${details.exceptionAsString().toString()}",
+          errorType:
+              "Type:${details.exception.runtimeType.toString()} ${details.exceptionAsString().toString()}",
           lastFourPageVisited: lastFourPageVisited,
           errorPath: details.stack.toString(),
           lastApiRequest: '');
@@ -35,6 +36,7 @@ class ReturnedOrderList extends StatelessWidget {
     };
     final ordersData = ordersController.ordersData;
     final orders = ordersData?.data?.data;
+    final myOrders = ordersController.myAllOrdersData?.data!!;
 
     if (orders == null || orders.isEmpty) {
       return EmptyDataWidget(
@@ -48,46 +50,54 @@ class ReturnedOrderList extends StatelessWidget {
         },
       );
     }
+    // here
+    return (myOrders != null &&
+            myOrders.isNotEmpty &&
+            myOrders.any((el) =>
+             ((el.orderStatus == 'delivered' || el.orderStatus == 'out_for_return') && el.parentOrderId != null) ||
+            ((el.orderStatus == 'in_delivery_center' || el.orderStatus == 'out_for_delivery') && el.parentOrderId == null)))
+        ? Center(
+                child: Text('have_orders'.tr),
+          )
+        : ListView.separated(
+            controller: ordersController.orderScrollController,
+            itemCount: orders.length + 1,
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              if (index < orders.length) {
+                return OrderWidget(
+                  orders: orders,
+                  index: index,
+                  onTapViewDetails: () async {
+                    ordersController.orderIdForDetails = orders[index].id!;
+                    ordersController.currentOrder = orders[index];
+                    await GlobalFunctions.setIsFromNotifiForNewOrder(
+                        isFromNotifiForNewOrder: false);
+                    GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
+                    GetIt.I<PrefsRepository>().setMyParentOrderIdForChat("");
 
-    return ListView.separated(
-      controller: ordersController.orderScrollController,
-      itemCount: orders.length + 1,
-      physics: const AlwaysScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        if (index < orders.length) {
-          return OrderWidget(
-            orders: orders,
-            index: index,
-            onTapViewDetails: () async {
-              ordersController.orderIdForDetails = orders[index].id!;
-              ordersController.currentOrder = orders[index];
-              await GlobalFunctions.setIsFromNotifiForNewOrder(
-                  isFromNotifiForNewOrder: false);
-              GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
-              GetIt.I<PrefsRepository>().setMyParentOrderIdForChat("");
-
-              ordersController.previousRoute = Get.currentRoute;
-              Get.toNamed(Routes.ordersDetailsPage);
+                    ordersController.previousRoute = Get.currentRoute;
+                    Get.toNamed(Routes.ordersDetailsPage);
+                  },
+                );
+              } else {
+                if (orders.length > 4) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Center(
+                      child: ordersController.orderNoMoreItems
+                          ? Text('No More Items'.tr)
+                          : const CircularProgressIndicator(),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              }
+            },
+            separatorBuilder: (context, index) {
+              return const SizedBox();
             },
           );
-        } else {
-          if (orders.length > 4) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Center(
-                child: ordersController.orderNoMoreItems
-                    ? Text('No More Items'.tr)
-                    : const CircularProgressIndicator(),
-              ),
-            );
-          } else {
-            return Container();
-          }
-        }
-      },
-      separatorBuilder: (context, index) {
-        return const SizedBox();
-      },
-    );
   }
 }

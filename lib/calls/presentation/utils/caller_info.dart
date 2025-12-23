@@ -4,6 +4,8 @@ import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart'
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
+
+
 List<Map<String, dynamic>> callerInfo({required String channelId}) {
   FlutterError.onError = (details) {
     debugPrint("asfsd${details.toString()}");
@@ -13,10 +15,10 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
   };
   Chat currentChat = GetIt.I<ChatBloc>().state.chats.firstWhere(
       (element) => element.id == channelId || element.localId == channelId,
-      orElse: () => GetIt.I<ChatBloc>().state.pinnedChats.firstWhere(
-            (element) =>
-                element.id == channelId || element.localId == channelId,
-          ));
+      orElse: () => GetIt.I<ChatBloc>()
+          .state
+          .pinnedChats
+          .firstWhere((element) => element.id == channelId || element.localId == channelId,));
 
   ChannelMember currentReceiver = currentChat.channelMembers!.firstWhere(
       (element) => element.userId! != GetIt.I<PrefsRepository>().myChatId);
@@ -46,10 +48,9 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
   String callerName = GetIt.I<PrefsRepository>().myChatName ??
       GetIt.I<PrefsRepository>().myPhoneNumber ??
       'Un Known';
-  String? callerPhoto = GetIt.I<PrefsRepository>().myChatPhoto ??
-      (GetIt.I<PrefsRepository>().myChatPhoto == 'null'
-          ? null
-          : GetIt.I<PrefsRepository>().myChatPhoto);
+  String? callerPhoto = GetIt.I<PrefsRepository>().myChatPhoto ?? (GetIt.I<PrefsRepository>().myChatPhoto == 'null'
+      ? null
+      : GetIt.I<PrefsRepository>().myChatPhoto);
   // String? callerPhoto = currentCaller.user == null
   //     ? null
   //     : (currentCaller.user!.photoPath == null
@@ -62,9 +63,9 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
       {
         "callerName": callerName,
         "callerPhoto": callerPhoto,
-        "channelId": currentChat.id.toString(),
+        "channelId" : currentChat.id.toString(),
         "mobilePhone": GetIt.I<PrefsRepository>().myPhoneNumber,
-        "Target": 'Application'
+        "Target" : 'Application'
       }
     ];
   }
@@ -73,9 +74,9 @@ List<Map<String, dynamic>> callerInfo({required String channelId}) {
     {
       "callerName": callerName,
       "callerPhoto": callerPhoto,
-      "channelId": currentChat.id.toString(),
+      "channelId" : currentChat.id.toString(),
       "mobilePhone": GetIt.I<PrefsRepository>().myPhoneNumber,
-      "Target": 'Application'
+      "Target" : 'Application'
     }
   ];
 }

@@ -8,9 +8,11 @@ import 'package:delivery_man_app/main.dart';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
 import 'package:delivery_man_app/models/Orders/change_status_model.dart';
+import 'package:delivery_man_app/models/Orders/listDirectOrder.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/assign_order_tome_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_received_amount_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/change_order_status.dart';
+import 'package:delivery_man_app/providers/Orders_providers.dart/getAllMyOrdersProvider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/getReturnedOrders.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/get_my_orders_for_chat_provider.dart';
 import 'package:delivery_man_app/providers/Orders_providers.dart/get_my_orders_provider.dart';
@@ -102,6 +104,9 @@ class OrdersController extends GetxController {
   GetOrderStatusDataProvider getOrderStatusDataProvider =
       Get.find<GetOrderStatusDataProvider>();
 
+  GetAllMyOrderDataProvider getAllMyOrdersProvider =
+      Get.find<GetAllMyOrderDataProvider>();
+
   late ScrollController orderScrollController;
   int orderPaginationOffset = 2;
   bool orderNoMoreItems = false;
@@ -123,9 +128,11 @@ class OrdersController extends GetxController {
   bool isGetMyOrderStatusNoInternetConnection = false;
 
   ListOrderModel? myOrdersData;
+  MyOrdersResponse? myAllOrdersData;
   GetOrderForChat? myOrderForChatData;
   late GetMyOrdersProvider getMyOrdersProvider =
       Get.find<GetMyOrdersProvider>();
+
   late GetMyOrdersForChatProvider getMyOrdersForChatProvider =
       Get.find<GetMyOrdersForChatProvider>();
 
@@ -238,9 +245,9 @@ class OrdersController extends GetxController {
         timerService.stopTimer(isGlobalTimer: false);
       }
 
+      await getAllMyOrders(token: token);
       orderStatus = OrderStatuses.inDeliveryCenter;
       await getListOrderData(token: token, status: orderStatus, offset: 1);
-
       orderScrollController.addListener(() async {
         if (orderScrollController.position.maxScrollExtent ==
             orderScrollController.offset) {
@@ -261,10 +268,10 @@ class OrdersController extends GetxController {
         timerService.stopTimer(isGlobalTimer: false);
       }
 
+      await getAllMyOrders(token: token);
       orderStatus = OrderStatuses.delivered;
       await getListReturnedOrderData(
           token: token, status: orderStatus, offset: 1);
-
       orderScrollController.addListener(() async {
         if (orderScrollController.position.maxScrollExtent ==
             orderScrollController.offset) {
@@ -310,6 +317,25 @@ class OrdersController extends GetxController {
     super.onClose();
 
     debugPrint('Order Controller closed');
+  }
+
+  Future<void> getAllMyOrders({
+    required String token,
+  }) async {
+    showGetOrdersCircleIndicator();
+    final failureOrGetOrdersData =
+        await getAllMyOrdersProvider.call(token: token);
+    failureOrGetOrdersData.fold((failure) {
+      HandlingFailures.networkErrorrHandling(
+        failure: failure,
+        hideCircleIndicator: () {},
+        showNoInternetPage: () {},
+      );
+    }, (getOrdersData) {
+      myAllOrdersData = getOrdersData;
+      hideGetOrdersCircleIndicator();
+      hideGetOrdersNoInternetPage();
+    });
   }
 
   void addReturnedProducts(ProductModel orderProduct) {

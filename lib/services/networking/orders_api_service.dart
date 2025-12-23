@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:delivery_man_app/models/AssignToVehicle/unassign_to_vehicle_model.dart';
 import 'package:delivery_man_app/models/Orders/assign_order_tome_data_model.dart';
+import 'package:delivery_man_app/models/Orders/listDirectOrder.dart';
 import 'package:delivery_man_app/services/networking/api_config/api_methods.dart';
+import 'package:flutter/material.dart';
 import '../../controllers/Client/client_controller.dart';
 import '../../controllers/Client/timer_service.dart';
 import '../../models/Orders/change_status_model.dart';
@@ -12,19 +14,19 @@ abstract class OrdersApiService {
   Future<ListOrderModel> getListOrderDataApi(
       {required String token, required String status, required int offset});
 
-
   Future<ListOrderModel> getListReturnedOrderDataApi(
       {required String token, required String status, required int offset});
 
   Future<ListOrderModel> getMyOrdersDataApi(
       {required String token, required String status, required int offset});
 
+  Future<MyOrdersResponse> getAllMyOrdersDataApi({required String token});
+
   Future<GetOrderForChat> getMyOrderDataForChatApi(
       {required String token, required String id, required int offset});
   Future<List<dynamic>> getOrderStatusDataApi(
     String token,
   );
-
 
   Future<UpdateOrderResponseModel> getOrderDetailsApi({
     required String token,
@@ -91,7 +93,6 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
     return response;
   }
 
-
   @override
   Future<ListOrderModel> getListReturnedOrderDataApi(
       {required String token,
@@ -126,6 +127,24 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
         isGlobalTimer: false,
         fromJson: ListOrderModel.fromJson);
 
+    return response;
+  }
+
+  @override
+  Future<MyOrdersResponse> getAllMyOrdersDataApi({
+    required String token,
+  }) async {
+    clientController.reOpenSecondaryClient();
+
+    final response = await ApiMethodsDelivery.getRequest<MyOrdersResponse>(
+        urlPath: 'orders/my_orders',
+        token: token,
+        client: clientController.secondaryClient,
+        timerService: timerService,
+        isGlobalTimer: false,
+        fromJson: MyOrdersResponse.fromJson);
+        
+    debugPrint('All my orders data: ${response.toString()}');
     return response;
   }
 

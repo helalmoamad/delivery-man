@@ -68,33 +68,66 @@ class GetOrderRecipientIdModel {
 
 class Data {
   final Recipient? recipient;
-  final Chat? chatParticipant;
+  final Chat? chat;
+  final ChatRespend? chatRespend;
+  
 
   Data({
     this.recipient,
-    this.chatParticipant,
+    this.chat,
+    this.chatRespend
   });
 
   Data copyWith({
     Recipient? recipient,
-    Chat? chatParticipant,
+    Chat? chat,
+    ChatRespend? chatRespend
   }) =>
       Data(
         recipient: recipient ?? this.recipient,
-        chatParticipant: chatParticipant ?? this.chatParticipant,
+        chat: chat ?? this.chat,
+        chatRespend: chatRespend ?? this.chatRespend
       );
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         recipient: json["recipient"] == null
             ? null
             : Recipient.fromJson(json["recipient"]),
-        chatParticipant:
+        chat:
             json["channel"] == null ? null : Chat.fromJson(json["channel"]),
+        chatRespend:
+            json["chat_participant"] == null ? null : ChatRespend.fromJson(json["chat_participant"]),
+
       );
 
   Map<String, dynamic> toJson() => {
         "recipient": recipient?.toJson(),
-        "channel": chatParticipant?.toJson(),
+        "channel": chat?.toJson(),
+        "chat_participant" : chatRespend?.toJson(),
+      };
+}
+
+
+class ChatRespend {
+  final int? id;
+
+  ChatRespend({
+    this.id,
+  });
+
+  ChatRespend copyWith({
+    int? id,
+  }) =>
+      ChatRespend(
+        id: id ?? this.id,
+      );
+
+  factory ChatRespend.fromJson(Map<String, dynamic> json) => ChatRespend(
+        id: int.tryParse(json["id"].toString()) ,
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
       };
 }
 
@@ -113,7 +146,7 @@ class Recipient {
       );
 
   factory Recipient.fromJson(Map<String, dynamic> json) => Recipient(
-        id: json["id"],
+        id: int.tryParse(json["id"].toString()) ,
       );
 
   Map<String, dynamic> toJson() => {

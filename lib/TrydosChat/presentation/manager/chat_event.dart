@@ -510,7 +510,7 @@ class DeleteMessageNotificationReceivedInChatsEvent extends ChatEvent {
   final String messageId;
   final String channelId;
   final bool deleteForAll;
-  final int isDelete;
+  final bool isDelete;
   final int deletedByUserId;
   const DeleteMessageNotificationReceivedInChatsEvent(
       {required this.messageId,

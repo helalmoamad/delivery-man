@@ -13,6 +13,7 @@ import 'package:delivery_man_app/providers/Auth_providers/send_otp_provider.dart
 import 'package:delivery_man_app/providers/Auth_providers/verify_otp_provider.dart'
     show VerifyOtpProvider;
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
@@ -350,10 +351,12 @@ class AuthController extends GetxController {
         );
       },
       (data) async {
-        GetIt.I<ChatBloc>().add(StoreFcmTokenEvent(
-            userId: GlobalFunctions.getUserId(),
-            fcmToken: GetIt.I<PrefsRepository>().getFcmToken ?? ""));
         chatLoginData = data;
+        GetIt.I<ChatBloc>().add(StoreFcmTokenEvent(
+          
+            userId: chatLoginData!.data!.id!,
+            fcmToken: GetIt.I<PrefsRepository>().getFcmToken ?? ""));
+        
         await _prefsRepository
             .setChatToken(chatLoginData!.data!.accessToken ?? '');
 
@@ -364,6 +367,7 @@ class AuthController extends GetxController {
             .setMyChatPhoto(chatLoginData!.data!.photoPath ?? '');
         await GlobalFunctions.setChatToken(
             chatToken: chatLoginData!.data!.accessToken ?? '');
+        
 
         hideChatLoginCircleIndicator();
         SnackBarWidgets.showSuccessSnackBar('Login Succeeded'.tr, '');

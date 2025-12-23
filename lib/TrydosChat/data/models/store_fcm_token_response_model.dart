@@ -62,8 +62,8 @@ class Data {
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    id: json["id"],
-    userId: json["user_id"],
+    id: int.tryParse(json["id"].toString()),
+    userId: int.tryParse(json["user_id"].toString()),
     token: json["token"],
     authToken: json["auth_token"],
     isLockedByAdminForDelete: json["is_locked_by_admin_for_delete"],

@@ -24,6 +24,10 @@ class NoImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      //LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Container(
       width: width,
       height: height,
@@ -31,6 +35,7 @@ class NoImageWidget extends StatelessWidget {
           boxShadow: thereActivity
               ? [
                   BoxShadow(
+                      // ignore: deprecated_member_use
                       color: const Color(0xff007CFF).withOpacity(0.16),
                       offset: const Offset(0, 3),
                       blurRadius: 6)
@@ -38,15 +43,15 @@ class NoImageWidget extends StatelessWidget {
               : withImageShadow
                   ? [
                       BoxShadow(
+                        // ignore: deprecated_member_use
                         color: context.colorScheme.black.withOpacity(0.16),
                         offset: const Offset(0, 3),
                         blurRadius: 6,
                       ),
                     ]
                   : null,
-          border: thereActivity
-              ? Border.all(color: const Color(0xff007CFF), width: 1)
-              : null,
+          border:
+              thereActivity ? Border.all(color: const Color(0xff007CFF)) : null,
           borderRadius: BorderRadius.circular(radius),
           gradient: const LinearGradient(
             colors: [

@@ -31,6 +31,7 @@ class OrderList extends StatelessWidget {
       await Sentry.captureException(details.exception,
           stackTrace: details.stack);
     };
+    final myOrders = ordersController.myAllOrdersData?.data!;
     final orders = ordersController.ordersData!.data!.data!;
     return orders.isEmpty
         ? EmptyDataWidget(
@@ -42,46 +43,57 @@ class OrderList extends StatelessWidget {
                   offset: 1);
             },
           )
-        : ListView.separated(
-            controller: ordersController.orderScrollController,
-            itemCount: orders.length + 1,
-            physics: const AlwaysScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              if (index < orders.length) {
-                return OrderWidget(
-                    orders: orders,
-                    index: index,
-                    onTapViewDetails: () async {
-                      ordersController.orderIdForDetails = orders[index].id!;
-                      ordersController.currentOrder = orders[index];
-                      await GlobalFunctions.setIsFromNotifiForNewOrder(
-                          isFromNotifiForNewOrder: false);
-                      GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
-                      GetIt.I<PrefsRepository>().setMyParentOrderIdForChat("");
+        : (myOrders != null &&
+                myOrders.isNotEmpty &&
+                myOrders.any((el) =>
+                ((el.orderStatus == 'in_delivery_center' || el.orderStatus == 'out_for_delivery') && el.parentOrderId == null) // free
+                     ||
+                ((el.orderStatus == 'delivered' ||el.orderStatus == 'out_for_return') && el.parentOrderId != null))) // return
+            ? Center(
+                child: Text('have_orders'.tr),
+              )
+            : ListView.separated(
+                controller: ordersController.orderScrollController,
+                itemCount: orders.length + 1,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  if (index < orders.length) {
+                    return OrderWidget(
+                        orders: orders,
+                        index: index,
+                        onTapViewDetails: () async {
+                          ordersController.orderIdForDetails =
+                              orders[index].id!;
+                          ordersController.currentOrder = orders[index];
+                          await GlobalFunctions.setIsFromNotifiForNewOrder(
+                              isFromNotifiForNewOrder: false);
+                          GetIt.I<PrefsRepository>().setMyOrderIdForChat("");
+                          GetIt.I<PrefsRepository>()
+                              .setMyParentOrderIdForChat("");
 
-                      ordersController.previousRoute = Get.currentRoute;
-                      Get.toNamed(Routes.ordersDetailsPage);
-                    });
-              } else {
-                if (orders.length > 4) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 20, top: 2),
-                    child: Center(
-                      child: ordersController.orderNoMoreItems
-                          ? Text('No More Items'.tr)
-                          : const CircularProgressIndicator(),
-                    ),
+                          ordersController.previousRoute = Get.currentRoute;
+                          Get.toNamed(Routes.ordersDetailsPage);
+                        });
+                  } else {
+                    if (orders.length > 4) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 20, top: 2),
+                        child: Center(
+                          child: ordersController.orderNoMoreItems
+                              ? Text('No More Items'.tr)
+                              : const CircularProgressIndicator(),
+                        ),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  }
+                },
+                separatorBuilder: (context, index) {
+                  return const SizedBox(
+                    height: 1,
                   );
-                } else {
-                  return Container();
-                }
-              }
-            },
-            separatorBuilder: (context, index) {
-              return const SizedBox(
-                height: 1,
+                },
               );
-            },
-          );
   }
 }

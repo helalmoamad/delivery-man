@@ -33,11 +33,13 @@ import 'package:delivery_man_app/TrydosChat/domain/use_cases/upload_file_usecase
 import 'package:delivery_man_app/TrydosChat/helper/helper_functions.dart';
 import 'package:delivery_man_app/TrydosChat/helper/show_message.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/pages/chat_pages.dart';
+import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:uuid/uuid.dart';
 import 'chat_event.dart';
@@ -823,13 +825,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             getOrderRecipientIdStatus: GetOrderRecipientIdStatus.failure));
       },
       (r) {
+        GlobalFunctions.setOrderChatParticipantId(chatParticipantId: r.data?.chatRespend?.id.toString() ?? "");
         isFailedTheFirstTime.remove('GetOrderRecipientIdEvent');
         List<Chat> newChats = [];
         String uuid = const Uuid().v4();
         newChats.insert(
             0,
-            r.data?.chatParticipant != null
-                ? r.data!.chatParticipant!
+            r.data?.chat != null
+                ? r.data!.chat!
                 : chats.Chat(
                     id: uuid,
                     localId: uuid,
@@ -2022,7 +2025,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         authMessageStatus: MessageStatus(
             isDeleted: state.currentFailedMessage.contains(event.messageId)
                 ? 1
-                : event.isDelete,
+                : (event.isDelete == true ? 1 : 0),
             deleteForAll: event.deleteForAll));
     if (!event.deleteForAll) {
       chat.messages?.removeAt(index);

@@ -87,8 +87,10 @@ class PostClient<T> extends BaseApi<T> {
         onUploadingFinished?.call(false);
         return error;
       });
+        print("obj#####111111111111111111    ${response.statusCode}   1111111111111########################################ct");
 
-      if (response.statusCode == StatusCode.operationSucceeded.code) {
+      if (response.statusCode == StatusCode.operationSucceeded.code || response.statusCode == 201) {
+        print("obj###################${response.statusCode}##########################ct");
         if (_fromJson == null) {
           return Future.value(_valueOnSuccess);
         }

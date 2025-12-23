@@ -6,7 +6,6 @@ import 'package:delivery_man_app/TrydosChat/api/methods/detect_server.dart';
 import 'package:delivery_man_app/TrydosChat/api/methods/post.dart';
 import 'package:delivery_man_app/calls/data/models/missed_call_count.dart';
 import 'package:delivery_man_app/calls/data/models/my_calls.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 
 import '../models/agora_token_remote_response_model.dart';

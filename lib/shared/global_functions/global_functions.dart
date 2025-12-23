@@ -82,6 +82,16 @@ class GlobalFunctions {
     debugPrint(isLoggedIn.toString());
   }
 
+  static Future<void> setOrderChatParticipantId({required String chatParticipantId}) async {
+    await prefs.setString('order_chat_participant_id', chatParticipantId);
+    debugPrint(chatParticipantId.toString());
+  }
+
+  static String getOrderChatParticipantId() {
+    String chatParticipantId = prefs.getString('order_chat_participant_id') ?? "";
+    return chatParticipantId;
+  }
+
   static bool getIsLoggedIn() {
     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     debugPrint('isLoggedIn :  ${isLoggedIn.toString()}');

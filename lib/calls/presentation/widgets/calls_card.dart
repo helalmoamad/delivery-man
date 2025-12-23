@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:delivery_man_app/TrydosChat/chat_utils/assets_provider.dart';
 import 'package:delivery_man_app/TrydosChat/chat_utils/build_context.dart';
 import 'package:delivery_man_app/TrydosChat/chat_utils/theme_state.dart';
@@ -7,7 +6,6 @@ import 'package:delivery_man_app/TrydosChat/config/theme/my_color_scheme.dart';
 import 'package:delivery_man_app/TrydosChat/config/theme/typography.dart';
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/TrydosChat/helper/helper_functions.dart';
-import 'package:delivery_man_app/TrydosChat/helper/show_message.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/utils/responsive_padding.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/widgets/chat_card.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_cached_network_image.dart';
@@ -21,8 +19,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as LocaleKeys;
 import 'package:permission_handler/permission_handler.dart';
+
 
 class CallsCard extends StatefulWidget {
   const CallsCard({
@@ -60,16 +61,22 @@ class _CallsCardState extends ThemeState<CallsCard> {
   late CallsBloc callsBloc;
   final PrefsRepository _prefsRepository = GetIt.I<PrefsRepository>();
   ValueNotifier<int> typingIndicator = ValueNotifier(0);
+  Timer? _typingTimer;
 
   @override
   void initState() {
     callsBloc = BlocProvider.of<CallsBloc>(context);
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (typingIndicator.value == 5) {
-        typingIndicator.value = 0;
+    _typingTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        if (typingIndicator.value == 5) {
+          typingIndicator.value = 0;
+        } else {
+          typingIndicator.value++;
+        }
       } else {
-        typingIndicator.value++;
+        // إيقاف الـ Timer إذا تم التخلص من الـ Widget
+        timer.cancel();
       }
     });
     super.initState();
@@ -77,12 +84,20 @@ class _CallsCardState extends ThemeState<CallsCard> {
 
   @override
   void dispose() {
+    // إيقاف الـ Timer
+    _typingTimer?.cancel();
+
+    // تنظيف ValueNotifier
     typingIndicator.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (FlutterErrorDetails error) {
+      //LastPagesTracker.sendErrorToBlocAndLog(error);
+      FlutterError.dumpErrorToConsole(error);
+    };
     return Column(mainAxisSize: MainAxisSize.min, children: [
       Container(
         height: widget.index == 0 ? 0 : 0.4,
@@ -95,53 +110,54 @@ class _CallsCardState extends ThemeState<CallsCard> {
             extentRatio: 0.25,
             children: [
               SlidableActionWidget(
-                text: "delete",
+                text: 'delete'.tr,
                 backgroundColor: const Color(0xffFFE8E8),
                 foregroundColor: const Color(0xffFA6868),
                 iconUrl: AppAssets.binSvg,
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (context) =>
-                        AlertDialog(title: Text("delete_message"), actions: [
-                      MaterialButton(
-                        onPressed: () {
-                          callsBloc.add(DeleteMessageEvent(
-                              deleteFromId: _prefsRepository.myChatId!,
-                              type: "call",
-                              deleteFromBoth: 0,
-                              messageId: widget.callRegId));
-                          callsBloc.add(DeleteMessageEvent(
-                              deleteFromId: _prefsRepository.myChatId!,
-                              type: "message",
-                              deleteFromBoth: 0,
-                              channelId: widget.chatId,
-                              messageId: widget.callRegId));
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("only_me"),
-                      ),
-                      SizedBox(
-                        width: 20.w,
-                      ),
-                      MaterialButton(
-                        onPressed: () {
-                          callsBloc.add(DeleteMessageEvent(
-                              type: "call",
-                              deleteFromBoth: 1,
-                              messageId: widget.callRegId,
-                              deleteFromId: _prefsRepository.myChatId!));
-                          callsBloc.add(DeleteMessageEvent(
-                              deleteFromId: _prefsRepository.myChatId!,
-                              type: "message",
-                              deleteFromBoth: 1,
-                              channelId: widget.chatId,
-                              messageId: widget.callRegId));
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("everyone"),
-                      )
-                    ]),
+                    builder: (context) => AlertDialog(
+                        title: Text('delete_message'.tr),
+                        actions: [
+                          MaterialButton(
+                            onPressed: () {
+                              callsBloc.add(DeleteMessageEvent(
+                                  deleteFromId: _prefsRepository.myChatId!,
+                                  type: "call",
+                                  deleteFromBoth: 0,
+                                  messageId: widget.callRegId));
+                              callsBloc.add(DeleteMessageEvent(
+                                  deleteFromId: _prefsRepository.myChatId!,
+                                  type: "message",
+                                  deleteFromBoth: 0,
+                                  channelId: widget.chatId,
+                                  messageId: widget.callRegId));
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('only_me'.tr),
+                          ),
+                          SizedBox(
+                            width: 20.w,
+                          ),
+                          MaterialButton(
+                            onPressed: () {
+                              callsBloc.add(DeleteMessageEvent(
+                                  type: "call",
+                                  deleteFromBoth: 1,
+                                  messageId: widget.callRegId,
+                                  deleteFromId: _prefsRepository.myChatId!));
+                              callsBloc.add(DeleteMessageEvent(
+                                  deleteFromId: _prefsRepository.myChatId!,
+                                  type: "message",
+                                  deleteFromBoth: 1,
+                                  channelId: widget.chatId,
+                                  messageId: widget.callRegId));
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('everyone'.tr),
+                          )
+                        ]),
                   );
                 },
               )
@@ -183,8 +199,8 @@ class _CallsCardState extends ThemeState<CallsCard> {
                   //todo we have the id of the chat so we can move to the call immediately
                 }
               } else if (microphone.isDenied || status2.isDenied) {
-                showMessage("permission_denied");
-                openAppSettings();
+                // showWarningMessage(context, LocaleKeys.permission_denied.tr());
+                // openAppSettings();
               }
               ;
             } else {
@@ -222,8 +238,8 @@ class _CallsCardState extends ThemeState<CallsCard> {
                   //todo we have the id of the chat so we can move to the call immediately
                 }
               } else if (microphone.isDenied || status2.isDenied) {
-                showMessage("permission_denied");
-                openAppSettings();
+                // showWarningMessage(context, LocaleKeys.permission_denied.tr());
+                // openAppSettings();
               }
             }
           },
@@ -241,7 +257,6 @@ class _CallsCardState extends ThemeState<CallsCard> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(
-                        width: 1.0,
                         color: widget.isMissing
                             ? const Color(0xffff5f61)
                             : widget.isIncome
@@ -249,8 +264,8 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                 : const Color(0xffFFC05C)),
                   ),
                   child: widget.photoPath != ""
-                      ? Container(
-                          /* decoration: BoxDecoration(
+                      ?
+                      /* decoration: BoxDecoration(
                             border: Border.all(
                                 width: 1.0, color: const Color(0xff388cff)),
                             boxShadow: const [
@@ -261,26 +276,22 @@ class _CallsCardState extends ThemeState<CallsCard> {
                               ),
                             ],
                           ),*/
-                          child: MyCachedNetworkImage(
-                            imageUrl: (widget.photoPath
-                                        .toString()
-                                        .contains("cloudinary")
-                                    ? ""
-                                    : "${dotenv.env['Profile_Images_Url']}") +
-                                widget.photoPath,
-                            imageFit: BoxFit.cover,
-                            progressIndicatorBuilderWidget: TrydosLoader(),
-                            height: 55,
-                            width: 55.w,
-                          ),
+                      MyCachedNetworkImage(
+                          imageUrl: (widget.photoPath
+                                      .toString()
+                                      .contains("cloudinary")
+                                  ? ""
+                                  : "${dotenv.env['Images_Url']}") +
+                              widget.photoPath,
+                          imageFit: BoxFit.cover,
+                          progressIndicatorBuilderWidget: TrydosLoader(),
+                          height: 55,
+                          width: 55.w,
                         )
                       : NoImageWidget(
                           height: 40,
                           width: 40.w,
-                          textStyle: context.textTheme.bodyMedium?.br.copyWith(
-                              color: const Color(0xff6638FF),
-                              letterSpacing: 0.18,
-                              height: 1.33),
+                          textStyle: TextStyle(),
                           name: HelperFunctions.getTheFirstTwoLettersOfName(
                               widget.fullReceiverName)),
                 ),
@@ -307,7 +318,6 @@ class _CallsCardState extends ThemeState<CallsCard> {
                             ),
                             10.verticalSpace,
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 SvgPicture.asset(
                                   widget.isMissing
@@ -321,10 +331,10 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                 10.horizontalSpace,
                                 Text(
                                   widget.isMissing
-                                      ? "missed_call"
+                                      ? 'missed_call'.tr
                                       : widget.isIncome
-                                          ? "income"
-                                          : "Outcome",
+                                          ? 'income'.tr
+                                          : 'Outcome'.tr,
                                   maxLines: 1,
                                   style: textTheme.titleLarge?.lr.copyWith(
                                       color: Color(widget.isMissing
@@ -375,7 +385,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                           widget.duration > 0
                               ? Row(
                                   children: [
-                                    Text(
+                                    const Text(
                                       "المدة : ",
                                       style:
                                           TextStyle(color: Color(0xff8E8D92)),
@@ -388,7 +398,7 @@ class _CallsCardState extends ThemeState<CallsCard> {
                                     ),
                                   ],
                                 )
-                              : SizedBox.shrink(),
+                              : const SizedBox.shrink(),
                         ],
                       ),
                     ],
@@ -437,9 +447,11 @@ class SlidableActionWidgete extends StatelessWidget {
             8.verticalSpace,
             Text(
               text,
-              style: context.textTheme.titleMedium?.rr
-                  .copyWith(color: foregroundColor),
-            ),
+              style: TextStyle(
+                  color: foregroundColor,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500 
+            ),)
           ],
         ),
       ),
@@ -452,9 +464,9 @@ String formatDate(DateTime dateStr) {
   Duration difference = now.difference(dateStr);
 
   if (difference.inDays == 0) {
-    return "today";
+    return 'today'.tr;
   } else if (difference.inDays == 1) {
-    return "yesterday";
+    return 'yesterday'.tr;
   } else {
     return HelperFunctions.getDatesInFormat(dateStr);
   }

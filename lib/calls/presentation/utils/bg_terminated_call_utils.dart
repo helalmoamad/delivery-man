@@ -1,7 +1,6 @@
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
-
 import 'package:get_it/get_it.dart';
 
 import '../bloc/calls_bloc.dart';
@@ -36,7 +35,7 @@ Future<void> checkAndNavigationCallingPage(BuildContext context,
     return;
   }
   Future.delayed(
-    Duration(seconds: 2),
+    const Duration(seconds: 3),
     whereToNavigationAfterCheck,
   );
 }

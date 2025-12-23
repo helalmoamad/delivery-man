@@ -87,7 +87,9 @@ dependencies:
   crypto: ^3.0.0
   sentry_flutter: 8.14.2
   # smartlook: 4.0.1
-
+  firebase_analytics: ^10.8.0
+  webview_flutter: 4.4.2
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
