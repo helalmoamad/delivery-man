@@ -145,7 +145,7 @@ class _ChatPagesState extends ThemeState<ChatPages> with FormStateMinxin {
               p.makeCallStatus != c.makeCallStatus &&
               c.makeCallStatus == MakeCallStatus.startCall,
           listener: (context, state) {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
+            Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => AgoraInAppWebView(
                       type: state.isVideoCall ? 'video' : 'voice',
                       isReceivingCall: false,

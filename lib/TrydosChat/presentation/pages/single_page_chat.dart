@@ -255,323 +255,367 @@ class _SinglePageChatState extends ThemeState<SinglePageChat> {
             return Scaffold(
                 backgroundColor: const Color.fromARGB(255, 255, 197, 197),
                 appBar: TrydosAppBar(
-  heightAppBar: (widget.fromSearch ?? false) ? 120 : 56,
-  appBarParams: AppBarParams(
-    dividerBottom: false,
-    hasLeading: false,
-    surfaceTintColor: Colors.transparent,
-    elevation: 0,
-    child: SafeArea(
-      child: Column(
-        children: [
-          const SizedBox(height: 7),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              BlocListener<ChatBloc, ChatState>(
-                listenWhen: (p, c) =>
-                    p.currentOpenedChatId != c.currentOpenedChatId,
-                listener: (context, state) {
-                  chat = state.chats.firstWhere(
-                      (element) =>
-                          element.id.toString() == widget.chatId ||
-                          element.localId.toString() == widget.chatId,
-                      orElse: () => state.pinnedChats.firstWhere((element) =>
-                          element.id.toString() == widget.chatId ||
-                          element.localId.toString() == widget.chatId));
-
-                  member = !chat.channelMembers.isNullOrEmpty
-                      ? chat.channelMembers!.firstWhere((element) =>
-                          element.userId != _prefsRepository.myChatId)
-                      : null;
-
-                  FirebasePresence.listeningToConnectStatus(
-                      chatId: widget.chatId, friendId: member!.userId!);
-                },
-                child: BlocBuilder<ChatBloc, ChatState>(
-                  builder: (context, state) {
-                    if ((state.unReadMessagesFromAllChats -
-                            countMessagesReceivedToMeNow) >
-                        0) {
-                      return Row(
+                  heightAppBar: (widget.fromSearch ?? false) ? 120 : 56,
+                  appBarParams: AppBarParams(
+                    dividerBottom: false,
+                    hasLeading: false,
+                    surfaceTintColor: Colors.transparent,
+                    elevation: 0,
+                    child: SafeArea(
+                      child: Column(
                         children: [
-                          MyTextWidget(
-                            (state.unReadMessagesFromAllChats -
-                                    countMessagesReceivedToMeNow)
-                                .toString(),
-                            style: textTheme.bodyMedium?.rr.copyWith(
-                                color: const Color(0xff388CFF)),
-                          ),
-                        ],
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-              ),
+                          const SizedBox(height: 7),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              BlocListener<ChatBloc, ChatState>(
+                                listenWhen: (p, c) =>
+                                    p.currentOpenedChatId !=
+                                    c.currentOpenedChatId,
+                                listener: (context, state) {
+                                  chat = state.chats.firstWhere(
+                                      (element) =>
+                                          element.id.toString() ==
+                                              widget.chatId ||
+                                          element.localId.toString() ==
+                                              widget.chatId,
+                                      orElse: () => state.pinnedChats
+                                          .firstWhere((element) =>
+                                              element.id.toString() ==
+                                                  widget.chatId ||
+                                              element.localId.toString() ==
+                                                  widget.chatId));
 
-              10.horizontalSpace,
+                                  member = !chat.channelMembers.isNullOrEmpty
+                                      ? chat.channelMembers!.firstWhere(
+                                          (element) =>
+                                              element.userId !=
+                                              _prefsRepository.myChatId)
+                                      : null;
 
-              // صورة المستقبل
-              widget.receiverPhoto != null
-                  ? Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            width: 1.0, color: const Color(0xff388cff)),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x29388cff),
-                            offset: Offset(0, 3),
-                            blurRadius: 6,
-                          ),
-                        ],
-                      ),
-                      child: MyCachedNetworkImage(
-                        imageUrl: (widget.receiverPhoto
-                                    .toString()
-                                    .contains("cloudinary")
-                                ? ""
-                                : "${dotenv.env['Profile_Images_Url']}") +
-                            widget.receiverPhoto!,
-                        imageFit: BoxFit.cover,
-                        progressIndicatorBuilderWidget: TrydosLoader(),
-                        height: 40,
-                        width: 40.w,
-                      ),
-                    )
-                  : NoImageWidget(
-                      height: 40,
-                      width: 40.w,
-                      textStyle: context.textTheme.bodyMedium?.br.copyWith(
-                          color: const Color(0xff6638FF),
-                          letterSpacing: 0.18,
-                          height: 1.33),
-                      name: widget.receiverName,
-                    ),
-
-              20.horizontalSpace,
-
-              // الاسم + آخر ظهور
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {},
-                      child: MyTextWidget(
-                        widget.fullReceiverName,
-                        style: textTheme.bodyMedium?.mr
-                            .copyWith(color: const Color(0xff5D5C5D)),
-                      ),
-                    ),
-
-                    if (int.tryParse(widget.chatId) != null)
-                      BlocBuilder<AppBloc, AppState>(
-                        builder: (context, state) {
-                          if (state.pusherActivityIds[int.parse(widget.chatId)] !=
-                              null) {
-                            return MyTextWidget(
-                              state.pusherActivityDescription[
-                                      int.parse(widget.chatId)]
-                                  .toString(),
-                              overflow: TextOverflow.ellipsis,
-                              style: textTheme.titleMedium?.mr
-                                  .copyWith(color: const Color(0xff007CFF)),
-                            );
-                          } else {
-                            return BlocBuilder<ChatBloc, ChatState>(
-                              builder: (context, state) {
-                                return state.userConnectedStatuse != ' ' &&
-                                        DateTime.tryParse(
-                                                state.userConnectedStatuse) !=
-                                            null
-                                    ? DateTime.parse(state.userConnectedStatuse)
-                                                .subtract(Duration(
-                                                    minutes: duration))
-                                                .difference(DateTime.now().toUtc())
-                                                .inMinutes
-                                                .abs() <=
-                                            5
-                                        ? MyTextWidget(
-                                            "Online",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: textTheme.titleMedium?.mr
+                                  FirebasePresence.listeningToConnectStatus(
+                                      chatId: widget.chatId,
+                                      friendId: member!.userId!);
+                                },
+                                child: BlocBuilder<ChatBloc, ChatState>(
+                                  builder: (context, state) {
+                                    if ((state.unReadMessagesFromAllChats -
+                                            countMessagesReceivedToMeNow) >
+                                        0) {
+                                      return Row(
+                                        children: [
+                                          MyTextWidget(
+                                            (state.unReadMessagesFromAllChats -
+                                                    countMessagesReceivedToMeNow)
+                                                .toString(),
+                                            style: textTheme.bodyMedium?.rr
                                                 .copyWith(
-                                                    color:
-                                                        const Color(0xff007CFF)),
-                                          )
-                                        : Row(
-                                            children: [
-                                              MyTextWidget(
-                                                  "أخر ظهور ",
-                                                  style: textTheme
-                                                      .titleMedium?.mr
-                                                      .copyWith(
-                                                          color: const Color(
-                                                              0xff007CFF))),
-                                              MyTextWidget(
-                                                  formatDate(DateTime.tryParse(
-                                                          state.userConnectedStatuse)!
-                                                      .subtract(Duration(
-                                                          minutes: duration))),
-                                                  style: textTheme
-                                                      .titleMedium?.mr
-                                                      .copyWith(
-                                                          color: const Color(
-                                                              0xff007CFF))),
-                                              MyTextWidget(
-                                                  " الساعة ",
-                                                  style: textTheme
-                                                      .titleMedium?.mr
-                                                      .copyWith(
-                                                          color: const Color(
-                                                              0xff007CFF))),
-                                              MyTextWidget(
-                                                  HelperFunctions
-                                                      .gettimesInFormat(
-                                                          DateTime.tryParse(state
-                                                                  .userConnectedStatuse)!
-                                                              .subtract(Duration(
-                                                                  minutes:
-                                                                      duration))),
-                                                  style: textTheme
-                                                      .titleMedium?.mr
-                                                      .copyWith(
-                                                          color: const Color(
-                                                              0xff007CFF))),
-                                            ],
-                                          )
-                                    : const SizedBox.shrink();
-                              },
-                            );
-                          }
-                        },
-                      ),
-                  ],
-                ),
-              ),
+                                                    color: const Color(
+                                                        0xff388CFF)),
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                    return const SizedBox.shrink();
+                                  },
+                                ),
+                              ),
 
-              /// =====================
-              ///   🔥 زر مكالمة الفيديو
-              /// =====================
-              InkWell(
-                onTap: () async {
-                  List<Map<String, dynamic>> info =
-                      callerInfo(channelId: widget.chatId);
+                              10.horizontalSpace,
 
-                  PermissionStatus mic =
-                      await Permission.microphone.request();
-                  PermissionStatus cam = await Permission.camera.request();
+                              // صورة المستقبل
+                              widget.receiverPhoto != null
+                                  ? Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 1.0,
+                                            color: const Color(0xff388cff)),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Color(0x29388cff),
+                                            offset: Offset(0, 3),
+                                            blurRadius: 6,
+                                          ),
+                                        ],
+                                      ),
+                                      child: MyCachedNetworkImage(
+                                        imageUrl: (widget.receiverPhoto
+                                                    .toString()
+                                                    .contains("cloudinary")
+                                                ? ""
+                                                : "${dotenv.env['Profile_Images_Url']}") +
+                                            widget.receiverPhoto!,
+                                        imageFit: BoxFit.cover,
+                                        progressIndicatorBuilderWidget:
+                                            TrydosLoader(),
+                                        height: 40,
+                                        width: 40.w,
+                                      ),
+                                    )
+                                  : NoImageWidget(
+                                      height: 40,
+                                      width: 40.w,
+                                      textStyle: context
+                                          .textTheme.bodyMedium?.br
+                                          .copyWith(
+                                              color: const Color(0xff6638FF),
+                                              letterSpacing: 0.18,
+                                              height: 1.33),
+                                      name: widget.receiverName,
+                                    ),
 
-                  if (mic.isGranted && cam.isGranted) {
-                    GetIt.I<CallsBloc>().add(
-                      MakeCallEvent(
-                        isVideo: true,
-                        receiverCallName: widget.fullReceiverName,
-                        chatId: info[0]['channelId'],
-                        payload: info[0],
-                      ),
-                    );
-                  } else {
-                    openAppSettings();
-                  }
-                },
-                child: SvgPicture.asset(
-                  AppAssets.makeVideoCallSvg,
-                  width: 30,
-                  height: 28,
-                ),
-              ),
+                              20.horizontalSpace,
 
-              SizedBox(width: 16),
-              InkWell(
-                onTap: () async {
-                  List<Map<String, dynamic>> info =
-                      callerInfo(channelId: widget.chatId);
+                              // الاسم + آخر ظهور
+                              Expanded(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {},
+                                      child: MyTextWidget(
+                                        widget.fullReceiverName,
+                                        style: textTheme.bodyMedium?.mr
+                                            .copyWith(
+                                                color: const Color(0xff5D5C5D)),
+                                      ),
+                                    ),
+                                    if (int.tryParse(widget.chatId) != null)
+                                      BlocBuilder<AppBloc, AppState>(
+                                        builder: (context, state) {
+                                          if (state.pusherActivityIds[
+                                                  int.parse(widget.chatId)] !=
+                                              null) {
+                                            return MyTextWidget(
+                                              state.pusherActivityDescription[
+                                                      int.parse(widget.chatId)]
+                                                  .toString(),
+                                              overflow: TextOverflow.ellipsis,
+                                              style: textTheme.titleMedium?.mr
+                                                  .copyWith(
+                                                      color: const Color(
+                                                          0xff007CFF)),
+                                            );
+                                          } else {
+                                            return BlocBuilder<ChatBloc,
+                                                ChatState>(
+                                              builder: (context, state) {
+                                                return state.userConnectedStatuse !=
+                                                            ' ' &&
+                                                        DateTime.tryParse(state
+                                                                .userConnectedStatuse) !=
+                                                            null
+                                                    ? DateTime.parse(state
+                                                                    .userConnectedStatuse)
+                                                                .subtract(Duration(
+                                                                    minutes:
+                                                                        duration))
+                                                                .difference(
+                                                                    DateTime.now()
+                                                                        .toUtc())
+                                                                .inMinutes
+                                                                .abs() <=
+                                                            5
+                                                        ? MyTextWidget(
+                                                            "Online",
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: textTheme
+                                                                .titleMedium?.mr
+                                                                .copyWith(
+                                                                    color: const Color(
+                                                                        0xff007CFF)),
+                                                          )
+                                                        : Row(
+                                                            children: [
+                                                              MyTextWidget(
+                                                                  "أخر ظهور ",
+                                                                  style: textTheme
+                                                                      .titleMedium
+                                                                      ?.mr
+                                                                      .copyWith(
+                                                                          color:
+                                                                              const Color(0xff007CFF))),
+                                                              MyTextWidget(
+                                                                  formatDate(DateTime
+                                                                          .tryParse(state
+                                                                              .userConnectedStatuse)!
+                                                                      .subtract(Duration(
+                                                                          minutes:
+                                                                              duration))),
+                                                                  style: textTheme
+                                                                      .titleMedium
+                                                                      ?.mr
+                                                                      .copyWith(
+                                                                          color:
+                                                                              const Color(0xff007CFF))),
+                                                              MyTextWidget(
+                                                                  " الساعة ",
+                                                                  style: textTheme
+                                                                      .titleMedium
+                                                                      ?.mr
+                                                                      .copyWith(
+                                                                          color:
+                                                                              const Color(0xff007CFF))),
+                                                              MyTextWidget(
+                                                                  HelperFunctions.gettimesInFormat(DateTime
+                                                                          .tryParse(state
+                                                                              .userConnectedStatuse)!
+                                                                      .subtract(Duration(
+                                                                          minutes:
+                                                                              duration))),
+                                                                  style: textTheme
+                                                                      .titleMedium
+                                                                      ?.mr
+                                                                      .copyWith(
+                                                                          color:
+                                                                              const Color(0xff007CFF))),
+                                                            ],
+                                                          )
+                                                    : const SizedBox.shrink();
+                                              },
+                                            );
+                                          }
+                                        },
+                                      ),
+                                  ],
+                                ),
+                              ),
 
-                  PermissionStatus mic =
-                      await Permission.microphone.request();
+                              /// =====================
+                              ///  زر مكالمة الفيديو
+                              /// =====================
+                              InkWell(
+                                onTap: () async {
+                                  List<Map<String, dynamic>> info =
+                                      callerInfo(channelId: widget.chatId);
 
-                  if (mic.isGranted) {
-                    GetIt.I<CallsBloc>().add(
-                      MakeCallEvent(
-                        isVideo: false,
-                        receiverCallName: widget.fullReceiverName,
-                        chatId: info[0]['channelId'],
-                        payload: info[0],
-                      ),
-                    );
-                  } else {
-                    openAppSettings();
-                  }
-                },
-                child: SvgPicture.asset(
-                  AppAssets.makeCallSvg,
-                  width: 26,
-                  height: 26,
-                ),
-              ),
+                                  PermissionStatus mic =
+                                      await Permission.microphone.request();
+                                  PermissionStatus cam =
+                                      await Permission.camera.request();
 
-              15.horizontalSpace,
-            ],
-          ),
+                                  if (mic.isGranted && cam.isGranted) {
+                                    GetIt.I<CallsBloc>().add(
+                                      MakeCallEvent(
+                                        isVideo: true,
+                                        receiverCallName:
+                                            widget.fullReceiverName,
+                                        chatId: info[0]['channelId'],
+                                        payload: info[0],
+                                      ),
+                                    );
+                                  } else {
+                                    openAppSettings();
+                                  }
+                                },
+                                child: SvgPicture.asset(
+                                  AppAssets.makeVideoCallSvg,
+                                  width: 30,
+                                  height: 28,
+                                ),
+                              ),
 
-          if ((widget.fromSearch ?? false)) ...{
-            SizedBox(height: 5),
-            ValueListenableBuilder<Map<String, int>>(
-              valueListenable: currentIndextForEachMessage,
-              builder: (context, currentIndextForMessages, _) {
-                currentFocusedIcon.value = -2;
-                return BlocBuilder<ChatBloc, ChatState>(
-                  buildWhen: (previous, current) {
-                    return previous.resultOfSearchTextInChat?.paginationStatus !=
-                            current.resultOfSearchTextInChat?.paginationStatus ||
-                        previous.getMessagesBetweenStatus !=
-                            current.getMessagesBetweenStatus;
-                  },
-                  builder: (context, state) {
-                    searchResults =
-                        state.resultOfSearchTextInChat?.items ?? [];
+                              SizedBox(width: 16),
+                              InkWell(
+                                onTap: () async {
+                                  List<Map<String, dynamic>> info =
+                                      callerInfo(channelId: widget.chatId);
 
-                    return SafeArea(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Padding(
-                          padding: HWEdgeInsets.symmetric(horizontal: 20.0)
-                              .copyWith(bottom: 10),
-                          child: AppTextField(
-                            filledColor: Color(0xffF8F8F8),
-                            bordersColor: Color(0xffF8F8F8),
-                            hintText: 'Search',
-                            roundingCornersValue: 30,
-                            controller: controller,
-                            textStyle: context.textTheme.titleMedium?.lr
-                                .copyWith(color: const Color(0xff8D8D8D)),
-                            hintTextStyle: context.textTheme.bodySmall?.lr
-                                .copyWith(color: const Color(0xff8D8D8D)),
-                            prefixIcon: Padding(
-                              padding: HWEdgeInsetsDirectional.only(
-                                  top: 15, bottom: 15),
-                              child: SvgPicture.asset(
-                                  AppAssets.searchOutlinedSvg),
-                            ),
+                                  PermissionStatus mic =
+                                      await Permission.microphone.request();
+
+                                  if (mic.isGranted) {
+                                    GetIt.I<CallsBloc>().add(
+                                      MakeCallEvent(
+                                        isVideo: false,
+                                        receiverCallName:
+                                            widget.fullReceiverName,
+                                        chatId: info[0]['channelId'],
+                                        payload: info[0],
+                                      ),
+                                    );
+                                  } else {
+                                    openAppSettings();
+                                  }
+                                },
+                                child: SvgPicture.asset(
+                                  AppAssets.makeCallSvg,
+                                  width: 26,
+                                  height: 26,
+                                ),
+                              ),
+
+                              15.horizontalSpace,
+                            ],
                           ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            )
-          }
-        ],
-      ),
-    ),
-  ),
-),
+                          if ((widget.fromSearch ?? false)) ...{
+                            SizedBox(height: 5),
+                            ValueListenableBuilder<Map<String, int>>(
+                              valueListenable: currentIndextForEachMessage,
+                              builder: (context, currentIndextForMessages, _) {
+                                currentFocusedIcon.value = -2;
+                                return BlocBuilder<ChatBloc, ChatState>(
+                                  buildWhen: (previous, current) {
+                                    return previous.resultOfSearchTextInChat
+                                                ?.paginationStatus !=
+                                            current.resultOfSearchTextInChat
+                                                ?.paginationStatus ||
+                                        previous.getMessagesBetweenStatus !=
+                                            current.getMessagesBetweenStatus;
+                                  },
+                                  builder: (context, state) {
+                                    searchResults =
+                                        state.resultOfSearchTextInChat?.items ??
+                                            [];
 
+                                    return SafeArea(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: Padding(
+                                          padding: HWEdgeInsets.symmetric(
+                                                  horizontal: 20.0)
+                                              .copyWith(bottom: 10),
+                                          child: AppTextField(
+                                            filledColor: Color(0xffF8F8F8),
+                                            bordersColor: Color(0xffF8F8F8),
+                                            hintText: 'Search',
+                                            roundingCornersValue: 30,
+                                            controller: controller,
+                                            textStyle: context
+                                                .textTheme.titleMedium?.lr
+                                                .copyWith(
+                                                    color: const Color(
+                                                        0xff8D8D8D)),
+                                            hintTextStyle: context
+                                                .textTheme.bodySmall?.lr
+                                                .copyWith(
+                                                    color: const Color(
+                                                        0xff8D8D8D)),
+                                            prefixIcon: Padding(
+                                              padding:
+                                                  HWEdgeInsetsDirectional.only(
+                                                      top: 15, bottom: 15),
+                                              child: SvgPicture.asset(
+                                                  AppAssets.searchOutlinedSvg),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            )
+                          }
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
                 body: BlocListener<ChatBloc, ChatState>(
                   listenWhen: (p, c) => (p.getMessagesBetweenStatus !=
                           c.getMessagesBetweenStatus &&

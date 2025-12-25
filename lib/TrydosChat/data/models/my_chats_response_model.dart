@@ -211,7 +211,7 @@ class ChatMessage {
           : false,
       senderUserId: json["sender_user_id"],
       receiverUserId: json["receiver_user_id"],
-      deletedByUserId: json["deleted_by_user_id"],
+      deletedByUserId: int.parse(json["deleted_by_user_id"]?.toString() ?? '0'),
       channelId: json["channel_id"].toString(),
       authMessageStatus: json["auth_message_status"] == null
           ? null

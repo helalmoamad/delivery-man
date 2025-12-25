@@ -1,9 +1,12 @@
 import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart';
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/TrydosChat/helper/show_message.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_state.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/pages/single_page_chat.dart';
+import 'package:delivery_man_app/calls/presentation/bloc/calls_bloc.dart';
+import 'package:delivery_man_app/calls/presentation/pages/in_app_view.dart';
 import 'package:delivery_man_app/controllers/Orders/orders_controller.dart';
 import 'package:delivery_man_app/models/Orders/list_order_model.dart';
 import 'package:delivery_man_app/routes/routes.dart';
@@ -171,6 +174,38 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
+                            BlocListener<CallsBloc, CallsState>(
+      listenWhen: (p, c) =>
+          p.makeCallStatus != c.makeCallStatus &&
+          c.makeCallStatus == MakeCallStatus.loading,
+      listener: (context, state) {
+        callInProgressDialog(context);
+      },
+      child: BlocListener<CallsBloc, CallsState>(
+        listenWhen: (p, c) =>
+            p.makeCallStatus != c.makeCallStatus &&
+            c.makeCallStatus == MakeCallStatus.failure,
+        listener: (context, state) {
+          Navigator.pop(context);
+          showMessage('${state.receiverCallName ?? "user"} in_another_call',
+              showInRelease: true);
+        },
+        child: BlocListener<CallsBloc, CallsState>(
+          listenWhen: (p, c) =>
+              p.makeCallStatus != c.makeCallStatus &&
+              c.makeCallStatus == MakeCallStatus.startCall,
+          listener: (context, state) {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => AgoraInAppWebView(
+                      type: state.isVideoCall ? 'video' : 'voice',
+                      isReceivingCall: false,
+                      channelId: state.channelIdForCurrentCall!,
+                      auth_token: GetIt.I<PrefsRepository>().chatToken!,
+                      uId: GetIt.I<PrefsRepository>().myChatId.toString(),
+                      action: 'sent',
+                      messageId: state.messageId!,
+                    )));
+          },child: 
                             BlocListener<ChatBloc, ChatState>(
                               listenWhen: (previous, current) =>
                                   previous.getOrderRecipientIdStatus !=
@@ -289,7 +324,7 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
                                   );
                                 },
                               ),
-                            ),
+                            ),)))
                           ],
                         )
                       : Container();

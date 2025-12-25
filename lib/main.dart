@@ -25,6 +25,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_callkit_incoming/entities/android_params.dart';
+import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
+import 'package:flutter_callkit_incoming/entities/ios_params.dart';
+import 'package:flutter_callkit_incoming/entities/notification_params.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
@@ -68,6 +73,66 @@ class MyHttpOverrides extends HttpOverrides {
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
   }
+}
+
+@pragma('vm:entry-point')
+showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
+    {required bool isVideo}) async {
+  print("${data["message"]})");
+  print("))))))))))))))${data["message"]['channel']}");
+  CallKitParams callKitParams = CallKitParams(
+    id: currentUuid,
+    nameCaller: data["message"]['channel']["channel_name"] ?? 'Un Known',
+    appName: 'Trydos',
+    avatar: data["message"]['channel']["photo_path"] ??
+        'https://trydos.s3.ap-south-1.amazonaws.com/images/5TPxSXKGAv3kLkbKIz5noTTmaZBwXNtSpJMoh7lE.jpg',
+    handle: data['payload']['mobilePhone'],
+    type: isVideo ? 1 : 0,
+    textAccept: 'Accept',
+    textDecline: 'Decline',
+    missedCallNotification: const NotificationParams(
+      showNotification: true,
+      isShowCallback: true,
+      subtitle: 'Missed call',
+      callbackText: 'Call back',
+    ),
+    duration: 60000,
+    extra: <String, dynamic>{
+      'channel_id': data["message"]["channel_id"].toString(),
+      'message_id': data["message"]["id"].toString(),
+      'type': isVideo ? 'video' : 'voice'
+    },
+    headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
+    android: const AndroidParams(
+        isCustomNotification: true,
+        isImportant: true,
+        isShowFullLockedScreen: true,
+        isShowLogo: false,
+        ringtonePath: 'system_ringtone_default',
+        backgroundColor: '#0955fa',
+        backgroundUrl:
+            'https://trydos.s3.ap-south-1.amazonaws.com/images/5TPxSXKGAv3kLkbKIz5noTTmaZBwXNtSpJMoh7lE.jpg',
+        actionColor: '#4CAF50',
+        incomingCallNotificationChannelName: "Incoming Call",
+        missedCallNotificationChannelName: "Missed Call"),
+    ios: const IOSParams(
+      iconName: 'CallKitLogo',
+      handleType: 'generic',
+      supportsVideo: true,
+      maximumCallGroups: 2,
+      maximumCallsPerCallGroup: 1,
+      audioSessionMode: 'default',
+      audioSessionActive: true,
+      audioSessionPreferredSampleRate: 44100.0,
+      audioSessionPreferredIOBufferDuration: 0.005,
+      supportsDTMF: true,
+      supportsHolding: true,
+      supportsGrouping: false,
+      supportsUngrouping: false,
+      ringtonePath: 'system_ringtone_default',
+    ),
+  );
+  await FlutterCallkitIncoming.showCallkitIncoming(callKitParams);
 }
 
 late ItemScrollController myOrderStatusScrollController;
@@ -197,6 +262,7 @@ Future<void> main() async {
 //     );
 //   }
 // }
+bool declineCallBecauseOfNotificationButton = false;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
