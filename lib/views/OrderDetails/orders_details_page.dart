@@ -195,7 +195,7 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
               p.makeCallStatus != c.makeCallStatus &&
               c.makeCallStatus == MakeCallStatus.startCall,
           listener: (context, state) {
-            Navigator.of(context).push(MaterialPageRoute(
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (_) => AgoraInAppWebView(
                       type: state.isVideoCall ? 'video' : 'voice',
                       isReceivingCall: false,
