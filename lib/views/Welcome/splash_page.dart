@@ -3,6 +3,7 @@ import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart'
     show ChatBloc;
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
+import 'package:delivery_man_app/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'package:delivery_man_app/controllers/Auth/auth_controller.dart';
 import 'package:delivery_man_app/main.dart';
 import 'package:delivery_man_app/message_error_log/PagesMonitor.dart';
@@ -30,7 +31,13 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     Timer(const Duration(seconds: 3), () {
-      goToHomeScreen();
+      checkAndNavigationCallingPage(
+        context,
+        fromTerminated: true,
+        whereToNavigationAfterCheck: () {
+          goToHomeScreen();
+        },
+      );
     });
     PagesMonitor.addPageToList(page: "SplashPage");
     FlutterError.onError = (details) async {

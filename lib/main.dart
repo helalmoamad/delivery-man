@@ -106,7 +106,7 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
     android: const AndroidParams(
         isCustomNotification: true,
         isImportant: true,
-        isShowFullLockedScreen: true,
+        isShowFullLockedScreen: false,
         isShowLogo: false,
         ringtonePath: 'system_ringtone_default',
         backgroundColor: '#0955fa',
@@ -194,8 +194,6 @@ Future<void> main() async {
           .add(StoreFcmTokenEvent(userId: userIdd, fcmToken: myFcmToken));
     } else {}
   }
-
-
 
   // Sentry + Smartlook
   await SentryFlutter.init(

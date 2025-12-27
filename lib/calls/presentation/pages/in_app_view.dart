@@ -1,18 +1,18 @@
 import 'dart:async';
-import 'dart:developer';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/pages/single_page_chat.dart';
 import 'package:delivery_man_app/calls/presentation/bloc/calls_bloc.dart';
-import 'package:delivery_man_app/message_error_log/PagesMonitor.dart';
+import 'package:flutter/services.dart';
+import 'dart:developer';
+import 'package:audioplayers/audioplayers.dart' hide AVAudioSessionCategory;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:vibration/vibration.dart';
 
+import 'package:vibration/vibration.dart';
 
 // ignore: must_be_immutable
 class AgoraInAppWebView extends StatefulWidget {
@@ -24,15 +24,16 @@ class AgoraInAppWebView extends StatefulWidget {
   String messageId;
   bool isReceivingCall;
 
-  AgoraInAppWebView(
-      {required this.messageId,
-      required this.action,
-      required this.type,
-      required this.channelId,
-      required this.auth_token,
-      required this.uId,
-      this.isReceivingCall = true,
-      super.key});
+  AgoraInAppWebView({
+    required this.messageId,
+    required this.action,
+    required this.type,
+    required this.channelId,
+    required this.auth_token,
+    required this.uId,
+    this.isReceivingCall = true,
+    super.key,
+  });
 
   @override
   State<AgoraInAppWebView> createState() => _AgoraInAppWebViewState();
@@ -42,13 +43,38 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   late Uri source;
   Timer? timer;
   final AudioPlayer _audioPlayer = AudioPlayer();
+  static const platform = MethodChannel('com.trydos.audio/settings');
 
-  void playIncomingCall() {
-    _audioPlayer.play(AssetSource('audio/incoming_call.mp3'), volume: 1);
+  Future<void> _setCallAudioMode(bool enable) async {
+    try {
+      await platform.invokeMethod('setCallAudioMode', enable);
+    } on PlatformException catch (e) {
+      debugPrint("Failed to set audio mode: '${e.message}'.");
+    }
   }
 
-  void playWaitingCall() {
-    _audioPlayer.play(AssetSource('audio/send_call_ring.mp3'), volume: 1);
+  Future<void> playIncomingCall() async {
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(
+        AssetSource('audio/incoming_call.mp3'),
+        volume: 1,
+      );
+    } catch (e) {
+      print('Error playing incoming call: $e');
+    }
+  }
+
+  Future<void> playWaitingCall() async {
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(
+        AssetSource('audio/send_call_ring.mp3'),
+        volume: 1,
+      );
+    } catch (e) {
+      print('Error playing waiting call: $e');
+    }
   }
 
   void startVibration() {
@@ -58,7 +84,6 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   late ChatBloc chatBloc;
   @override
   void initState() {
-    PagesMonitor.addPageToList(page: 'AgoraInAppWebView');
     chatBloc = BlocProvider.of<ChatBloc>(context);
     debugPrint("asdafsd{${widget.channelId}");
     debugPrint("asdafsd{${widget.messageId}");
@@ -67,14 +92,19 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     debugPrint("asdafsd{${widget.action}");
     debugPrint("asdafsd{${widget.auth_token}");
     Uri baseUrl = Uri.parse(dotenv.env['WEB_CALLS_URL']!);
-    source = Uri(queryParameters: {
-      'uid': widget.uId,
-      'authToken': widget.auth_token,
-      'message_id': widget.messageId,
-      'type': widget.type,
-      'action': widget.action,
-      'ch_id': widget.channelId,
-    }, host: baseUrl.host, scheme: baseUrl.scheme, path: '/call_direct');
+    source = Uri(
+      queryParameters: {
+        'uid': widget.uId,
+        'authToken': widget.auth_token,
+        'message_id': widget.messageId,
+        'type': widget.type,
+        'action': widget.action,
+        'ch_id': widget.channelId,
+      },
+      host: baseUrl.host,
+      scheme: baseUrl.scheme,
+      path: '/call_direct',
+    );
     // controller1 = WebViewController()
     //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
     //   ..setBackgroundColor(const Color(0x00000000))
@@ -85,6 +115,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
   @override
   void dispose() {
+    _setCallAudioMode(false);
     Vibration.cancel();
     timer?.cancel();
     if (_audioPlayer.state == PlayerState.playing) {
@@ -94,19 +125,54 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   }
 
   ValueNotifier<int> loadingNotifier = ValueNotifier(0);
+  void _performAction1(List<dynamic> args) {
+    debugPrint('Received message from web: $args');
+    if (args.isEmpty) return;
+
+    final action = args[0];
+    print("action: $action");
+
+    // 1. معالجة إيقاف الرنين
+    if (action == 'stop-ring') {
+      Vibration.cancel();
+      timer?.cancel();
+      if (_audioPlayer.state == PlayerState.playing) {
+        _audioPlayer.stop(); // استخدم stop بدلاً من dispose للحفاظ على الكائن
+      }
+      // إذا كانت المكالمة صوتية ولم يتم تحديد حالة مكبر الصوت بعد، نضبطها على Earpiece افتراضياً
+      // أما في مكالمات الفيديو فتكون Speaker افتراضياً
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (widget.type == 'voice') {
+          _setCallAudioMode(true); // Earpiece
+        } else {
+          _setCallAudioMode(false); // Speaker
+        }
+      });
+    }
+
+    // 2. معالجة حالة مكبر الصوت (Speaker)
+    for (var arg in args) {
+      if (arg == 'IsSpeaker') {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _setCallAudioMode(false);
+        });
+        break;
+      } else if (arg == 'IsEarpiece') {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _setCallAudioMode(true);
+        });
+        break;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    FlutterError.onError = (FlutterErrorDetails error) {
-      //LastPagesTracker.sendErrorToBlocAndLog(error);
-      FlutterError.dumpErrorToConsole(error);
-    };
-
     return BlocListener<CallsBloc, CallsState>(
       listener: (context, state) {
         timer?.cancel();
         if (_audioPlayer.state == PlayerState.playing) {
-          _audioPlayer.dispose();
+          _audioPlayer.stop();
         }
       },
       listenWhen: (p, c) => p.stopRingToneReason != c.stopRingToneReason,
@@ -118,16 +184,31 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
           body: Stack(
             children: [
               InAppWebView(
+                onWebViewCreated: (controller) {
+                  // --- REGISTER JAVASCRIPT HANDLER ---
+                  controller.addJavaScriptHandler(
+                    handlerName:
+                        'flutterMessageHandler', // Name the web content will use
+                    callback: (args) {
+                      // Trigger ACTION1 when a message is received from the web
+                      _performAction1(args);
+                      // No response/send functionality added here as requested
+                    },
+                  );
+                  // --- END HANDLER REGISTRATION ---
+                },
                 /*   onLoadStop: (controller, url) {
                   print(
                       "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${url}^^^^^^^^^^99999999999999999}");
                   controller.dispose();
                 },*/
-                onReceivedError: (controller, request, error) =>
-                    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${error}"),
+                onReceivedError: (controller, request, error) => print(
+                  "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^${error}",
+                ),
                 onReceivedHttpError: (controller, webResources, webErrors) {
                   print(
-                      "*********************/////////////////////////////////////////////////${webErrors}");
+                    "*********************/////////////////////////////////////////////////${webErrors}",
+                  );
                   // showMessage('Can\'t lunch call , please try again' , showInRelease: true);
                   // GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
                   //     messageId: widget.messageId.toString()));
@@ -137,16 +218,20 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 },
                 onUpdateVisitedHistory: (controller, url, isReload) {
                   print(
-                      "//////////////////////////////////////1111111111111111111111///////////${url}");
+                    "//////////////////////////////////////1111111111111111111111///////////${url?.queryParameters}",
+                  );
 
                   log('ring? ${url?.queryParameters.containsKey('ring')}');
                   if (_audioPlayer.state == PlayerState.playing &&
                       widget.isReceivingCall &&
                       !(url?.queryParameters.containsKey('ring') ?? false)) {
                     timer?.cancel();
-                    _audioPlayer.dispose();
+                    _audioPlayer.stop();
                   }
-                  if (url.toString().contains('callInProg')) {
+                  if ((url?.path ?? "").toString().contains('callInProg')) {
+                    print(
+                      "57............................${url?.path.toString()}",
+                    );
                     Timer.periodic(const Duration(seconds: 7), (timer) {
                       controller.stopLoading();
                       controller.dispose();
@@ -159,9 +244,8 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                       //     messageId: widget.messageId.toString()));
                     });
                   }
-                  if (url.toString().contains('end')) {
-                    print(
-                        "54............................................................................................");
+                  if ((url?.path ?? "").toString().contains('end')) {
+                    print("54..............${url.toString()}");
                     controller.stopLoading();
                     controller.dispose();
                     if (context.canPop() && context.widget is! SinglePageChat) {
@@ -177,59 +261,58 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 initialSettings: InAppWebViewSettings(
                   mediaPlaybackRequiresUserGesture: false,
                   javaScriptCanOpenWindowsAutomatically: true,
+                  allowsInlineMediaPlayback: true, // مهم جداً لـ iOS
                 ),
-
-                // onPermissionRequest: (controller, permissionRequest) async {
-                //   return await PermissionResponse(
-                //       action: PermissionResponseAction.GRANT,
-                //       resources: [
-                //         PermissionResourceType.CAMERA_AND_MICROPHONE,
-                //         PermissionResourceType.PROTECTED_MEDIA_ID,
-                //   ]);
-                // },
-                initialUrlRequest: URLRequest(url: WebUri(source.toString())),
+                initialUrlRequest: URLRequest(
+                  url: WebUri(source.toString()),
+                ),
                 onPermissionRequest: (controller, request) async {
-                  print(
-                      "///////*************111111111111111117777777777777777777777777////////////////////////////////////////44/");
+                  debugPrint(
+                    "Processing permission request for: ${request.resources}",
+                  );
 
                   final resources = <PermissionResourceType>[];
-                  if (request.resources
-                      .contains(PermissionResourceType.CAMERA)) {
-                    final cameraStatus = await Permission.camera.request();
-                    if (!cameraStatus.isDenied) {
-                      resources.add(PermissionResourceType.CAMERA);
-                    }
-                  }
-                  if (request.resources
-                      .contains(PermissionResourceType.MICROPHONE)) {
-                    final microphoneStatus =
-                        await Permission.microphone.request();
-                    if (!microphoneStatus.isDenied) {
-                      resources.add(PermissionResourceType.MICROPHONE);
-                    }
-                  }
-                  // only for iOS and macOS
-                  if (request.resources
-                      .contains(PermissionResourceType.CAMERA_AND_MICROPHONE)) {
-                    final cameraStatus = await Permission.camera.request();
-                    final microphoneStatus =
-                        await Permission.microphone.request();
-                    if (!cameraStatus.isDenied && !microphoneStatus.isDenied) {
-                      resources
-                          .add(PermissionResourceType.CAMERA_AND_MICROPHONE);
+
+                  for (var resource in request.resources) {
+                    if (resource == PermissionResourceType.CAMERA) {
+                      final status = await Permission.camera.request();
+                      if (status.isGranted)
+                        resources.add(PermissionResourceType.CAMERA);
+                    } else if (resource == PermissionResourceType.MICROPHONE) {
+                      final status = await Permission.microphone.request();
+                      if (status.isGranted)
+                        resources.add(PermissionResourceType.MICROPHONE);
+                    } else if (resource ==
+                        PermissionResourceType.CAMERA_AND_MICROPHONE) {
+                      final cameraStatus = await Permission.camera.request();
+                      final microphoneStatus =
+                          await Permission.microphone.request();
+                      if (cameraStatus.isGranted &&
+                          microphoneStatus.isGranted) {
+                        resources.add(
+                          PermissionResourceType.CAMERA_AND_MICROPHONE,
+                        );
+                      }
+                    } else if (resource ==
+                        PermissionResourceType.PROTECTED_MEDIA_ID) {
+                      // مطلوب لبعض خدمات الـ RTC على أندرويد
+                      resources.add(
+                        PermissionResourceType.PROTECTED_MEDIA_ID,
+                      );
                     }
                   }
 
                   return PermissionResponse(
-                      resources: resources,
-                      action: resources.isEmpty
-                          ? PermissionResponseAction.DENY
-                          : PermissionResponseAction.GRANT);
+                    resources: resources,
+                    action: resources.isEmpty
+                        ? PermissionResponseAction.DENY
+                        : PermissionResponseAction.GRANT,
+                  );
                 },
-
                 onProgressChanged: (controller, progress) {
                   print(
-                      "******************---------------------------------------------------------------------------------/////////////////////////////////////////////////${progress}");
+                    "******************---------------------------------------------------------------------------------/////////////////////////////////////////////////${progress}",
+                  );
 
                   setState(() {
                     loadingNotifier.value = progress;
@@ -237,39 +320,46 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                 },
               ),
               ValueListenableBuilder<int>(
-                  valueListenable: loadingNotifier,
-                  builder: (context, progress, child) {
-                    print(
-                        "///////*111111111111111111111111111111111111*********${progress}**4444444444444444*7777777777777777777777777/////////////////////////////////////////*************");
+                valueListenable: loadingNotifier,
+                builder: (context, progress, child) {
+                  print(
+                    "///////*111111111111111111111111111111111111****${timer?.isActive ?? false}*****${progress}**4444444444444444*7777777777777777777777777/////////////////////////////////////////*************",
+                  );
 
-                    if (progress < 100)
-                      return const Center(child: CircularProgressIndicator());
-                    if (timer == null && !widget.isReceivingCall) {
-                      timer =
-                          Timer.periodic(const Duration(seconds: 14), (timer) {
-                        playWaitingCall();
-                      });
-                      Future.delayed(const Duration(seconds: 7), () {
-                        timer?.cancel();
-                        if (_audioPlayer.state == PlayerState.playing) {
-                          _audioPlayer.dispose();
-                        }
-                      });
-                    } else if (timer == null && widget.isReceivingCall) {
-                      startVibration();
-                      timer =
-                          Timer.periodic(const Duration(seconds: 2), (timer) {
-                        playIncomingCall();
-                      });
-                      Future.delayed(const Duration(seconds: 7), () {
-                        timer?.cancel();
-                        if (_audioPlayer.state == PlayerState.playing) {
-                          _audioPlayer.dispose();
-                        }
-                      });
-                    }
-                    return const SizedBox.shrink();
-                  }),
+                  if (progress < 100)
+                    return const Center(child: CircularProgressIndicator());
+                  if (!(timer?.isActive ?? false) && !widget.isReceivingCall) {
+                    print("*/*/*11111111111111111111");
+                    playWaitingCall();
+                    timer = Timer.periodic(const Duration(seconds: 10), (
+                      t,
+                    ) {
+                      print("*/*/*222222222222111");
+                      playWaitingCall();
+                    });
+                    Future.delayed(const Duration(seconds: 7), () {
+                      if (_audioPlayer.state == PlayerState.playing) {
+                        print("*/*/*33333333333333333333");
+                        _audioPlayer.stop();
+                      }
+                    });
+                  } else if (timer == null && widget.isReceivingCall) {
+                    startVibration();
+                    timer = Timer.periodic(const Duration(seconds: 2), (
+                      timer,
+                    ) {
+                      playIncomingCall();
+                    });
+                    Future.delayed(const Duration(seconds: 7), () {
+                      timer?.cancel();
+                      if (_audioPlayer.state == PlayerState.playing) {
+                        _audioPlayer.stop();
+                      }
+                    });
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
             ],
           ),
         ),

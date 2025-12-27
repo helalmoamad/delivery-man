@@ -3,15 +3,19 @@ import 'dart:convert' as convert;
 import 'dart:io';
 import 'dart:math';
 import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart';
+import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart'
+    as messgae;
 import 'package:delivery_man_app/TrydosChat/di/di_container.dart'
     show configureDependencies;
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/TrydosChat/helper/helper_functions.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/pages/single_page_chat.dart';
 import 'package:delivery_man_app/background_service/background_service.dart';
 import 'package:delivery_man_app/calls/presentation/bloc/calls_bloc.dart';
 import 'package:delivery_man_app/calls/presentation/pages/in_app_view.dart';
+import 'package:delivery_man_app/calls/presentation/utils/bg_terminated_call_utils.dart';
 import 'package:delivery_man_app/main.dart' as main;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +25,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../../controllers/Orders/orders_controller.dart';
@@ -116,7 +122,7 @@ class PushNotificationService {
             "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG${message.data}GGGGGGGGGGGGg");
 
         if (notificationIsChat(message.data["type"])) {
-          showNotificationFromChat(message);
+          showNotificationFromChat(message, true);
           return;
         }
 
@@ -199,12 +205,46 @@ class PushNotificationService {
   }
 
   @pragma('vm:entry-point')
-  static Future<void> backgroundTerminateHandler(RemoteMessage message) async {
-    if (notificationIsChat(message.data["type"])) {
-      showNotificationFromChat(message);
+  static Future<void> checkAndNavigationCallingPage(BuildContext context,
+      {bool fromTerminated = false,
+      void Function()? whereToNavigationAfterCheck}) async {
+    var currentCall = await getCurrentCall();
+    await FlutterCallkitIncoming.endAllCalls();
+    if (currentCall != null) {
+      debugPrint(currentCall['extra']['message_id']);
+      debugPrint(currentCall['extra']['channel_id']);
+      GetIt.I<CallsBloc>().add(AnswerVideoCallEvent(
+          chatId: currentCall['extra']['channel_id'],
+          messageId: currentCall['extra']['message_id']));
+      Navigator.of(context)
+          .push(MaterialPageRoute(
+        builder: (context) => AgoraInAppWebView(
+            messageId: currentCall['extra']['message_id'],
+            action: currentCall['accepted'] ? 'sent' : 'receive',
+            type: currentCall['extra']['type'],
+            channelId: currentCall['extra']['channel_id'],
+            auth_token: GetIt.I<PrefsRepository>().chatToken!,
+            uId: GetIt.I<PrefsRepository>().myChatId!.toString()),
+      ))
+          .then((value) {
+        if (fromTerminated) {
+          whereToNavigationAfterCheck!.call();
+        }
+      });
       return;
     }
- 
+    Future.delayed(
+      const Duration(seconds: 3),
+      whereToNavigationAfterCheck,
+    );
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> backgroundTerminateHandler(RemoteMessage message) async {
+    if (notificationIsChat(message.data["type"])) {
+      showNotificationFromChat(message, false);
+      return;
+    }
 
     debugPrint('Handling a background message ${message.messageId}');
     debugPrint('background message title ${message.notification!.title}');
@@ -230,6 +270,9 @@ class PushNotificationService {
     DealWithRemovedMessageStoredFromBackground();
     DealWithMessageReceivedStatusStoredFromBackground();
     DealWithMessageWatchStatusStoredFromBackground();
+    if (GetIt.I<PrefsRepository>().chatToken != null) {
+      checkAndNavigationCallingPage(main.navigatorKey.currentState!.context);
+    }
 
     Future.delayed(Duration(milliseconds: 600),
         () => navigationToOrderPageForChat(orderId, parentOrderId));
@@ -449,7 +492,8 @@ class PushNotificationService {
   }
 
   @pragma('vm:entry-point')
-  static void showNotificationFromChat(RemoteMessage? remoteMessages) async {
+  static void showNotificationFromChat(
+      RemoteMessage? remoteMessages, bool fromForeground) async {
     if (!main.isDependencyInitialized) {
       HttpOverrides.global = MyHttpOverrides();
       await dotenv.load(fileName: ".env");
@@ -459,103 +503,254 @@ class PushNotificationService {
 
     Map<String, dynamic> remoteMessage = remoteMessages?.data ?? {};
     remoteMessage = jsonDecode(remoteMessage["data"]);
+    if (fromForeground) {
+      if (remoteMessage['type'] == 'RefuseCallEvent') {
+        Map<String, dynamic> data = remoteMessage;
+        if (data['duration_in_seconds']!.toString().contains("-1")) {
+          GetIt.I<ChatBloc>().add(
+            ReceiveMissCallEvent(
+              true,
+              channelId: data['channel_id'].toString(),
+            ),
+          );
+          GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
+        }
+        if ((data['message_id'].toString() !=
+                GetIt.I<CallsBloc>().state.currentActiveCallId) &&
+            GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
+          return;
+        }
 
-    if (remoteMessage['type'] == 'RefuseCallEvent') {
-      Map<String, dynamic> data = remoteMessage;
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: 'RefuseCall for message ForeGround ${data['message_id']}');
-      if (data['duration_in_seconds']!.toString().contains("-1")) {
-        GetIt.I<ChatBloc>().add(ReceiveMissCallEvent(true,
-            channelId: data['channel_id'].toString()));
-        GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
-      }
-      if ((data['message_id'].toString() !=
-              GetIt.I<CallsBloc>().state.currentActiveCallId) &&
-          GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
+        FlutterCallkitIncoming.endAllCalls();
+        GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: true));
+        // ignore: use_build_context_synchronously
+        if (main.navigatorKey.currentState!.context.canPop() &&
+            main.navigatorKey.currentState!.context.widget is! SinglePageChat) {
+          // ignore: use_build_context_synchronously
+          main.navigatorKey.currentState!.context.pop();
+        }
+        return;
+      } else if (remoteMessage['type'] == 'VideoCallEvent') {
+        ChatMessage? message;
+        try {
+          message = ChatMessage.fromJson(remoteMessage['message']);
+          GetIt.I<CallsBloc>().add(
+            UpdateCurrentActiveCallIdEvent(id: message.id.toString()),
+          );
+        } catch (e) {}
+        GetIt.I<ChatBloc>().add(
+          AddChannelToChannels(
+            message: message!,
+          ),
+        );
+        GetIt.I<ChatBloc>().add(
+          ReceiveMessageEvent(message: message, increaseUnReadMessages: false),
+        );
+        Navigator.of(main.navigatorKey.currentState!.context).push(
+          MaterialPageRoute(
+            builder: (context) => AgoraInAppWebView(
+              messageId: message!.id.toString(),
+              action: 'receive',
+              type: 'video',
+              channelId: message.channelId.toString(),
+              auth_token: GetIt.I<PrefsRepository>().chatToken!,
+              uId: GetIt.I<PrefsRepository>().myChatId!.toString(),
+            ),
+          ),
+        );
+        return;
+      } else if (remoteMessage['type'] == 'VoiceCallEvent') {
+        ChatMessage? message;
+        try {
+          message = ChatMessage.fromJson(remoteMessage['message']);
+
+          GetIt.I<CallsBloc>().add(
+            UpdateCurrentActiveCallIdEvent(id: message.id.toString()),
+          );
+        } catch (e) {}
+        GetIt.I<ChatBloc>().add(
+          AddChannelToChannels(
+            message: message!,
+          ),
+        );
+        GetIt.I<ChatBloc>().add(
+          ReceiveMessageEvent(message: message, increaseUnReadMessages: false),
+        );
+        Navigator.of(main.navigatorKey.currentState!.context).push(
+          MaterialPageRoute(
+            builder: (context) => AgoraInAppWebView(
+              messageId: message!.id.toString(),
+              action: 'receive',
+              type: 'voice',
+              channelId: message.channelId.toString(),
+              auth_token: GetIt.I<PrefsRepository>().chatToken!,
+              uId: GetIt.I<PrefsRepository>().myChatId!.toString(),
+            ),
+          ),
+        );
+        return;
+      } else if (remoteMessage['type'] == 'AnswerCallEvent') {
+        Map<String, dynamic> data = remoteMessage;
+
+        debugPrint(
+          'GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false))',
+        );
+        if (data['message_id'].toString() !=
+                GetIt.I<CallsBloc>().state.currentActiveCallId &&
+            GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
+          return;
+        }
+        if (GetIt.I<PrefsRepository>().myChatId.toString() ==
+                data['user']['id'].toString() &&
+            main.navigatorKey.currentState!.context.canPop() &&
+            main.navigatorKey.currentState!.context.widget is! SinglePageChat) {
+          main.navigatorKey.currentState!.context.pop();
+        }
+        GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false));
         return;
       }
+    } else {
+      if (remoteMessage['type'] == 'VideoCallEvent' ||
+          remoteMessage['type'] == 'VoiceCallEvent') {
+        String currentUuid = const Uuid().v4();
+        Map<String, dynamic> data = remoteMessage["message"];
 
-      FlutterCallkitIncoming.endAllCalls();
-      GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: true));
-      /*if (navigatorKey.currentState!.context.canPop() &&
-          navigatorKey.currentState!.context.widget is! SinglePageChat) {
-        navigatorKey.currentState!.context.pop();
-      }*/
-    } else if (remoteMessage['type'] == 'VideoCallEvent') {
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: 'VideoCallEvent ForeGround Message');
-      ChatMessage? message;
-      try {
-        message = ChatMessage.fromJson(remoteMessage['message']);
-        GetIt.I<CallsBloc>()
-            .add(UpdateCurrentActiveCallIdEvent(id: message.id.toString()));
-      } catch (e) {
-        GetIt.I<PrefsRepository>().saveRequestsData(
-            null, null, null, null, null, null, null,
-            error: 'VideoCallEvent Error ${e.toString()}');
-      }
-      GetIt.I<ChatBloc>().add(AddChannelToChannels(message: message!));
-      GetIt.I<ChatBloc>().add(
-          ReceiveMessageEvent(message: message, increaseUnReadMessages: false));
-      /*  Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => AgoraInAppWebView(
-            messageId: message!.id.toString(),
-            action: 'receive',
-            type: 'video',
-            channelId: message.channelId.toString(),
-            auth_token: GetIt.I<PrefsRepository>().chatToken!,
-            uId: GetIt.I<PrefsRepository>().myChatId!.toString()),
-      ));*/
-    } else if (remoteMessage['type'] == 'VoiceCallEvent') {
-      print(remoteMessage);
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: 'VoiceCallEvent ForeGround Message');
-      ChatMessage? message;
-      try {
-        message = ChatMessage.fromJson(remoteMessage['message']);
+        if (DateTime.now()
+                .difference(
+                  HelperFunctions.getZonedDate(
+                    DateTime.parse(data['created_at']),
+                  ),
+                )
+                .inMinutes >=
+            1) {
+          return;
+        }
+        GetIt.I<CallsBloc>().add(
+          UpdateCurrentActiveCallIdEvent(id: data["id"].toString()),
+        );
 
-        GetIt.I<CallsBloc>()
-            .add(UpdateCurrentActiveCallIdEvent(id: message.id.toString()));
-      } catch (e) {
-        GetIt.I<PrefsRepository>().saveRequestsData(
-            null, null, null, null, null, null, null,
-            error: 'VoiceCallEvent Error ${e.toString()}');
-      }
-      GetIt.I<ChatBloc>().add(AddChannelToChannels(message: message!));
-      GetIt.I<ChatBloc>().add(
-          ReceiveMessageEvent(message: message, increaseUnReadMessages: false));
-      /* Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => AgoraInAppWebView(
-            messageId: message!.id.toString(),
-            action: 'receive',
-            type: 'voice',
-            channelId: message.channelId.toString(),
-            auth_token: GetIt.I<PrefsRepository>().chatToken!,
-            uId: GetIt.I<PrefsRepository>().myChatId!.toString()),
-      ));*/
-    } else if (remoteMessage['type'] == 'AnswerCallEvent') {
-      Map<String, dynamic> data = remoteMessage;
-      GetIt.I<PrefsRepository>().saveRequestsData(
-          null, null, null, null, null, null, null,
-          error: 'AnswerCallEvent Message');
-      debugPrint(
-          'GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false))');
-      if (data['message_id'].toString() !=
-              GetIt.I<CallsBloc>().state.currentActiveCallId &&
-          GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
+        FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
+          print("CALLKIT EVENT: ${event?.event.toString()}");
+          print("CALLKIT BODY: ${event?.body.toString()}");
+
+          switch (event!.event) {
+            case Event.actionCallAccept:
+              {
+                // ✅ معالج قبول المكالمة - فتح التطبيق والانتقال لشاشة المكالمة
+                print(
+                  "FFFFFFFFFFFFFFFDDDDDDDDDDDDDDDDDDDDDD///*/*** actionCallAccept triggered",
+                );
+                try {
+                  print("Event body: ${event.body}");
+                  print("Event body type: ${event.body.runtimeType}");
+                  print("Extra data: ${event.body['extra']}");
+                  print("Extra type: ${event.body['extra'].runtimeType}");
+
+                  // ✅ الحصول على بيانات المكالمة من extra - تحويل صحيح للنوع
+                  final extraData = event.body['extra'];
+
+                  if (extraData != null) {
+                    // تحويل من Map<Object?, Object?> إلى Map<String, dynamic>
+                    final callData =
+                        Map<String, dynamic>.from(extraData as Map);
+                    print("Call data from extra: $callData");
+
+                    final channelId = callData['channel_id']?.toString() ?? '';
+                    final messageId = callData['message_id']?.toString() ?? '';
+                    final type = callData['type']?.toString() ?? 'voice';
+
+                    print(
+                      "Extracted: channel=$channelId, message=$messageId, type=$type",
+                    );
+
+                    // تحديث ID المكالمة النشطة
+                    GetIt.I<CallsBloc>().add(
+                      UpdateCurrentActiveCallIdEvent(id: messageId),
+                    );
+
+                    print(
+                      "✅ Call accepted successfully - waiting for app to open",
+                    );
+                  } else {
+                    print(
+                      "❌ extraData is null - cannot extract call information",
+                    );
+                  }
+                } catch (e, stackTrace) {
+                  print("❌ Error in actionCallAccept: $e");
+                  print("Stack trace: $stackTrace");
+                }
+              }
+              break;
+            case Event.actionCallDecline:
+              {
+                HttpOverrides.global = MyHttpOverrides();
+                if (!main.declineCallBecauseOfNotificationButton) {
+                  GetIt.I<CallsBloc>().add(
+                    RejectVideoCallEvent(
+                      duration: 0,
+                      payload: {'Target': 'Application  From terminated'},
+                      messageId: data["id"].toString(),
+                    ),
+                  );
+                }
+              }
+              break;
+            case Event.actionCallTimeout:
+              {
+                HttpOverrides.global = MyHttpOverrides();
+                if (!main.declineCallBecauseOfNotificationButton) {
+                  GetIt.I<CallsBloc>().add(
+                    RejectVideoCallEvent(
+                      duration: 0,
+                      payload: {'Target': 'Application  From terminated'},
+                      messageId: data["id"].toString(),
+                    ),
+                  );
+                }
+              }
+              break;
+            default:
+              break;
+          }
+          main.declineCallBecauseOfNotificationButton = false;
+        });
+        main.showCallKitIncoming(
+          remoteMessage,
+          currentUuid,
+          isVideo: remoteMessage['type'] == 'VideoCallEvent',
+        );
+        return;
+      } else if (remoteMessage['type'] == 'RefuseCallEvent') {
+        main.declineCallBecauseOfNotificationButton = true;
+        Map<String, dynamic> data = remoteMessage;
+
+        if (data['duration_in_seconds']!.toString().contains("-1")) {
+          GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
+        }
+        if (data['message_id'].toString() !=
+                GetIt.I<CallsBloc>().state.currentActiveCallId &&
+            GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
+          return;
+        }
+
+        FlutterCallkitIncoming.endAllCalls();
+        GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: true));
+        return;
+      } else if (remoteMessage['type'] == 'AnswerCallEvent') {
+        main.declineCallBecauseOfNotificationButton = true;
+        Map<String, dynamic> data = remoteMessage;
+        if (data['message_id'].toString() !=
+                GetIt.I<CallsBloc>().state.currentActiveCallId &&
+            GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
+          return;
+        }
+        FlutterCallkitIncoming.endAllCalls();
+        GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false));
         return;
       }
-      /* if (GetIt.I<PrefsRepository>().myChatId.toString() ==
-              data['user']['id'].toString() &&
-          navigatorKey.currentState!.context.canPop() &&
-          navigatorKey.currentState!.context.widget is! SinglePageChat) {
-        navigatorKey.currentState!.context.pop();
-      }*/
-      GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false));
-    } else if (remoteMessage['type'] == 'ChannelDeletedEvent') {
+    }
+    if (remoteMessage['type'] == 'ChannelDeletedEvent') {
       Map<String, dynamic> data = remoteMessage;
       GetIt.I<ChatBloc>()
           .add(DeleteChatFromNotificationEvent(channelId: data['channelId']));
