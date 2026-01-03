@@ -115,7 +115,7 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
         actionColor: isVideo ? '#FF1744' : '#4CAF50',
         incomingCallNotificationChannelName: "Incoming Call",
         missedCallNotificationChannelName: "Missed Call"),
-    ios: IOSParams(
+    ios: const IOSParams(
       iconName: 'CallKitLogo',
       handleType: 'generic',
       supportsVideo: true,

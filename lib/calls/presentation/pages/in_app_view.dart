@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/pages/single_page_chat.dart';
 import 'package:delivery_man_app/calls/presentation/bloc/calls_bloc.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +8,8 @@ import 'dart:developer';
 import 'package:audioplayers/audioplayers.dart' hide AVAudioSessionCategory;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 // import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -151,6 +154,15 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
     // 2. معالجة حالة مكبر الصوت (Speaker)
     for (var arg in args) {
+      if ((int.tryParse(arg.toString()) ?? 0) > 0) {
+        chatBloc.add(
+          AddDurationToMessageCallEvent(
+            channelId: widget.channelId,
+            messageId: widget.messageId,
+            duration: int.tryParse(arg.toString()) ?? 0,
+          ),
+        );
+      }
       if (arg == 'IsSpeaker') {
         Future.delayed(const Duration(milliseconds: 500), () {
           _setCallAudioMode('speaker');
@@ -234,9 +246,8 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     Timer.periodic(const Duration(seconds: 7), (timer) {
                       controller.stopLoading();
                       controller.dispose();
-                      if (Navigator.of(context).canPop() &&
-                          context.widget is! SinglePageChat) {
-                        Navigator.of(context).pop();
+                      if (Navigator.of(Get.context!).canPop()) {
+                        Get.back();
                       }
                       // GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
                       //     payload: {'Target': 'Application From callInProg'},
@@ -247,9 +258,8 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     print("54..............${url.toString()}");
                     controller.stopLoading();
                     controller.dispose();
-                    if (Navigator.of(context).canPop() &&
-                        context.widget is! SinglePageChat) {
-                      Navigator.of(context).pop();
+                    if (Navigator.of(Get.context!).canPop()) {
+                      Get.back();
                     }
                     //    Navigator.of(context).pop();
                     // GetIt.I<CallsBloc>().add(RejectVideoCallEvent(
