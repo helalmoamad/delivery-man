@@ -65,7 +65,7 @@ dependencies:
   flutter_sound: ^9.28.0
   flutter_svg: ^2.0.10+1
   file_picker: ^8.0.6
-  wechat_assets_picker: ^9.0.0
+  wechat_assets_picker: ^10.1.0
   camera: ^0.10.5+5
   flutter_slidable: ^4.0.0
   file_saver: ^0.2.14
@@ -115,6 +115,7 @@ flutter:
   assets:
     - assets/pictures/
     - assets/svg/
+    - assets/audio/
     - .env
   
 

@@ -10,6 +10,7 @@ import 'package:delivery_man_app/TrydosChat/data/models/pagination/pagination_mo
 import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
 import 'package:delivery_man_app/TrydosChat/domain/use_cases/change_chat_property_usecase.dart';
 import 'package:delivery_man_app/TrydosChat/domain/use_cases/delete_chat_usecase.dart';
+import 'package:delivery_man_app/TrydosChat/domain/use_cases/delete_fcm_from_chat_usecase.dart';
 import 'package:delivery_man_app/TrydosChat/domain/use_cases/get_contacts_usecase.dart';
 import 'package:delivery_man_app/TrydosChat/domain/use_cases/get_date_time.dart';
 import 'package:delivery_man_app/TrydosChat/domain/use_cases/get_media_count_usecase.dart';
@@ -64,6 +65,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       this.getMyChatsUseCase,
       this.shareProductOnAppsUseCase,
       this.saveContactsUseCase,
+      this.deleteFcmFromChatUseCase,
       this.sendMessageUseCase,
       this.getSharedProductCountUseCase,
       this.getMessagesBetweenUseCase,
@@ -84,6 +86,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       this.sendErrorToServerUseCase)
       : super(ChatState()) {
     on<ChatEvent>((event, emit) {});
+    on<DeleteFcmTokenFromChatEvent>(_onDeleteFcmTokenFromChatEvent);
+
     on<UpdateChannelObjectFromNotificationEvent>(
         _onUpdateChannelObjectFromNotificationEvent);
     on<UpdateProfileInChatEvent>(_onUpdateProfileInChatEvent);
@@ -102,6 +106,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         _onShareProductWithContactsOrChannelsEvent);
     on<IncreaseFileImageVideoCounterEvent>(
         _onIncreaseFileImageVideoCounterEvent);
+    on<AddDurationToMessageCallEvent>(_onAddDurationToMessageCallEvent);
     on<ReadAllMessagesEvent>(_onReadAllMessagesEvent);
     on<NotifyThatIReceivedMessageEvent>(_onNotifyThatIReceivedMessageEvent);
     on<ReceiveMessageEvent>(_onReceiveMessageEvent);
@@ -152,6 +157,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetDateTimeUseCase getDateTimeUseCase;
   final GetMyChatsUseCase getMyChatsUseCase;
   final StoreFcmUseCase storeFcmUseCase;
+  final DeleteFcmFromChatUseCase deleteFcmFromChatUseCase;
   final GetOrderRecipientIdUseCase getOrderRecipientIdUseCase;
   final SendErrorToServerUseCase sendErrorToServerUseCase;
   final UploadFileCloudinaryUseCase uploadFileCloudinaryUseCase;
@@ -388,8 +394,72 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
   }
 
+  FutureOr<void> _onAddDurationToMessageCallEvent(
+    AddDurationToMessageCallEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    emit(state.copyWith(receiveMessageStatus: ReceiveMessageStatus.loading));
+    try {
+      List<ChatMessage> messages = [];
+      bool fromPinned = false;
+      List<Chat> chats;
+      if (state.chats.any((e) => e.id == event.channelId)) {
+        chats = List.of(state.chats);
+      } else {
+        fromPinned = true;
+        chats = List.of(state.pinnedChats);
+      }
+      Chat chat = chats.firstWhere(
+        (element) => element.id == event.channelId,
+        orElse: () => Chat(id: '-1'),
+      );
+
+      chats.removeWhere((element) => element.id == chat.id);
+      chats.insert(0, chat);
+      messages = List.of(chat.messages ?? []);
+      ChatMessage message = messages.firstWhere(
+        (element) => element.id == event.messageId,
+        orElse: () => ChatMessage(id: '-1'),
+      );
+      message = message.copyWith(durationInSeconds: event.duration);
+      int index = messages.indexWhere((element) => element.id == message.id);
+      if (index != -1) {
+        messages.removeAt(index);
+        messages.insert(index, message);
+      }
+
+      chats[0] = chats[0].copyWith(messages: messages);
+      emit(
+        state.copyWith(
+          receiveMessageStatus: ReceiveMessageStatus.success,
+          newSortedChatsByDate: groupReceivedMessageOnDays(
+            chats: [
+              ...chats,
+              ...(fromPinned ? state.chats : state.pinnedChats),
+            ],
+          ),
+          currentChannelReceivedMessage: chat.localId ?? chat.id,
+          channelId: event.channelId,
+          chats: fromPinned ? state.chats : chats,
+          pinnedChats: !fromPinned ? state.pinnedChats : chats,
+        ),
+      );
+      // add(IncreaseFileImageVideoCounterEvent(event.message.messageType!.name!));
+    } catch (e) {
+      emit(state.copyWith(receiveMessageStatus: ReceiveMessageStatus.failure));
+    }
+  }
+
+  FutureOr<void> _onDeleteFcmTokenFromChatEvent(
+    DeleteFcmTokenFromChatEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    await deleteFcmFromChatUseCase(DeleteFcmParams(fcmToken: event.fcmToken));
+  }
+
   FutureOr<void> _onStoreFcmTokenEvent(
       StoreFcmTokenEvent event, Emitter<ChatState> emit) async {
+    _prefsRepository.addFcmToken(event.fcmToken);
     final response = await storeFcmUseCase(
       StoreFcmParams(
         userId: event.userId,
@@ -825,7 +895,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             getOrderRecipientIdStatus: GetOrderRecipientIdStatus.failure));
       },
       (r) {
-        GlobalFunctions.setOrderChatParticipantId(chatParticipantId: r.data?.chatRespend?.id.toString() ?? "");
+        GlobalFunctions.setOrderChatParticipantId(
+            chatParticipantId: r.data?.chatRespend?.id.toString() ?? "");
         isFailedTheFirstTime.remove('GetOrderRecipientIdEvent');
         List<Chat> newChats = [];
         String uuid = const Uuid().v4();
@@ -2046,10 +2117,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
             return e;
           }).toList()
         : state.pinnedChats;
-    if (isAFileMessageRemoved) {
-      _prefsRepository.removeAFilePathExist(
-          chat.messages![index].mediaMessageContent![0].filePath!,
-          event.channelId);
+    try {
+      if (isAFileMessageRemoved) {
+        _prefsRepository.removeAFilePathExist(
+            chat.messages![index].mediaMessageContent![0].filePath!,
+            event.channelId);
+      }
+    } catch (e) {
+      debugPrint('Error removing file path: $e');
     }
     emit(state.copyWith(
       /* videoCountInEachChat: isAvideoMessageRemoved

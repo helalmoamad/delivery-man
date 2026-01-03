@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:delivery_man_app/TrydosChat/chat_utils/use_case.dart';
+import 'package:delivery_man_app/TrydosChat/domain/repositories/prefs_repository.dart';
+import 'package:delivery_man_app/TrydosChat/helper/show_message.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
 import 'package:delivery_man_app/calls/data/models/my_calls.dart';
 import 'package:delivery_man_app/calls/domain/useCase/delete_Message.dart';
+import 'package:delivery_man_app/calls/domain/useCase/end_call_usecase.dart';
 import 'package:delivery_man_app/calls/domain/useCase/get_agora_token_use_case.dart';
 import 'package:delivery_man_app/calls/domain/useCase/get_missed_call_count.dart';
 import 'package:delivery_man_app/calls/domain/useCase/get_my_calls.dart';
@@ -32,9 +35,11 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   final GetAgoraTokenUseCase getAgoraTokenUseCase;
   final DeleteMessageUseCase deleteMessageUseCase;
   final GetMyCallsUseCase getMyCallsUseCase;
+  final EndCallUseCase endCallUseCase;
   final GetMissedCalCountUseCase getMissedCalCountUseCase;
   CallsBloc(
       this.rejectCallUseCase,
+      this.endCallUseCase,
       this.makeCallUseCase,
       this.getMyCallsUseCase,
       this.watchMissedCallUseCase,
@@ -107,55 +112,96 @@ class CallsBloc extends Bloc<CallsEvent, CallsState> {
   }
 
   FutureOr<void> _onMakeCallEvent(
-      MakeCallEvent event, Emitter<CallsState> emit) async {
-    emit(state.copyWith(
+    MakeCallEvent event,
+    Emitter<CallsState> emit,
+  ) async {
+    emit(
+      state.copyWith(
         makeCallStatus: MakeCallStatus.loading,
         receiverCallName: event.receiverCallName,
-        isVideoCall: event.isVideo));
-    emit(state.copyWith(
-        makeCallStatus: MakeCallStatus.init, isVideoCall: event.isVideo));
+        isVideoCall: event.isVideo,
+      ),
+    );
+    emit(
+      state.copyWith(
+        makeCallStatus: MakeCallStatus.init,
+        isVideoCall: event.isVideo,
+      ),
+    );
+    final response = await endCallUseCase(
+      EndCallParams(userId: GetIt.I<PrefsRepository>().myChatId.toString()),
+    );
+    response.fold((l) {
+      emit(state.copyWith(makeCallStatus: MakeCallStatus.failure));
+      return;
+    }, (r) {});
     if (event.receiverUserId != null) {
-      final response = await makeCallUseCase(MakeCallParams(
+      final response = await makeCallUseCase(
+        MakeCallParams(
           isVideo: event.isVideo,
           payload: event.payload,
-          receiverUserId: event.receiverUserId!));
-      response.fold((l) {
-        emit(state.copyWith(makeCallStatus: MakeCallStatus.failure));
-      }, (r) {
-        GetIt.I<ChatBloc>().add(AddAMessageToAChannel(
-            message: r.data!.message!, localChannelId: event.chatId!));
-        emit(state.copyWith(
-            makeCallStatus: MakeCallStatus.startCall,
-            isVideoCall: event.isVideo,
-            currentActiveCallId: r.data!.message!.id!.toString(),
-            messageId: r.data!.message!.id!.toString(),
-            channelIdForCurrentCall: r.data!.message!.channelId.toString(),
-            agoraToken: r.data!.token));
-      });
+          receiverUserId: event.receiverUserId!,
+        ),
+      );
+      response.fold(
+        (l) {
+          emit(state.copyWith(makeCallStatus: MakeCallStatus.failure));
+        },
+        (r) {
+          GetIt.I<ChatBloc>().add(
+            AddAMessageToAChannel(
+              message: r.data!.message!,
+              localChannelId: event.chatId!,
+            ),
+          );
+          emit(
+            state.copyWith(
+              makeCallStatus: MakeCallStatus.startCall,
+              isVideoCall: event.isVideo,
+              currentActiveCallId: r.data!.message!.id!.toString(),
+              messageId: r.data!.message!.id!.toString(),
+              channelIdForCurrentCall: r.data!.message!.channelId.toString(),
+              agoraToken: r.data!.token,
+            ),
+          );
+        },
+      );
       debugPrint("the channel not exist");
     } else {
       debugPrint("the channel exist");
 
-      final response = await makeCallUseCase(MakeCallParams(
+      final response = await makeCallUseCase(
+        MakeCallParams(
           payload: event.payload,
           chatId: event.chatId!,
-          isVideo: event.isVideo));
-      response.fold((l) {
-        emit(state.copyWith(makeCallStatus: MakeCallStatus.failure));
-      }, (r) {
-        GetIt.I<ChatBloc>().add(ReceiveMessageEvent(
-            message: r.data!.message!, increaseUnReadMessages: false));
-        emit(state.copyWith(
-          messageId: r.data!.message!.id!.toString(),
-          isVideoCall: event.isVideo,
-          makeCallStatus: MakeCallStatus.startCall,
-          currentActiveCallId: r.data!.message!.id!.toString(),
-          agoraToken: r.data!.token,
-          channelIdForCurrentCall: r.data!.message!.channelId.toString(),
-        ));
+          isVideo: event.isVideo,
+        ),
+      );
+      response.fold(
+        (l) {
+          emit(state.copyWith(makeCallStatus: MakeCallStatus.failure));
+        },
+        (r) {
+          GetIt.I<ChatBloc>().add(
+            ReceiveMessageEvent(
+              message: r.data!.message!,
+              increaseUnReadMessages: false,
+            ),
+          );
+          emit(
+            state.copyWith(
+              messageId: r.data!.message!.id!.toString(),
+              isVideoCall: event.isVideo,
+              makeCallStatus: MakeCallStatus.startCall,
+              currentActiveCallId: r.data!.message!.id!.toString(),
+              agoraToken: r.data!.token,
+              channelIdForCurrentCall: r.data!.message!.channelId.toString(),
+            ),
+          );
 
-        emit(state.copyWith(callRegister: state.callRegister));
-      });
+          emit(state.copyWith(callRegister: state.callRegister));
+        },
+      );
     }
   }
 

@@ -1,26 +1,38 @@
+import 'dart:ui' as ui;
 import 'package:delivery_man_app/TrydosChat/chat_utils/assets_provider.dart';
+import 'package:delivery_man_app/TrydosChat/chat_utils/build_context.dart';
+import 'package:delivery_man_app/TrydosChat/config/theme/my_color_scheme.dart';
+import 'package:delivery_man_app/TrydosChat/config/theme/typography.dart';
 import 'package:delivery_man_app/TrydosChat/helper/helper_functions.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/utils/responsive_padding.dart';
-import 'package:delivery_man_app/TrydosChat/presentation/widgets/chat_widgets/no_image_widget.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_cached_network_image.dart';
 import 'package:delivery_man_app/TrydosChat/presentation/widgets/my_text_widget.dart';
+import 'package:delivery_man_app/TrydosChat/presentation/widgets/trydos_loader.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../calls/presentation/widgets/no_image_widget.dart';
+
 class CallMessage extends StatelessWidget {
-  const CallMessage(
-      {super.key,
-      this.userMessagePhoto,
-      required this.message,
-      required this.userMessageName,
-      required this.isVideo,
-      required this.time,
-      required this.isSent});
+  const CallMessage({
+    Key? key,
+    this.userMessagePhoto,
+    required this.message,
+    required this.userMessageName,
+    required this.isVideo,
+    required this.time,
+    required this.isSent,
+    required this.durationInSeconds,
+    required this.isMessageForMe,
+  }) : super(key: key);
   final String message;
   final bool isVideo;
   final bool isSent;
+  final int durationInSeconds;
+  final bool isMessageForMe;
   final DateTime time;
   final String? userMessagePhoto;
   final String userMessageName;
@@ -28,7 +40,7 @@ class CallMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.ltr,
+      textDirection: ui.TextDirection.ltr,
       child: Padding(
         padding: HWEdgeInsets.only(
           right: isSent ? 25.w : 0,
@@ -44,23 +56,26 @@ class CallMessage extends StatelessWidget {
                 Container(
                   constraints: const BoxConstraints(minHeight: 50),
                   decoration: BoxDecoration(
-                      color: const Color(0xffFFDEDE),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            offset: const Offset(0, 3),
-                            blurRadius: 6)
-                      ]),
+                    color: const Color(0xffFFDEDE),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        // ignore: deprecated_member_use
+                        color: context.colorScheme.black.withOpacity(0.05),
+                        offset: const Offset(0, 3),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
                   child: Padding(
                     padding: HWEdgeInsets.only(
-                        left: isSent ? 20.w : 40.w,
-                        right: isSent ? 40.w : 20.w),
+                      left: isSent ? 20.w : 40.w,
+                      right: isSent ? 40.w : 20.w,
+                    ),
                     child: Center(
                       child: Directionality(
-                        textDirection: TextDirection.ltr,
+                        textDirection: ui.TextDirection.ltr,
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SvgPicture.asset(
                               isVideo
@@ -71,16 +86,12 @@ class CallMessage extends StatelessWidget {
                             ),
                             10.horizontalSpace,
                             MyTextWidget(
-                              '$message  ${!time.isUtc ? HelperFunctions.getDateInFormat(time) : HelperFunctions.getZonedDateInFormat(time)}',
-                              style: const TextStyle(
-                                color: Color(0xff404040),
+                              '${durationInSeconds == 0 ? " missed call" : (isMessageForMe == false ? "incomming call" : "outgoing call")}${durationInSeconds > 0 ? ' ${HelperFunctions.getTimeInFormat(Duration(seconds: durationInSeconds))}' : ''} , $message  ${!time.isUtc ? HelperFunctions.getDateInFormat(time) : HelperFunctions.getZonedDateInFormat(time)}',
+                              style: context.textTheme.titleMedium?.rq.copyWith(
+                                color: const Color(0xff404040),
                                 height: 1.66,
                               ),
-                              //  context.textTheme.titleMedium?.rr.copyWith(
-                              //   color: const Color(0xff404040),
-                              //   height: 1.66,
-                              // ),
-                              textDirection: TextDirection.ltr,
+                              textDirection: ui.TextDirection.ltr,
                             ),
                           ],
                         ),
@@ -103,14 +114,13 @@ class CallMessage extends StatelessWidget {
                       ),
                       userMessagePhoto != null
                           ? MyCachedNetworkImage(
-                              imageUrl: (userMessagePhoto
-                                          .toString()
-                                          .contains("cloudinary")
-                                      ? ""
-                                      : "${dotenv.env['Profile_Images_Url']}") +
-                                  userMessagePhoto!,
-                              progressIndicatorBuilderWidget: const Center(
-                                  child: CircularProgressIndicator()),
+                              imageUrl: (userMessagePhoto.toString().contains(
+                                        "cloudinary",
+                                      )
+                                  ? userMessagePhoto!
+                                  : ("${dotenv.env['Images_Url']}") +
+                                      userMessagePhoto!),
+                              progressIndicatorBuilderWidget: TrydosLoader(),
                               imageFit: BoxFit.cover,
                               radius: 8,
                               width: 30.w,
@@ -119,17 +129,15 @@ class CallMessage extends StatelessWidget {
                           : NoImageWidget(
                               width: 30.w,
                               height: 30,
-                              textStyle: const TextStyle(
-                                color: Color(0xff6638FF),
-                                height: 1.33,
+                              textStyle:
+                                  context.textTheme.titleMedium?.bq.copyWith(
+                                color: const Color(0xff6638FF),
                                 letterSpacing: 0.18,
+                                height: 1.33,
                               ),
-                              // context.textTheme.titleMedium?.br.copyWith(
-                              //     color: const Color(0xff6638FF),
-                              //     letterSpacing: 0.18,
-                              //     height: 1.33),
                               radius: 8,
-                              name: userMessageName)
+                              name: userMessageName,
+                            ),
                     ],
                   ),
                 ),

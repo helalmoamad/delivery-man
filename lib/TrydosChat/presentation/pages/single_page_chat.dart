@@ -274,29 +274,32 @@ class _SinglePageChatState extends ThemeState<SinglePageChat> {
                                     p.currentOpenedChatId !=
                                     c.currentOpenedChatId,
                                 listener: (context, state) {
-                                  chat = state.chats.firstWhere(
-                                      (element) =>
-                                          element.id.toString() ==
-                                              widget.chatId ||
-                                          element.localId.toString() ==
-                                              widget.chatId,
-                                      orElse: () => state.pinnedChats
-                                          .firstWhere((element) =>
-                                              element.id.toString() ==
-                                                  widget.chatId ||
-                                              element.localId.toString() ==
-                                                  widget.chatId));
+                                  if ((state.currentOpenedChatId?.length ?? 0) >
+                                      0) {
+                                    chat = state.chats.firstWhere(
+                                        (element) =>
+                                            element.id.toString() ==
+                                                widget.chatId ||
+                                            element.localId.toString() ==
+                                                widget.chatId,
+                                        orElse: () => state.pinnedChats
+                                            .firstWhere((element) =>
+                                                element.id.toString() ==
+                                                    widget.chatId ||
+                                                element.localId.toString() ==
+                                                    widget.chatId));
 
-                                  member = !chat.channelMembers.isNullOrEmpty
-                                      ? chat.channelMembers!.firstWhere(
-                                          (element) =>
-                                              element.userId !=
-                                              _prefsRepository.myChatId)
-                                      : null;
+                                    member = !chat.channelMembers.isNullOrEmpty
+                                        ? chat.channelMembers!.firstWhere(
+                                            (element) =>
+                                                element.userId !=
+                                                _prefsRepository.myChatId)
+                                        : null;
 
-                                  FirebasePresence.listeningToConnectStatus(
-                                      chatId: widget.chatId,
-                                      friendId: member!.userId!);
+                                    FirebasePresence.listeningToConnectStatus(
+                                        chatId: widget.chatId,
+                                        friendId: member!.userId!);
+                                  }
                                 },
                                 child: BlocBuilder<ChatBloc, ChatState>(
                                   builder: (context, state) {
@@ -382,7 +385,7 @@ class _SinglePageChatState extends ThemeState<SinglePageChat> {
                                                 color: const Color(0xff5D5C5D)),
                                       ),
                                     ),
-                                    if (int.tryParse(widget.chatId) != null)
+                                    /*   if (int.tryParse(widget.chatId) != null)
                                       BlocBuilder<AppBloc, AppState>(
                                         builder: (context, state) {
                                           if (state.pusherActivityIds[
@@ -480,7 +483,7 @@ class _SinglePageChatState extends ThemeState<SinglePageChat> {
                                             );
                                           }
                                         },
-                                      ),
+                                      ),*/
                                   ],
                                 ),
                               ),
@@ -725,8 +728,6 @@ class _SinglePageChatState extends ThemeState<SinglePageChat> {
                                                                           .toString()]!
                                                                       .reversed
                                                                       .toList();
-                                                              print(
-                                                                  "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX${chatState.newSortedChatsByDate![chat.id]!.length}");
 
                                                               if (messages[
                                                                       index]
@@ -1885,6 +1886,8 @@ class _SinglePageChatState extends ThemeState<SinglePageChat> {
             message: "video_call_at",
             time: message.createdAt!,
             isSent: isSentMessage,
+            durationInSeconds: message.durationInSeconds ?? 0,
+            isMessageForMe: isSentMessage,
             userMessageName: isSentMessage ? senderName : receiverName,
             userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,
           );
@@ -1893,6 +1896,8 @@ class _SinglePageChatState extends ThemeState<SinglePageChat> {
             isVideo: false,
             message: "voice_call_at",
             isSent: isSentMessage,
+            durationInSeconds: message.durationInSeconds ?? 0,
+            isMessageForMe: isSentMessage,
             time: message.createdAt!,
             userMessageName: isSentMessage ? senderName : receiverName,
             userMessagePhoto: isSentMessage ? senderPhoto : receiverPhoto,

@@ -20,7 +20,7 @@ abstract class CallsRepository {
 
   Future<Either<Failure, GetAgoraTokenResponseModel>> getAgoraToken(
       {required String ChatId});
-
+ Future<Either<Failure, bool>> endCall(Map<String, dynamic> params);
   Future<Either<Failure, bool>> deleteMessage(Map<String, dynamic> params);
   Future<Either<Failure, MissedCallCountModel>> getMissedCallCount();
 }

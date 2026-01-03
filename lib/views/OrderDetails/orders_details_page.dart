@@ -39,7 +39,9 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
   void initState() {
     super.initState();
     //////////////
-    getAllData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getAllData();
+    });
     /////////////
     final args = Get.arguments;
     if (args != null && args is OrderDataModel) {
@@ -175,156 +177,187 @@ class _OrdersDetailsPageState extends State<OrdersDetailsPage> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             BlocListener<CallsBloc, CallsState>(
-      listenWhen: (p, c) =>
-          p.makeCallStatus != c.makeCallStatus &&
-          c.makeCallStatus == MakeCallStatus.loading,
-      listener: (context, state) {
-        callInProgressDialog(context);
-      },
-      child: BlocListener<CallsBloc, CallsState>(
-        listenWhen: (p, c) =>
-            p.makeCallStatus != c.makeCallStatus &&
-            c.makeCallStatus == MakeCallStatus.failure,
-        listener: (context, state) {
-          Navigator.pop(context);
-          showMessage('${state.receiverCallName ?? "user"} in_another_call',
-              showInRelease: true);
-        },
-        child: BlocListener<CallsBloc, CallsState>(
-          listenWhen: (p, c) =>
-              p.makeCallStatus != c.makeCallStatus &&
-              c.makeCallStatus == MakeCallStatus.startCall,
-          listener: (context, state) {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => AgoraInAppWebView(
-                      type: state.isVideoCall ? 'video' : 'voice',
-                      isReceivingCall: false,
-                      channelId: state.channelIdForCurrentCall!,
-                      auth_token: GetIt.I<PrefsRepository>().chatToken!,
-                      uId: GetIt.I<PrefsRepository>().myChatId.toString(),
-                      action: 'sent',
-                      messageId: state.messageId!,
-                    )));
-          },child: 
-                            BlocListener<ChatBloc, ChatState>(
-                              listenWhen: (previous, current) =>
-                                  previous.getOrderRecipientIdStatus !=
-                                  current.getOrderRecipientIdStatus,
-                              listener: (context, state) {
-                                if (state.getOrderRecipientIdStatus ==
-                                    GetOrderRecipientIdStatus.success) {
-                                  String receiverName = "recipient";
-                                  String fullReceiverName = "recipient";
-                                  String? recipientUserId =
-                                      state.recipientUserId;
-                                  if (recipientUserId == null) {
-                                    return;
-                                  }
-                                  Chat? chat;
-                                  User? receiver;
-                                  List<Chat> chats =
-                                      List.of(GetIt.I<ChatBloc>().state.chats);
-                                  debugPrint(chats.toString());
-                                  chats.addAll(
-                                      GetIt.I<ChatBloc>().state.pinnedChats);
-                                  chat = chats.firstWhere((element) =>
-                                      element.channelMembers!.any((element) {
-                                        return element.userId.toString() ==
-                                            recipientUserId;
-                                      }));
-                                  final preferences =
-                                      GetIt.I<PrefsRepository>();
-                                  receiver = chat.channelMembers
-                                      ?.firstWhere(
-                                        (element) =>
-                                            element.userId !=
-                                            preferences.myChatId,
-                                        orElse: () => ChannelMember(
-                                            userId:
-                                                int.tryParse(recipientUserId),
-                                            user: User(
-                                                id: int.tryParse(
-                                                    recipientUserId),
-                                                name: receiverName)),
-                                      )
-                                      .user;
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => SinglePageChat(
-                                        orderId: ordersController
-                                            .myOrderIdInMarket
-                                            .toString(),
-                                        chatId: chat?.id ?? "",
-                                        receiverName: "CU",
-                                        receiverPhone: "",
-                                        fullReceiverName: "Customer",
-                                        senderName: "Ali",
-                                      ),
-                                    ),
-                                  );
-                                }
-                                // TODO: implement listener
-                              },
-                              child: BlocBuilder<ChatBloc, ChatState>(
-                                buildWhen: (previous, current) =>
-                                    previous.getOrderRecipientIdStatus !=
-                                    current.getOrderRecipientIdStatus,
-                                builder: (context, state) {
-                                  if (state.getOrderRecipientIdStatus ==
-                                          GetOrderRecipientIdStatus.loading &&
-                                      GlobalFunctions.getChatToken()
-                                          .isNotEmpty &&
-                                      GlobalFunctions.getChatToken()
-                                          .isNotEmpty) {
-                                    return const SizedBox(
-                                      width: 30,
-                                      height: 30,
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-                                  return InkWell(
-                                    onTap: () {
-                                      if (GlobalFunctions.getMobilePhone()
-                                          .isNotEmpty) {
-                                        if ((GetIt.I<PrefsRepository>()
-                                                    .chatToken
-                                                    ?.length ??
-                                                0) >
-                                            7) {
-                                          GetIt.I<ChatBloc>().add(
-                                              GetOrderRecipientIdEvent(
-                                                  originalUserId:
-                                                      GlobalFunctions
-                                                              .getUserId()
+                                listenWhen: (p, c) =>
+                                    p.makeCallStatus != c.makeCallStatus &&
+                                    c.makeCallStatus == MakeCallStatus.loading,
+                                listener: (context, state) {
+                                  callInProgressDialog(context);
+                                },
+                                child: BlocListener<CallsBloc, CallsState>(
+                                    listenWhen: (p, c) =>
+                                        p.makeCallStatus != c.makeCallStatus &&
+                                        c.makeCallStatus ==
+                                            MakeCallStatus.failure,
+                                    listener: (context, state) {
+                                      Navigator.pop(context);
+                                      showMessage(
+                                          '${state.receiverCallName ?? "user"} in_another_call',
+                                          showInRelease: true);
+                                    },
+                                    child: BlocListener<CallsBloc, CallsState>(
+                                      listenWhen: (p, c) =>
+                                          p.makeCallStatus !=
+                                              c.makeCallStatus &&
+                                          c.makeCallStatus ==
+                                              MakeCallStatus.startCall,
+                                      listener: (context, state) {
+                                        Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                builder: (_) =>
+                                                    AgoraInAppWebView(
+                                                      type: state.isVideoCall
+                                                          ? 'video'
+                                                          : 'voice',
+                                                      isReceivingCall: false,
+                                                      channelId: state
+                                                          .channelIdForCurrentCall!,
+                                                      auth_token: GetIt.I<
+                                                              PrefsRepository>()
+                                                          .chatToken!,
+                                                      uId: GetIt.I<
+                                                              PrefsRepository>()
+                                                          .myChatId
                                                           .toString(),
-                                                  parentOrderId: ordersController
-                                                      .myParentOrderIdInMarket
-                                                      .toString(),
+                                                      action: 'sent',
+                                                      messageId:
+                                                          state.messageId!,
+                                                    )));
+                                      },
+                                      child: BlocListener<ChatBloc, ChatState>(
+                                        listenWhen: (previous, current) =>
+                                            previous
+                                                .getOrderRecipientIdStatus !=
+                                            current.getOrderRecipientIdStatus,
+                                        listener: (context, state) {
+                                          if (state.getOrderRecipientIdStatus ==
+                                              GetOrderRecipientIdStatus
+                                                  .success) {
+                                            String receiverName = "recipient";
+                                            String fullReceiverName =
+                                                "recipient";
+                                            String? recipientUserId =
+                                                state.recipientUserId;
+                                            if (recipientUserId == null) {
+                                              return;
+                                            }
+                                            Chat? chat;
+                                            User? receiver;
+                                            List<Chat> chats = List.of(
+                                                GetIt.I<ChatBloc>()
+                                                    .state
+                                                    .chats);
+                                            debugPrint(chats.toString());
+                                            chats.addAll(GetIt.I<ChatBloc>()
+                                                .state
+                                                .pinnedChats);
+                                            chat = chats.firstWhere((element) =>
+                                                element.channelMembers!
+                                                    .any((element) {
+                                                  return element.userId
+                                                          .toString() ==
+                                                      recipientUserId;
+                                                }));
+                                            final preferences =
+                                                GetIt.I<PrefsRepository>();
+                                            receiver = chat.channelMembers
+                                                ?.firstWhere(
+                                                  (element) =>
+                                                      element.userId !=
+                                                      preferences.myChatId,
+                                                  orElse: () => ChannelMember(
+                                                      userId: int.tryParse(
+                                                          recipientUserId),
+                                                      user: User(
+                                                          id: int.tryParse(
+                                                              recipientUserId),
+                                                          name: receiverName)),
+                                                )
+                                                .user;
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SinglePageChat(
                                                   orderId: ordersController
                                                       .myOrderIdInMarket
-                                                      .toString()));
+                                                      .toString(),
+                                                  chatId: chat?.id ?? "",
+                                                  receiverName: "CU",
+                                                  receiverPhone: "",
+                                                  fullReceiverName: "Customer",
+                                                  senderName: "Ali",
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                          // TODO: implement listener
+                                        },
+                                        child: BlocBuilder<ChatBloc, ChatState>(
+                                          buildWhen: (previous, current) =>
+                                              previous
+                                                  .getOrderRecipientIdStatus !=
+                                              current.getOrderRecipientIdStatus,
+                                          builder: (context, state) {
+                                            if (state.getOrderRecipientIdStatus ==
+                                                    GetOrderRecipientIdStatus
+                                                        .loading &&
+                                                GlobalFunctions.getChatToken()
+                                                    .isNotEmpty &&
+                                                GlobalFunctions.getChatToken()
+                                                    .isNotEmpty) {
+                                              return const SizedBox(
+                                                width: 30,
+                                                height: 30,
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              );
+                                            }
+                                            return InkWell(
+                                              onTap: () {
+                                                if (GlobalFunctions
+                                                        .getMobilePhone()
+                                                    .isNotEmpty) {
+                                                  if ((GetIt.I<PrefsRepository>()
+                                                              .chatToken
+                                                              ?.length ??
+                                                          0) >
+                                                      7) {
+                                                    GetIt.I<ChatBloc>().add(
+                                                        GetOrderRecipientIdEvent(
+                                                            originalUserId:
+                                                                GlobalFunctions
+                                                                        .getUserId()
+                                                                    .toString(),
+                                                            parentOrderId:
+                                                                ordersController
+                                                                    .myParentOrderIdInMarket
+                                                                    .toString(),
+                                                            orderId: ordersController
+                                                                .myOrderIdInMarket
+                                                                .toString()));
 
-                                          // Get.toNamed(Routes.chatPage);
-                                        } else {
-                                          Get.toNamed(
-                                              Routes.otpVerificationPage);
-                                        }
-                                      } else {
-                                        SnackBarWidgets.showSuccessSnackBar(
-                                            'Please enter the phone number',
-                                            '');
-                                      }
-                                    },
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      width: 30,
-                                      height: 40,
-                                      child: const Icon(Icons.chat),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),)))
+                                                    // Get.toNamed(Routes.chatPage);
+                                                  } else {
+                                                    Get.toNamed(Routes
+                                                        .otpVerificationPage);
+                                                  }
+                                                } else {
+                                                  SnackBarWidgets
+                                                      .showSuccessSnackBar(
+                                                          'Please enter the phone number',
+                                                          '');
+                                                }
+                                              },
+                                              child: Container(
+                                                alignment: Alignment.center,
+                                                width: 30,
+                                                height: 40,
+                                                child: const Icon(Icons.chat),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    )))
                           ],
                         )
                       : Container();

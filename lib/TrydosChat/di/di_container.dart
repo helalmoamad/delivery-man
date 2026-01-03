@@ -10,13 +10,24 @@ import 'di_container.config.dart';
 import 'package:logger/logger.dart';
 
 final GetIt _getIt = GetIt.I;
+Future<GetIt>? _configureFuture;
 
 @InjectableInit(
   initializerName: r'$initGetIt',
   preferRelativeImports: true,
   asExtension: false,
 )
-Future<GetIt> configureDependencies() async => $initGetIt(_getIt);
+Future<GetIt> configureDependencies() async {
+  if (_getIt.isRegistered<Logger>()) {
+    return _getIt;
+  }
+  if (_configureFuture != null) {
+    return _configureFuture!;
+  }
+
+  _configureFuture = $initGetIt(_getIt);
+  return _configureFuture!;
+}
 
 @module
 abstract class AppModule {

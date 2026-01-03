@@ -46,7 +46,10 @@ abstract class ChatEndPoints {
       '${userId}'.usersScope();
   static final saveContactsEP = 'save_contacts'.usersScope();
   static final myCallReg = 'my_calls'.channelsScope();
-  static final getOrderRecipientIdEP = "orderChatParticipant/get-recipient".channelsScope();
+  static final getOrderRecipientIdEP =
+      "orderChatParticipant/get-recipient".channelsScope();
+  static String endCallEP = 'end_call'.messagesScope();
+  static final deleteFcmEP = "remove-token".firebaseTokensScope();
 
   ///! ----< No scope >----
   static final createUserEP = 'create_user'.noScope();
@@ -93,8 +96,6 @@ abstract class ChatEndPoints {
   ///! ----< firebase tokens >----
   ///
   static final storeFcmEP = ''.firebaseTokensScope();
-
-  static String deleteFcmEP(int id) => id.toString().firebaseTokensScope();
 
   ///! ----< video calls >----
   ///

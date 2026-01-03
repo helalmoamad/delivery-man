@@ -62,6 +62,18 @@ class ChatRemoteDataSource {
     return storeFcmToken();
   }
 
+  Future<bool> deleteFcmTokenFromChat(Map<String, dynamic> params) {
+    PostClient<bool> deleteFcmTokenFromChat = PostClient<bool>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<bool>(
+        endpoint: ChatEndPoints.deleteFcmEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return deleteFcmTokenFromChat();
+  }
+
   Future<bool> updateProfileInChat(Map<String, dynamic> params) {
     Map<String, dynamic> data = Map.of(params);
     data.removeWhere((key, value) => key == "id");

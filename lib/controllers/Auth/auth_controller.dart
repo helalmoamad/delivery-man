@@ -185,6 +185,8 @@ class AuthController extends GetxController {
     required String token,
   }) async {
     showLogoutCircleIndicator();
+    GetIt.I<ChatBloc>().add(DeleteFcmTokenFromChatEvent(
+        fcmToken: GetIt.I<PrefsRepository>().getFcmTokens[0]));
     ///////////////////////////////////
     final failureOrLogout = await logOutProvider.call(token: token);
     failureOrLogout.fold(
@@ -353,10 +355,9 @@ class AuthController extends GetxController {
       (data) async {
         chatLoginData = data;
         GetIt.I<ChatBloc>().add(StoreFcmTokenEvent(
-          
             userId: chatLoginData!.data!.id!,
             fcmToken: GetIt.I<PrefsRepository>().getFcmToken ?? ""));
-        
+
         await _prefsRepository
             .setChatToken(chatLoginData!.data!.accessToken ?? '');
 
@@ -367,7 +368,6 @@ class AuthController extends GetxController {
             .setMyChatPhoto(chatLoginData!.data!.photoPath ?? '');
         await GlobalFunctions.setChatToken(
             chatToken: chatLoginData!.data!.accessToken ?? '');
-        
 
         hideChatLoginCircleIndicator();
         SnackBarWidgets.showSuccessSnackBar('Login Succeeded'.tr, '');

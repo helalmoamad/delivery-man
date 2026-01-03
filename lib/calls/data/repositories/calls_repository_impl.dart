@@ -6,7 +6,6 @@ import 'package:delivery_man_app/calls/data/models/make_call_response_model.dart
 import 'package:delivery_man_app/calls/data/models/my_calls.dart';
 import 'package:injectable/injectable.dart';
 
-
 import '../../domain/repositories/calls_repository.dart';
 import '../models/agora_token_remote_response_model.dart';
 import '../models/missed_call_count.dart';
@@ -22,6 +21,11 @@ class CallsRepositoryImpl extends CallsRepository
   Future<Either<Failure, MakeCallRemoteResponseModel>> makeCall(
       {required Map<String, dynamic> params}) {
     return handlingExceptionRequest(tryCall: () => dataSource.makeCall(params));
+  }
+
+  @override
+  Future<Either<Failure, bool>> endCall(Map<String, dynamic> params) {
+    return handlingExceptionRequest(tryCall: () => dataSource.endCall(params));
   }
 
   @override

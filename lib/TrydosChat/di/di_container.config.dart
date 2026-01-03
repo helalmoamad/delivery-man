@@ -21,6 +21,7 @@ import '../../calls/data/repositories/calls_repository_impl.dart' as _i126;
 import '../../calls/domain/repositories/calls_repository.dart' as _i739;
 import '../../calls/domain/useCase/answer_call_usecase.dart' as _i1043;
 import '../../calls/domain/useCase/delete_Message.dart' as _i697;
+import '../../calls/domain/useCase/end_call_usecase.dart' as _i530;
 import '../../calls/domain/useCase/get_agora_token_use_case.dart' as _i645;
 import '../../calls/domain/useCase/get_missed_call_count.dart' as _i34;
 import '../../calls/domain/useCase/get_my_calls.dart' as _i895;
@@ -37,6 +38,7 @@ import '../domain/repositories/common_use_repository.dart' as _i49;
 import '../domain/repositories/prefs_repository.dart' as _i89;
 import '../domain/use_cases/change_chat_property_usecase.dart' as _i193;
 import '../domain/use_cases/delete_chat_usecase.dart' as _i997;
+import '../domain/use_cases/delete_fcm_from_chat_usecase.dart' as _i433;
 import '../domain/use_cases/get_contacts_usecase.dart' as _i1068;
 import '../domain/use_cases/get_date_time.dart' as _i221;
 import '../domain/use_cases/get_image_width_and_height_usecase.dart' as _i901;
@@ -81,10 +83,10 @@ Future<_i174.GetIt> $initGetIt(
   final appModule = _$AppModule();
   gh.factory<_i262.CallsRemoteDataSource>(() => _i262.CallsRemoteDataSource());
   gh.factory<_i722.ChatRemoteDataSource>(() => _i722.ChatRemoteDataSource());
-  gh.factory<_i361.BaseOptions>(() => appModule.dioOption);
-  gh.factory<_i1003.PreloadingVideosBloc>(() => _i1003.PreloadingVideosBloc());
   gh.factory<_i195.CommonUseRemoteDataSource>(
       () => _i195.CommonUseRemoteDataSource());
+  gh.factory<_i361.BaseOptions>(() => appModule.dioOption);
+  gh.factory<_i1003.PreloadingVideosBloc>(() => _i1003.PreloadingVideosBloc());
   gh.singleton<_i974.Logger>(() => appModule.logger);
   await gh.singletonAsync<_i460.SharedPreferences>(
     () => appModule.sharedPreferences,
@@ -105,6 +107,8 @@ Future<_i174.GetIt> $initGetIt(
       () => _i1043.AnswerCallUseCase(gh<_i739.CallsRepository>()));
   gh.factory<_i697.DeleteMessageUseCase>(
       () => _i697.DeleteMessageUseCase(gh<_i739.CallsRepository>()));
+  gh.factory<_i530.EndCallUseCase>(
+      () => _i530.EndCallUseCase(gh<_i739.CallsRepository>()));
   gh.factory<_i645.GetAgoraTokenUseCase>(
       () => _i645.GetAgoraTokenUseCase(gh<_i739.CallsRepository>()));
   gh.factory<_i34.GetMissedCalCountUseCase>(
@@ -117,6 +121,17 @@ Future<_i174.GetIt> $initGetIt(
       () => _i645.RejectCallUseCase(gh<_i739.CallsRepository>()));
   gh.factory<_i485.WatchMissedCallUseCase>(
       () => _i485.WatchMissedCallUseCase(gh<_i739.CallsRepository>()));
+  gh.lazySingleton<_i756.CallsBloc>(() => _i756.CallsBloc(
+        gh<_i645.RejectCallUseCase>(),
+        gh<_i530.EndCallUseCase>(),
+        gh<_i894.MakeCallUseCase>(),
+        gh<_i895.GetMyCallsUseCase>(),
+        gh<_i485.WatchMissedCallUseCase>(),
+        gh<_i1043.AnswerCallUseCase>(),
+        gh<_i34.GetMissedCalCountUseCase>(),
+        gh<_i645.GetAgoraTokenUseCase>(),
+        gh<_i697.DeleteMessageUseCase>(),
+      ));
   gh.singleton<_i361.Dio>(() => appModule.dio(
         gh<_i361.BaseOptions>(),
         gh<_i974.Logger>(),
@@ -162,27 +177,20 @@ Future<_i174.GetIt> $initGetIt(
   gh.factory<_i726.ShareProductWithContactsOrChannelsUsecase>(() =>
       _i726.ShareProductWithContactsOrChannelsUsecase(
           gh<_i792.ChatRepository>()));
+  gh.factory<_i261.StoreFcmUseCase>(
+      () => _i261.StoreFcmUseCase(gh<_i792.ChatRepository>()));
   gh.factory<_i908.UpdateProfileInChatUseCase>(
       () => _i908.UpdateProfileInChatUseCase(gh<_i792.ChatRepository>()));
   gh.factory<_i620.UploadFileUseCase>(
       () => _i620.UploadFileUseCase(gh<_i792.ChatRepository>()));
-  gh.factory<_i261.StoreFcmUseCase>(
-      () => _i261.StoreFcmUseCase(gh<_i792.ChatRepository>()));
-  gh.lazySingleton<_i756.CallsBloc>(() => _i756.CallsBloc(
-        gh<_i645.RejectCallUseCase>(),
-        gh<_i894.MakeCallUseCase>(),
-        gh<_i895.GetMyCallsUseCase>(),
-        gh<_i485.WatchMissedCallUseCase>(),
-        gh<_i1043.AnswerCallUseCase>(),
-        gh<_i34.GetMissedCalCountUseCase>(),
-        gh<_i645.GetAgoraTokenUseCase>(),
-        gh<_i697.DeleteMessageUseCase>(),
-      ));
+  gh.factory<_i433.DeleteFcmFromChatUseCase>(
+      () => _i433.DeleteFcmFromChatUseCase(gh<_i792.ChatRepository>()));
   gh.lazySingleton<_i212.ChatBloc>(() => _i212.ChatBloc(
         gh<_i1068.GetContactsUseCase>(),
         gh<_i838.GetMyChatsUseCase>(),
         gh<_i592.ShareProductOnAppsUseCase>(),
         gh<_i756.SaveContactsUseCase>(),
+        gh<_i433.DeleteFcmFromChatUseCase>(),
         gh<_i798.SendMessageUseCase>(),
         gh<_i883.GetSharedProductCountUseCase>(),
         gh<_i999.GetMessagesBetweenUseCase>(),

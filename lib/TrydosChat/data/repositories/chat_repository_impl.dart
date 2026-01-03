@@ -46,6 +46,15 @@ class ChatRepositoryImpl extends ChatRepository with HandlingExceptionRequest {
   }
 
   @override
+  Future<Either<Failure, bool>> deleteFcmTokenFromChat(
+    Map<String, dynamic> params,
+  ) {
+    return handlingExceptionRequest(
+      tryCall: () => dataSource.deleteFcmTokenFromChat(params),
+    );
+  }
+
+  @override
   Future<Either<Failure, CreateUserResponseModel>> createUser(
       Map<String, dynamic> params) {
     return handlingExceptionRequest(

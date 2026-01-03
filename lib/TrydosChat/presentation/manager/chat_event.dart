@@ -21,6 +21,16 @@ class LoadWidthAndHeightForImage extends ChatEvent {
   List<Object?> get props => [];
 }
 
+class DeleteFcmTokenFromChatEvent extends ChatEvent {
+  final String fcmToken;
+
+  const DeleteFcmTokenFromChatEvent({required this.fcmToken});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [fcmToken];
+}
+
 class StoreFcmTokenEvent extends ChatEvent {
   final int userId;
   final String fcmToken;
@@ -33,6 +43,22 @@ class StoreFcmTokenEvent extends ChatEvent {
   @override
   // TODO: implement props
   List<Object?> get props => [userId, fcmToken];
+}
+
+class AddDurationToMessageCallEvent extends ChatEvent {
+  final String channelId;
+  final String messageId;
+  final int duration;
+
+  const AddDurationToMessageCallEvent({
+    required this.channelId,
+    required this.messageId,
+    required this.duration,
+  });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [channelId, messageId, duration];
 }
 
 class SearchTextInChatEvent extends ChatEvent {

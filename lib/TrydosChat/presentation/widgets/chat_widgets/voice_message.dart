@@ -630,25 +630,28 @@ class _VoiceMessageState extends State<VoiceMessage> {
                                                               ],
                                                             ),
                                                           )
-                                                        : SvgPicture.asset(
-                                                            widget.isRead
-                                                                ? AppAssets
-                                                                    .messageReadArrowSvg
-                                                                : widget
-                                                                        .isReceived
+                                                        : (state.currentMessage
+                                                                    .contains(widget
+                                                                        .messageId) &&
+                                                                !timer)
+                                                            ? SizedBox(
+                                                                width: 10.sp,
+                                                                height: 10.sp,
+                                                              )
+                                                            : SvgPicture.asset(
+                                                                widget.isRead
                                                                     ? AppAssets
-                                                                        .messageDeliveredArrowSvg
-                                                                    : (state.currentMessage
-                                                                            .contains(widget.messageId))
-                                                                        ? timer
-                                                                            ? (state.currentMessage.contains(widget.messageId))
-                                                                                ? AppAssets.sandClockSvg
-                                                                                : AppAssets.messageSentArrowSvg
-                                                                            : ""
-                                                                        : AppAssets.messageSentArrowSvg,
-                                                            width: 10.sp,
-                                                            height: 10.sp,
-                                                          )
+                                                                        .messageReadArrowSvg
+                                                                    : widget
+                                                                            .isReceived
+                                                                        ? AppAssets
+                                                                            .messageDeliveredArrowSvg
+                                                                        : (state.currentMessage.contains(widget.messageId))
+                                                                            ? AppAssets.sandClockSvg
+                                                                            : AppAssets.messageSentArrowSvg,
+                                                                width: 10.sp,
+                                                                height: 10.sp,
+                                                              )
                                                   },
                                                   if (widget.isForwarded) ...{
                                                     10.horizontalSpace,

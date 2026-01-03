@@ -113,6 +113,7 @@ class ChatMessage {
   final Chat? channel;
   final ChatMessage? parentMessage;
   final int? deletedByUserId;
+  final int? durationInSeconds;
   final File? file;
   bool? isFirstMessageForThisDay;
   bool? isFirstMessage;
@@ -141,6 +142,7 @@ class ChatMessage {
     this.messageContent,
     this.messageStatus,
     this.mediaMessageContent,
+    this.durationInSeconds,
     this.channel,
     this.parentMessage,
   });
@@ -156,6 +158,7 @@ class ChatMessage {
     final int? receiverUserId,
     final String? channelId,
     final DateTime? createdAt,
+    final int? durationInSeconds,
     final MessageType? messageType,
     final String? parentMessageId,
     final int? isForward,
@@ -187,6 +190,7 @@ class ChatMessage {
           isFirstMessageForThisDay ?? this.isFirstMessageForThisDay,
       isFirstMessage: isFirstMessage ?? this.isFirstMessage,
       messageStatus: messageStatus ?? this.messageStatus,
+      durationInSeconds: durationInSeconds ?? this.durationInSeconds,
       mediaMessageContent: mediaMessageContent ?? this.mediaMessageContent,
       shareProductContent: shareProductContent ?? this.shareProductContent,
       channel: channel ?? this.channel,
@@ -200,6 +204,7 @@ class ChatMessage {
       localId: json["localId"].toString(),
       localParentMessageId: json["localParentMessageId"].toString(),
       dateValue: json["dateValue"],
+      durationInSeconds: int.tryParse(json["durationInSeconds"].toString()),
       isDateMessage: json["isDateMessage"] != null
           ? bool.parse(json["isDateMessage"])
           : false,
@@ -209,8 +214,8 @@ class ChatMessage {
       isFirstMessageForThisDay: json["isFirstMessageForThisDay"] != null
           ? bool.parse(json["isFirstMessageForThisDay"])
           : false,
-      senderUserId: json["sender_user_id"],
-      receiverUserId: json["receiver_user_id"],
+      senderUserId: int.tryParse(json["sender_user_id"].toString()),
+      receiverUserId: int.tryParse(json["receiver_user_id"].toString()),
       deletedByUserId: int.parse(json["deleted_by_user_id"]?.toString() ?? '0'),
       channelId: json["channel_id"].toString(),
       authMessageStatus: json["auth_message_status"] == null
@@ -221,7 +226,9 @@ class ChatMessage {
           : DateTime.parse(json["created_at"]),
       messageType: json["message_type"] == null
           ? null
-          : MessageType.fromJson(json["message_type"]),
+          : json["message_type"] is String
+              ? MessageType.fromJson({"name": json["message_type"]})
+              : MessageType.fromJson(json["message_type"]),
       parentMessageId: json["parent_message_id"]?.toString(),
       isForward: (json["is_forward"] is bool)
           ? (json["is_forward"] ? 1 : 0)
@@ -282,6 +289,7 @@ class ChatMessage {
         "sender_user_id": senderUserId,
         "receiver_user_id": receiverUserId,
         "channel_id": channelId,
+        "duration_in_seconds": durationInSeconds,
         "deleted_by_user_id": deletedByUserId,
         "auth_message_status": authMessageStatus?.toJson(),
         "created_at": createdAt?.toIso8601String(),

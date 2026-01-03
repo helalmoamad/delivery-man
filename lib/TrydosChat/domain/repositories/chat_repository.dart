@@ -53,7 +53,9 @@ abstract class ChatRepository {
       Map<String, dynamic> params);
   Future<Either<Failure, bool>> SendErrorChatToServer(
       Map<String, dynamic> params);
-
+  Future<Either<Failure, bool>> deleteFcmTokenFromChat(
+    Map<String, dynamic> params,
+  );
   Future<Either<Failure, ResultOfSearchTextInChatModel>>
       searchForMessageTextInChat(Map<String, dynamic> params);
 }

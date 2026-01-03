@@ -88,7 +88,7 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
         'https://trydos.s3.ap-south-1.amazonaws.com/images/5TPxSXKGAv3kLkbKIz5noTTmaZBwXNtSpJMoh7lE.jpg',
     handle: data['payload']['mobilePhone'],
     type: isVideo ? 1 : 0,
-    textAccept: 'Accept',
+    textAccept: isVideo ? 'Accept Video' : 'Accept Call',
     textDecline: 'Decline',
     missedCallNotification: const NotificationParams(
       showNotification: true,
@@ -103,19 +103,19 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
       'type': isVideo ? 'video' : 'voice'
     },
     headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
-    android: const AndroidParams(
+    android: AndroidParams(
         isCustomNotification: true,
         isImportant: true,
         isShowFullLockedScreen: false,
         isShowLogo: false,
         ringtonePath: 'system_ringtone_default',
-        backgroundColor: '#0955fa',
+        backgroundColor: isVideo ? '#2D1B4B' : '#0955fa',
         backgroundUrl:
             'https://trydos.s3.ap-south-1.amazonaws.com/images/5TPxSXKGAv3kLkbKIz5noTTmaZBwXNtSpJMoh7lE.jpg',
-        actionColor: '#4CAF50',
+        actionColor: isVideo ? '#FF1744' : '#4CAF50',
         incomingCallNotificationChannelName: "Incoming Call",
         missedCallNotificationChannelName: "Missed Call"),
-    ios: const IOSParams(
+    ios: IOSParams(
       iconName: 'CallKitLogo',
       handleType: 'generic',
       supportsVideo: true,
@@ -262,8 +262,35 @@ Future<void> main() async {
 // }
 bool declineCallBecauseOfNotificationButton = false;
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      print("FFFFFFFFFFFFFFFFFFddddddddddddddddddddddddd");
+      if (GetIt.I<PrefsRepository>().chatToken != null && Get.context != null) {
+        PushNotificationService.checkAndNavigationCallingPage(Get.context!);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -273,7 +300,6 @@ class MyApp extends StatelessWidget {
     ]);
 
     return ConnectivityWrapper(
-      // ✅ أضفنا هذا السطر
       child: ServiceProvider(
         child: GetMaterialApp(
           navigatorKey: navigatorKey,

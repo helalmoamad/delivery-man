@@ -119,6 +119,18 @@ class CallsRemoteDataSource {
     return mycalls();
   }
 
+  Future<bool> endCall(Map<String, dynamic> params) {
+    PostClient<bool> endCall = PostClient<bool>(
+      serverName: ServerName.chat,
+      requestPrams: RequestConfig<bool>(
+        endpoint: ChatEndPoints.endCallEP,
+        data: params,
+        response: ResponseValue<bool>(returnValueOnSuccess: true),
+      ),
+    );
+    return endCall();
+  }
+
   Future<bool> deleteMessage(Map<String, dynamic> params) {
     PostClient<bool> deleteMessage = PostClient<bool>(
       serverName: ServerName.chat,

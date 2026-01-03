@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:convert' as convert;
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
+import "dart:developer" as dev;
 import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart';
 import 'package:delivery_man_app/TrydosChat/data/models/my_chats_response_model.dart'
     as messgae;
@@ -25,7 +27,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
+// import 'package:go_router/go_router.dart';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -51,6 +53,7 @@ class PushNotificationService {
     'High Importance Notifications',
     importance: Importance.max,
     playSound: true,
+    enableVibration: true,
   );
   @pragma('vm:entry-point')
   static Future<void> initializeNotification() async {
@@ -141,12 +144,14 @@ class PushNotificationService {
             NotificationDetails(
               android: AndroidNotificationDetails(
                 androidChannel.id,
-                priority: Priority.max,
-                importance: Importance.max,
                 androidChannel.name,
+                importance: Importance.max,
+                priority: Priority.max,
                 channelDescription: androidChannel.description,
                 color: AppColors.primaryDark,
                 playSound: true,
+                enableVibration: true,
+                vibrationPattern: Int64List.fromList([0, 500, 200, 500]),
                 icon: '@mipmap/ic_launcher',
               ),
             ),
@@ -216,17 +221,15 @@ class PushNotificationService {
       GetIt.I<CallsBloc>().add(AnswerVideoCallEvent(
           chatId: currentCall['extra']['channel_id'],
           messageId: currentCall['extra']['message_id']));
-      Navigator.of(context)
-          .push(MaterialPageRoute(
-        builder: (context) => AgoraInAppWebView(
+      Get.to(
+        () => AgoraInAppWebView(
             messageId: currentCall['extra']['message_id'],
             action: currentCall['accepted'] ? 'sent' : 'receive',
             type: currentCall['extra']['type'],
             channelId: currentCall['extra']['channel_id'],
             auth_token: GetIt.I<PrefsRepository>().chatToken!,
             uId: GetIt.I<PrefsRepository>().myChatId!.toString()),
-      ))
-          .then((value) {
+      )?.then((value) {
         if (fromTerminated) {
           whereToNavigationAfterCheck!.call();
         }
@@ -270,8 +273,8 @@ class PushNotificationService {
     DealWithRemovedMessageStoredFromBackground();
     DealWithMessageReceivedStatusStoredFromBackground();
     DealWithMessageWatchStatusStoredFromBackground();
-    if (GetIt.I<PrefsRepository>().chatToken != null) {
-      checkAndNavigationCallingPage(main.navigatorKey.currentState!.context);
+    if (GetIt.I<PrefsRepository>().chatToken != null && Get.context != null) {
+      checkAndNavigationCallingPage(Get.context!);
     }
 
     Future.delayed(Duration(milliseconds: 600),
@@ -504,6 +507,7 @@ class PushNotificationService {
     Map<String, dynamic> remoteMessage = remoteMessages?.data ?? {};
     remoteMessage = jsonDecode(remoteMessage["data"]);
     if (fromForeground) {
+      print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFRRRR11111111111111");
       if (remoteMessage['type'] == 'RefuseCallEvent') {
         Map<String, dynamic> data = remoteMessage;
         if (data['duration_in_seconds']!.toString().contains("-1")) {
@@ -524,10 +528,8 @@ class PushNotificationService {
         FlutterCallkitIncoming.endAllCalls();
         GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: true));
         // ignore: use_build_context_synchronously
-        if (main.navigatorKey.currentState!.context.canPop() &&
-            main.navigatorKey.currentState!.context.widget is! SinglePageChat) {
-          // ignore: use_build_context_synchronously
-          main.navigatorKey.currentState!.context.pop();
+        if (Get.context != null && Navigator.of(Get.context!).canPop()) {
+          Get.back();
         }
         return;
       } else if (remoteMessage['type'] == 'VideoCallEvent') {
@@ -546,20 +548,17 @@ class PushNotificationService {
         GetIt.I<ChatBloc>().add(
           ReceiveMessageEvent(message: message, increaseUnReadMessages: false),
         );
-        Navigator.of(main.navigatorKey.currentState!.context).push(
-          MaterialPageRoute(
-            builder: (context) => AgoraInAppWebView(
+        Get.to(() => AgoraInAppWebView(
               messageId: message!.id.toString(),
               action: 'receive',
               type: 'video',
               channelId: message.channelId.toString(),
               auth_token: GetIt.I<PrefsRepository>().chatToken!,
               uId: GetIt.I<PrefsRepository>().myChatId!.toString(),
-            ),
-          ),
-        );
+            ));
         return;
       } else if (remoteMessage['type'] == 'VoiceCallEvent') {
+        print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFRRRR11111111111111");
         ChatMessage? message;
         try {
           message = ChatMessage.fromJson(remoteMessage['message']);
@@ -576,18 +575,15 @@ class PushNotificationService {
         GetIt.I<ChatBloc>().add(
           ReceiveMessageEvent(message: message, increaseUnReadMessages: false),
         );
-        Navigator.of(main.navigatorKey.currentState!.context).push(
-          MaterialPageRoute(
-            builder: (context) => AgoraInAppWebView(
+        print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFRRRR2222222222");
+        Get.to(() => AgoraInAppWebView(
               messageId: message!.id.toString(),
               action: 'receive',
               type: 'voice',
               channelId: message.channelId.toString(),
               auth_token: GetIt.I<PrefsRepository>().chatToken!,
               uId: GetIt.I<PrefsRepository>().myChatId!.toString(),
-            ),
-          ),
-        );
+            ));
         return;
       } else if (remoteMessage['type'] == 'AnswerCallEvent') {
         Map<String, dynamic> data = remoteMessage;
@@ -602,9 +598,9 @@ class PushNotificationService {
         }
         if (GetIt.I<PrefsRepository>().myChatId.toString() ==
                 data['user']['id'].toString() &&
-            main.navigatorKey.currentState!.context.canPop() &&
-            main.navigatorKey.currentState!.context.widget is! SinglePageChat) {
-          main.navigatorKey.currentState!.context.pop();
+            Get.context != null &&
+            Navigator.of(Get.context!).canPop()) {
+          Get.back();
         }
         GetIt.I<CallsBloc>().add(UserInteractWithCall(rejectIt: false));
         return;
@@ -784,6 +780,7 @@ class PushNotificationService {
           data['last_message_id'],
           DateTime.parse(data['received_at'])));
     } else {
+      dev.log('//// Navigate to chat page ${remoteMessage['message']}////');
       ChatMessage message = ChatMessage.fromJson(remoteMessage['message']);
       String prevMessageId = remoteMessage['prev_message_id'].toString();
       GetIt.I<ChatBloc>().add(AddChannelToChannels(message: message));
@@ -794,13 +791,17 @@ class PushNotificationService {
             NotifyThatIReceivedMessageEvent(channelId: message.channelId!));
       }
 
-      if (GetIt.I<ChatBloc>().state.currentOpenedChatId != message.channelId &&
+      if (GetIt.I<ChatBloc>().state.currentOpenedChatId !=
+              message
+                  .channelId /* &&
           message.channel!.channelMembers!
                   .firstWhere((element) =>
                       element.userId == GetIt.I<PrefsRepository>().myChatId)
                   .mute !=
-              1 &&
-          message.senderUserId != GetIt.I<PrefsRepository>().myChatId) {
+              1 */
+          /*&&
+          message.senderUserId != GetIt.I<PrefsRepository>().myChatId*/
+          ) {
         final Random random = Random();
         final int notificationId = random.nextInt(1000000);
 
@@ -817,7 +818,7 @@ class PushNotificationService {
 
         await flutterLocalNotificationsPlugin.show(
             notificationId,
-            myMessage.channel?.channelName ?? 'No Channel Name',
+            orderId,
             type == 'TextMessage'
                 ? myMessage.messageContent!.content.toString()
                 : type == 'ImageMessage'
@@ -829,16 +830,20 @@ class PushNotificationService {
                             : 'File',
             NotificationDetails(
               android: AndroidNotificationDetails(
-                priority: Priority.max,
                 androidChannel.id,
                 androidChannel.name,
                 importance: Importance.max,
+                priority: Priority.max,
+                category: AndroidNotificationCategory.message,
                 tag: myMessage.channel?.id,
                 groupKey: myMessage.channel?.id,
-                setAsGroupSummary: true,
                 channelDescription: androidChannel.description,
                 color: AppColors.primaryDark,
                 playSound: true,
+                enableVibration: true,
+                fullScreenIntent: true,
+                vibrationPattern: Int64List.fromList([0, 500, 200, 500]),
+                visibility: NotificationVisibility.public,
                 icon: '@mipmap/ic_launcher',
               ),
             ),

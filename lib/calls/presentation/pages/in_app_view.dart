@@ -7,7 +7,7 @@ import 'dart:developer';
 import 'package:audioplayers/audioplayers.dart' hide AVAudioSessionCategory;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:go_router/go_router.dart';
+// import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -45,9 +45,9 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   static const platform = MethodChannel('com.trydos.audio/settings');
 
-  Future<void> _setCallAudioMode(bool enable) async {
+  Future<void> _setCallAudioMode(String mode) async {
     try {
-      await platform.invokeMethod('setCallAudioMode', enable);
+      await platform.invokeMethod('setCallAudioMode', mode);
     } on PlatformException catch (e) {
       debugPrint("Failed to set audio mode: '${e.message}'.");
     }
@@ -115,7 +115,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
 
   @override
   void dispose() {
-    _setCallAudioMode(false);
+    _setCallAudioMode('normal');
     Vibration.cancel();
     timer?.cancel();
     if (_audioPlayer.state == PlayerState.playing) {
@@ -139,13 +139,12 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
       if (_audioPlayer.state == PlayerState.playing) {
         _audioPlayer.stop(); // استخدم stop بدلاً من dispose للحفاظ على الكائن
       }
-      // إذا كانت المكالمة صوتية ولم يتم تحديد حالة مكبر الصوت بعد، نضبطها على Earpiece افتراضياً
-      // أما في مكالمات الفيديو فتكون Speaker افتراضياً
-      Future.delayed(const Duration(milliseconds: 500), () {
+      // إضافة تأخير بسيط لضمان أن AudioManager جاهز بعد توقف الصوت
+      Future.delayed(const Duration(milliseconds: 800), () {
         if (widget.type == 'voice') {
-          _setCallAudioMode(true); // Earpiece
+          _setCallAudioMode('earpiece');
         } else {
-          _setCallAudioMode(false); // Speaker
+          _setCallAudioMode('speaker');
         }
       });
     }
@@ -154,12 +153,12 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
     for (var arg in args) {
       if (arg == 'IsSpeaker') {
         Future.delayed(const Duration(milliseconds: 500), () {
-          _setCallAudioMode(false);
+          _setCallAudioMode('speaker');
         });
         break;
       } else if (arg == 'IsEarpiece') {
         Future.delayed(const Duration(milliseconds: 500), () {
-          _setCallAudioMode(true);
+          _setCallAudioMode('earpiece');
         });
         break;
       }
@@ -235,7 +234,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     Timer.periodic(const Duration(seconds: 7), (timer) {
                       controller.stopLoading();
                       controller.dispose();
-                      if (context.canPop() &&
+                      if (Navigator.of(context).canPop() &&
                           context.widget is! SinglePageChat) {
                         Navigator.of(context).pop();
                       }
@@ -248,7 +247,8 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
                     print("54..............${url.toString()}");
                     controller.stopLoading();
                     controller.dispose();
-                    if (context.canPop() && context.widget is! SinglePageChat) {
+                    if (Navigator.of(context).canPop() &&
+                        context.widget is! SinglePageChat) {
                       Navigator.of(context).pop();
                     }
                     //    Navigator.of(context).pop();
