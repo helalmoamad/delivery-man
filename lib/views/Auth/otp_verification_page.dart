@@ -58,93 +58,94 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     return SafeArea(
       child: Scaffold(
         body: _isLoading
-                    ? const Scaffold(
-                        body: Center(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircularProgressIndicator(),
-                              Text("Please wait...")
-                            ],
-                          ),
-                        ),
-                      )
-                    :Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextWidget(
-                  text: "Phone Verification".tr,
-                  color: AppColors.blackDark,
-                  fontSize: 23,
-                  fontWeight: FontWeight.bold,
-                  textAlign: TextAlign.start,
-                  maxline: 1,
+            ? const Scaffold(
+                body: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      Text("Please wait...")
+                    ],
+                  ),
                 ),
-                /////////////////////////////
-                SizedBox(
-                  height: ScreenSizeUtils.getHeightInPercent(context, 3),
-                ),
-                /////////////////////////////
-                TextWidget(
-                  text: "We sent to you a code please enter it".tr,
-                  color: AppColors.blackDark,
-                  fontSize: 20,
-                  fontWeight: FontWeight.normal,
-                  textAlign: TextAlign.start,
-                  maxline: 2,
-                ),
-                /////////////////////////////
-                SizedBox(
-                  height: ScreenSizeUtils.getHeightInPercent(context, 20),
-                ),
-                /////////////////////////////
-                Obx(
-                  () {
-                    return Center(
-                      child: TextWidget(
-                        text: otpController.isResendAvailable.value
-                            ? "Didn't receive the code?".tr
-                            : "${'Resend code in'.tr} ${otpController.secondsRemaining.value}${'second'.tr}",
-                        color: AppColors.grey,
-                        fontSize: 13,
+              )
+            : Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextWidget(
+                        text: "Phone Verification".tr,
+                        color: AppColors.blackDark,
+                        fontSize: 23,
                         fontWeight: FontWeight.bold,
                         textAlign: TextAlign.start,
                         maxline: 1,
                       ),
-                    );
-                  },
-                ),
-                /////////
-                Obx(
-                  () {
-                    return otpController.isResendAvailable.value
-                        ? Center(
-                            child: TextButton(
-                              onPressed: otpController.resendCode,
-                              child: TextWidget(
-                                text: 'Resend Code'.tr,
-                                color: AppColors.primaryDark,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                textAlign: TextAlign.start,
-                                maxline: 1,
-                              ),
+                      /////////////////////////////
+                      SizedBox(
+                        height: ScreenSizeUtils.getHeightInPercent(context, 3),
+                      ),
+                      /////////////////////////////
+                      TextWidget(
+                        text: "We sent to you a code please enter it".tr,
+                        color: AppColors.blackDark,
+                        fontSize: 20,
+                        fontWeight: FontWeight.normal,
+                        textAlign: TextAlign.start,
+                        maxline: 2,
+                      ),
+                      /////////////////////////////
+                      SizedBox(
+                        height: ScreenSizeUtils.getHeightInPercent(context, 20),
+                      ),
+                      /////////////////////////////
+                      Obx(
+                        () {
+                          return Center(
+                            child: TextWidget(
+                              text: otpController.isResendAvailable.value
+                                  ? "Didn't receive the code?".tr
+                                  : "${'Resend code in'.tr} ${otpController.secondsRemaining.value}${'second'.tr}",
+                              color: AppColors.grey,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              textAlign: TextAlign.start,
+                              maxline: 1,
                             ),
-                          )
-                        : const SizedBox.shrink();
-                  },
-                ),
-                /////////////////////////////
-                SizedBox(
-                  height: ScreenSizeUtils.getHeightInPercent(context, 5),
-                ),
-                /////////////////////////////
-                ///
-                 OtpTextField(
+                          );
+                        },
+                      ),
+                      /////////
+                      Obx(
+                        () {
+                          return otpController.isResendAvailable.value
+                              ? Center(
+                                  child: TextButton(
+                                    onPressed: otpController.resendCode,
+                                    child: TextWidget(
+                                      text: 'Resend Code'.tr,
+                                      color: AppColors.primaryDark,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      textAlign: TextAlign.start,
+                                      maxline: 1,
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox.shrink();
+                        },
+                      ),
+                      /////////////////////////////
+                      SizedBox(
+                        height: ScreenSizeUtils.getHeightInPercent(context, 5),
+                      ),
+                      /////////////////////////////
+                      ///
+                      OtpTextField(
                         numberOfFields: 6,
                         borderColor: AppColors.primaryDark,
                         enabledBorderColor: AppColors.primaryDark,
@@ -179,23 +180,23 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                         }, // end onSubmit
                       ),
 
-                /////////////////////////////
-                SizedBox(
-                  height: ScreenSizeUtils.getHeightInPercent(context, 10),
+                      /////////////////////////////
+                      SizedBox(
+                        height: ScreenSizeUtils.getHeightInPercent(context, 10),
+                      ),
+                      ////////////
+                      GetBuilder<AuthController>(
+                        builder: (_) {
+                          return (authController.isVerifyOtpCircleShown ||
+                                  authController.isChatLoginCircleShown)
+                              ? const Center(child: CircularProgressIndicator())
+                              : const SizedBox.shrink();
+                        },
+                      )
+                    ],
+                  ),
                 ),
-                ////////////
-                GetBuilder<AuthController>(
-                  builder: (_) {
-                    return (authController.isVerifyOtpCircleShown ||
-                            authController.isChatLoginCircleShown)
-                        ? const Center(child: CircularProgressIndicator())
-                        : const SizedBox.shrink();
-                  },
-                )
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }

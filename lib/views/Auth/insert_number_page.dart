@@ -109,6 +109,7 @@ class InsertNumberPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CustomTextField(
+              key: Key("PhoneNumberInput"),
               textInputType: TextInputType.phone,
               controller: numberKey,
               hintText: 'Enter Phone Number'.tr,
@@ -146,6 +147,7 @@ class InsertNumberPage extends StatelessWidget {
             ),
             ////////////
             AppButton.normalButton(
+              key1: Key("LoginButton"),
               backgroundColor: AppColors.blackDark,
               titleSize: 15,
               title: 'Confirm'.tr,
