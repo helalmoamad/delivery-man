@@ -87,6 +87,7 @@ class ChooseOtpMethod extends StatelessWidget {
                 children: [
                   Expanded(
                     child: AppButton.normalButton(
+                      key1: const Key("whatsapp"),
                       backgroundColor: authController.otpMethod == 'whatsapp'
                           ? Colors.green
                           : AppColors.grey,
@@ -125,6 +126,7 @@ class ChooseOtpMethod extends StatelessWidget {
           ),
           ////////////
           AppButton.normalButton(
+            key1: const Key("ConfirmButton"),
             backgroundColor: AppColors.blackDark,
             titleSize: 15,
             title: 'Confirm'.tr,
