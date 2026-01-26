@@ -106,7 +106,7 @@ showCallKitIncoming(Map<String, dynamic> data, String currentUuid,
     android: AndroidParams(
         isCustomNotification: true,
         isImportant: true,
-        isShowFullLockedScreen: false,
+        isShowFullLockedScreen: true,
         isShowLogo: false,
         ringtonePath: 'system_ringtone_default',
         backgroundColor: isVideo ? '#2D1B4B' : '#0955fa',
@@ -189,7 +189,7 @@ Future<void> main() async {
   var myFcmToken = await FirebaseMessaging.instance.getToken();
   if (myFcmToken != null) {
     var userIdd = GetIt.I<PrefsRepository>().myChatId;
-    if (userIdd != null) {
+    if (userIdd != null && userIdd != -1) {
       GetIt.I<ChatBloc>()
           .add(StoreFcmTokenEvent(userId: userIdd, fcmToken: myFcmToken));
     } else {}

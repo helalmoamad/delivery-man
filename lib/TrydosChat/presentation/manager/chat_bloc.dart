@@ -454,7 +454,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     DeleteFcmTokenFromChatEvent event,
     Emitter<ChatState> emit,
   ) async {
-    await deleteFcmFromChatUseCase(DeleteFcmParams(fcmToken: event.fcmToken));
+    final response = await deleteFcmFromChatUseCase(
+        DeleteFcmParams(fcmToken: event.fcmToken));
+    response.fold((l) {
+      add(DeleteFcmTokenFromChatEvent(fcmToken: event.fcmToken));
+    }, (r) {
+      _prefsRepository.setMyChatId(-1);
+      _prefsRepository.setChatToken("");
+    });
   }
 
   FutureOr<void> _onStoreFcmTokenEvent(

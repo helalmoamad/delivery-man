@@ -192,5 +192,16 @@ const Map<String, String> en = {
   'only_me': 'only me',
   'delete_message': 'delete message',
   'delete': 'delete',
-  'have_orders': 'You have orders in delivery center or out for delivery'
+  'have_orders': 'You have orders in delivery center or out for delivery',
+  'copied': 'Copied',
+  'replay': 'Reply',
+  're_mind': 'Remind',
+  'forward': 'Forward',
+  'edit': 'Edit',
+  'category': 'Category',
+  'cancel': 'Cancel',
+  'yes': 'Yes',
+  'copy': 'Copy',
+  'you_have_deleted_this_message': 'You deleted this message',
+  'this_message_has_been_deleted': 'This message was deleted',
 };

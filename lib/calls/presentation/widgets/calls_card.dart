@@ -24,7 +24,6 @@ import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as LocaleKeys;
 import 'package:permission_handler/permission_handler.dart';
 
-
 class CallsCard extends StatefulWidget {
   const CallsCard({
     Key? key,
@@ -117,47 +116,46 @@ class _CallsCardState extends ThemeState<CallsCard> {
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (context) => AlertDialog(
-                        title: Text('delete_message'.tr),
-                        actions: [
-                          MaterialButton(
-                            onPressed: () {
-                              callsBloc.add(DeleteMessageEvent(
-                                  deleteFromId: _prefsRepository.myChatId!,
-                                  type: "call",
-                                  deleteFromBoth: 0,
-                                  messageId: widget.callRegId));
-                              callsBloc.add(DeleteMessageEvent(
-                                  deleteFromId: _prefsRepository.myChatId!,
-                                  type: "message",
-                                  deleteFromBoth: 0,
-                                  channelId: widget.chatId,
-                                  messageId: widget.callRegId));
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('only_me'.tr),
-                          ),
-                          SizedBox(
-                            width: 20.w,
-                          ),
-                          MaterialButton(
-                            onPressed: () {
-                              callsBloc.add(DeleteMessageEvent(
-                                  type: "call",
-                                  deleteFromBoth: 1,
-                                  messageId: widget.callRegId,
-                                  deleteFromId: _prefsRepository.myChatId!));
-                              callsBloc.add(DeleteMessageEvent(
-                                  deleteFromId: _prefsRepository.myChatId!,
-                                  type: "message",
-                                  deleteFromBoth: 1,
-                                  channelId: widget.chatId,
-                                  messageId: widget.callRegId));
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('everyone'.tr),
-                          )
-                        ]),
+                    builder: (context) =>
+                        AlertDialog(title: Text('delete_message'.tr), actions: [
+                      MaterialButton(
+                        onPressed: () {
+                          callsBloc.add(DeleteMessageEvent(
+                              deleteFromId: _prefsRepository.myChatId!,
+                              type: "call",
+                              deleteFromBoth: 0,
+                              messageId: widget.callRegId));
+                          callsBloc.add(DeleteMessageEvent(
+                              deleteFromId: _prefsRepository.myChatId!,
+                              type: "message",
+                              deleteFromBoth: 0,
+                              channelId: widget.chatId,
+                              messageId: widget.callRegId));
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('only_me'.tr),
+                      ),
+                      SizedBox(
+                        width: 20.w,
+                      ),
+                      MaterialButton(
+                        onPressed: () {
+                          callsBloc.add(DeleteMessageEvent(
+                              type: "call",
+                              deleteFromBoth: 1,
+                              messageId: widget.callRegId,
+                              deleteFromId: _prefsRepository.myChatId!));
+                          callsBloc.add(DeleteMessageEvent(
+                              deleteFromId: _prefsRepository.myChatId!,
+                              type: "message",
+                              deleteFromBoth: 1,
+                              channelId: widget.chatId,
+                              messageId: widget.callRegId));
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('everyone'.tr),
+                      )
+                    ]),
                   );
                 },
               )
@@ -450,8 +448,8 @@ class SlidableActionWidgete extends StatelessWidget {
               style: TextStyle(
                   color: foregroundColor,
                   fontSize: 14.sp,
-                  fontWeight: FontWeight.w500 
-            ),)
+                  fontWeight: FontWeight.w500),
+            )
           ],
         ),
       ),
