@@ -135,9 +135,9 @@ class OrderModel1 {
             : List<ProductModel1>.from(
                 json["details_with_local_prices"]
                     .map((x) => ProductModel1.fromJson(x))),
-        shippingAddressData: json["shipping_address_data"] == null
-            ? null
-            : ShippingAddressData1.fromJson(json["shipping_address_data"]),
+       shippingAddressData: (json["shipping_address_data"] != null && json["shipping_address_data"] is Map<String, dynamic>)
+    ? ShippingAddressData1.fromJson(json["shipping_address_data"])
+    : null,
         codAmount: (json["CODAmount"] ?? 0).toDouble(),
         codAmountLocalFormatted: json["cod_amount_local_formatted"],
         codAmountLocal: (json["cod_amount_local"] ?? 0).toDouble(),

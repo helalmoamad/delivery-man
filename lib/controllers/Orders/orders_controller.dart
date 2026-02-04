@@ -245,17 +245,8 @@ class OrdersController extends GetxController {
         timerService.stopTimer(isGlobalTimer: false);
       }
 
-      await getAllMyOrders(token: token);
-      orderStatus = OrderStatuses.inDeliveryCenter;
-      await getListOrderData(token: token, status: orderStatus, offset: 1);
-      orderScrollController.addListener(() async {
-        if (orderScrollController.position.maxScrollExtent ==
-            orderScrollController.offset) {
-          debugPrint('scrollController (orders)');
-          await getListOrderWithPaginationData(
-              token: token, status: orderStatus);
-        }
-      });
+      await getAllMyOrders(token: token, currentRoute: currentRoute);
+      
     }
 
     // الطلبات المرتجعة
@@ -268,18 +259,9 @@ class OrdersController extends GetxController {
         timerService.stopTimer(isGlobalTimer: false);
       }
 
-      await getAllMyOrders(token: token);
+      await getAllMyOrders(token: token , currentRoute: currentRoute);
       orderStatus = OrderStatuses.delivered;
-      await getListReturnedOrderData(
-          token: token, status: orderStatus, offset: 1);
-      orderScrollController.addListener(() async {
-        if (orderScrollController.position.maxScrollExtent ==
-            orderScrollController.offset) {
-          debugPrint('scrollController (returned)');
-          await getListReturnedOrderWithPaginationData(
-              token: token, status: orderStatus);
-        }
-      });
+      
     }
 
     // طلباتي
@@ -320,8 +302,9 @@ class OrdersController extends GetxController {
   }
 
   Future<void> getAllMyOrders({
-    required String token,
+    required String token, required String currentRoute
   }) async {
+    
     showGetOrdersCircleIndicator();
     final failureOrGetOrdersData =
         await getAllMyOrdersProvider.call(token: token);
@@ -331,8 +314,31 @@ class OrdersController extends GetxController {
         hideCircleIndicator: () {},
         showNoInternetPage: () {},
       );
-    }, (getOrdersData) {
+    }, (getOrdersData) async {
       myAllOrdersData = getOrdersData;
+      if(currentRoute ==  Routes.returnedOrders){
+await getListReturnedOrderData(
+          token: token, status: orderStatus, offset: 1);
+      orderScrollController.addListener(() async {
+        if (orderScrollController.position.maxScrollExtent ==
+            orderScrollController.offset) {
+          debugPrint('scrollController (returned)');
+          await getListReturnedOrderWithPaginationData(
+              token: token, status: orderStatus);
+        }
+      });
+      }else if(currentRoute ==  Routes.orderssPage){
+        orderStatus = OrderStatuses.inDeliveryCenter;
+      await getListOrderData(token: token, status: orderStatus, offset: 1);
+      orderScrollController.addListener(() async {
+        if (orderScrollController.position.maxScrollExtent ==
+            orderScrollController.offset) {
+          debugPrint('scrollController (orders)');
+          await getListOrderWithPaginationData(
+              token: token, status: orderStatus);
+        }
+      });
+      }
       hideGetOrdersCircleIndicator();
       hideGetOrdersNoInternetPage();
     });

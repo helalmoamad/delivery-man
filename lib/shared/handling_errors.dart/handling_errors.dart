@@ -16,8 +16,8 @@ class HandlingFailures {
       case ServerFailure:
         hideCircleIndicator();
         showNoInternetPage();
-        SnackBarWidgets.showFailureSnackBar(
-            'Server Error'.tr, AppFailureMessages.serverFailureMessage);
+        SnackBarWidgets.showFailureSnackBar('Server Error'.tr,
+            failure.message ?? AppFailureMessages.serverFailureMessage);
         break;
       case OfflineFailure:
         hideCircleIndicator();
@@ -28,14 +28,14 @@ class HandlingFailures {
       case WrongDataFailure:
         hideCircleIndicator();
         showNoInternetPage();
-        SnackBarWidgets.showFailureSnackBar(
-            'Wrong Data'.tr, AppFailureMessages.wrongDataFailureMessage);
+        SnackBarWidgets.showFailureSnackBar('Wrong Data'.tr,
+            failure.message ?? AppFailureMessages.wrongDataFailureMessage);
         break;
       case CantAssignToVehicleFailure:
         hideCircleIndicator();
         showNoInternetPage();
         SnackBarWidgets.showFailureSnackBar(
-          AppFailureMessages.cantAssignToVehicleMessage,
+          failure.message ?? AppFailureMessages.cantAssignToVehicleMessage,
           '',
         );
         break;
@@ -45,15 +45,16 @@ class HandlingFailures {
         hideCircleIndicator();
         showNoInternetPage();
         SnackBarWidgets.showFailureSnackBar(
-          AppFailureMessages.unExpectedFailureMessage,
+          failure.message ?? AppFailureMessages.unExpectedFailureMessage,
           seconds: 4,
           '',
         );
+        break;
       default:
         hideCircleIndicator();
         showNoInternetPage();
-        SnackBarWidgets.showFailureSnackBar(
-            'Unexpected error'.tr, AppFailureMessages.unExpectedFailureMessage);
+        SnackBarWidgets.showFailureSnackBar('Unexpected error'.tr,
+            failure.message ?? AppFailureMessages.unExpectedFailureMessage);
         break;
     }
   }

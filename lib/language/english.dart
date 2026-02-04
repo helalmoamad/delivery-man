@@ -192,5 +192,6 @@ const Map<String, String> en = {
   'only_me': 'only me',
   'delete_message': 'delete message',
   'delete': 'delete',
-  'have_orders': 'You have orders in delivery center or out for delivery'
+  'have_orders': 'You have orders in delivery center or out for delivery',
+  'phone number or otp is incorrect.': 'phone number or otp is incorrect.'
 };

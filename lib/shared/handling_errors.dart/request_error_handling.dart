@@ -15,7 +15,7 @@ class RequestErrorHandling {
     if (exception is ServerException) {
       debugPrint('//// ServerException ///// \n $exception');
       return left(
-        ServerFailure(),
+        ServerFailure(exception.message),
       );
     } else if (exception is ClientException) {
       debugPrint('//// ClientException ///// \n $exception');
@@ -35,7 +35,7 @@ class RequestErrorHandling {
     } else if (exception is CantAssignToVehicleException) {
       debugPrint('//// CantAssignToVehicleException ///// \n $exception');
       return left(
-        CantAssignToVehicleFailure(),
+        CantAssignToVehicleFailure(exception.message),
       );
     } else if (exception is TimeoutException) {
       debugPrint('//// TimeoutException ///// \n $exception');
@@ -43,12 +43,12 @@ class RequestErrorHandling {
     } else if (exception is WrongDataException) {
       debugPrint('//// WrongDataException ///// \n $exception');
       return left(
-        WrongDataFailure(),
+        WrongDataFailure(exception.message),
       );
     } else if (exception is OtpTryAgainException) {
       debugPrint('//// OtpTryAgainException ///// \n $exception');
       return left(
-        OtpTryAgainFailure(),
+        OtpTryAgainFailure(exception.message),
       );
     } else {
       debugPrint('//// UnExpected ///// \n $exception');

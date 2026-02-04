@@ -192,4 +192,5 @@ const Map<String, String> ar = {
   'delete_for_everyone': 'الحذف للجميع',
   'delete_for_me': 'الحذف لي',
   'have_orders': 'لديك طلبات قيد التوصيل',
+  'phone number or otp is incorrect.': 'رقم الهاتف أو رمز التحقق غير صحيح.',
 };

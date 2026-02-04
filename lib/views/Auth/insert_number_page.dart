@@ -85,11 +85,14 @@ class InsertNumberPage extends StatelessWidget {
                 ),
                 ///////////
                 ///////////
-                authController.isCircleShown
-                    ? const CircleIndicatorWidget(
-                        isBgWhite: false,
-                      )
-                    : Container()
+                GetBuilder<AuthController>(
+                  id: 'logout',
+                  builder: (controller) {
+                    return controller.isLogoutCircleShown
+                        ? const CircularProgressIndicator()
+                        : const SizedBox.shrink();
+                  },
+                )
               ],
             );
           },
