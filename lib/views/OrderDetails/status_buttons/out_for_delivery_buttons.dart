@@ -176,111 +176,175 @@ class OutForDeliveryButtons extends StatelessWidget {
                   }),
             ),
             /////////////////
-            const SizedBox(
-              width: 5,
-            ),
-            /////////////////
-            Expanded(
-              child: AppButton.normalButton(
-                title: 'Convert To Returned'.tr,
-                height: 40,
-                titleSize: 13,
-                backgroundColor: AppColors.darkGrey,
-                onPress: () {
-                  AppDialogs.showConfirmationDialog(
-                    context: context,
-                    title: 'The order status will be changed to "Returned"'.tr,
-                    onConfirm: () async {
-                      Get.back();
-                      await ordersController.changeOrderStatus(
-                        token: GlobalFunctions.getToken(),
-                        status: OrderStatuses.returned,
-                        orderId: order.id!,
-                      );
-                    },
-                  );
-                },
-              ),
-            )
+            // const SizedBox(
+            //   width: 5,
+            // ),
+            // /////////////////
+            // Expanded(
+            //   child: AppButton.normalButton(
+            //     title: 'Convert To Returned'.tr,
+            //     height: 40,
+            //     titleSize: 13,
+            //     backgroundColor: AppColors.darkGrey,
+            //     onPress: () {
+            //       AppDialogs.showConfirmationDialog(
+            //         context: context,
+            //         title: 'The order status will be changed to "Returned"'.tr,
+            //         onConfirm: () async {
+            //           Get.back();
+            //           await ordersController.changeOrderStatus(
+            //             token: GlobalFunctions.getToken(),
+            //             status: OrderStatuses.returned,
+            //             orderId: order.id!,
+            //           );
+            //         },
+            //       );
+            //     },
+            //   ),
+            // )
           ],
         ),
         ///////////////////
-        Row(
-          children: [
-            (order.products!.length <= 1)
-                ? const SizedBox.shrink()
-                : Expanded(
-                    child: AppButton.normalButton(
-                        title: 'Convert To Partial Returned'.tr,
-                        height: 40,
-                        titleSize: 13,
-                        backgroundColor: AppColors.secondary,
-                        onPress: () {
-                          if (ordersController.returnedProductsList.isEmpty) {
-                            SnackBarWidgets.showFailureSnackBar(
-                                'Add the returned products'.tr,
-                                'You have to add the returned products first'
-                                    .tr,
-                                seconds: 4);
-                          } else {
-                            AppDialogs.showAppDialogWidget(
-                                context: context,
-                                title: 'Enter The Cash Amount'.tr,
-                                actions: [
-                                  buildCashDialogAction(
-                                      cashKey: cashKey,
-                                      formKey: formKey,
-                                      cashAmount: order.codAmount,
-                                      onPress: () async {
-                                        if (formKey.currentState!.validate()) {
-                                          Get.back();
-                                          await ordersController
-                                              .changeOrderStatus(
-                                            token: GlobalFunctions.getToken(),
-                                            status: OrderStatuses.partialReturn,
-                                            orderId: order.id!,
-                                            returnedProducts: ordersController
-                                                .returnedProductsList,
-                                            amount: double.parse(cashKey.text),
-                                          );
-                                        }
-                                      })
-                                ]);
-                          }
-                        }),
-                  ),
+        // Row(
+        //   children: [
+        //     (order.products!.length <= 1)
+        //         ? const SizedBox.shrink()
+        //         : Expanded(
+        //             child: AppButton.normalButton(
+        //                 title: 'Convert To Partial Returned'.tr,
+        //                 height: 40,
+        //                 titleSize: 13,
+        //                 backgroundColor: AppColors.secondary,
+        //                 onPress: () {
+        //                   if (ordersController.returnedProductsList.isEmpty) {
+        //                     SnackBarWidgets.showFailureSnackBar(
+        //                         'Add the returned products'.tr,
+        //                         'You have to add the returned products first'
+        //                             .tr,
+        //                         seconds: 4);
+        //                   } else {
+        //                     AppDialogs.showAppDialogWidget(
+        //                         context: context,
+        //                         title: 'Enter The Cash Amount'.tr,
+        //                         actions: [
+        //                           buildCashDialogAction(
+        //                               cashKey: cashKey,
+        //                               formKey: formKey,
+        //                               cashAmount: order.codAmount,
+        //                               onPress: () async {
+        //                                 if (formKey.currentState!.validate()) {
+        //                                   Get.back();
+        //                                   await ordersController
+        //                                       .changeOrderStatus(
+        //                                     token: GlobalFunctions.getToken(),
+        //                                     status: OrderStatuses.partialReturn,
+        //                                     orderId: order.id!,
+        //                                     returnedProducts: ordersController
+        //                                         .returnedProductsList,
+        //                                     amount: double.parse(cashKey.text),
+        //                                   );
+        //                                 }
+        //                               })
+        //                         ]);
+        //                   }
+        //                 }),
+        //           ),
 
-            /////////////////
-            (order.products!.length <= 1)
-                ? const SizedBox.shrink()
-                : const SizedBox(
-                    width: 5,
-                  ),
-            /////////////////
-            Expanded(
-              child: AppButton.normalButton(
-                title: 'Convert To Failed'.tr,
-                height: 40,
-                titleSize: 13,
-                backgroundColor: const Color.fromARGB(255, 136, 25, 17),
-                onPress: () {
-                  AppDialogs.showConfirmationDialog(
-                    context: context,
-                    title: 'The order status will be changed to "Failed"'.tr,
-                    onConfirm: () async {
-                      Get.back();
-                      await ordersController.changeOrderStatus(
-                        token: GlobalFunctions.getToken(),
-                        status: OrderStatuses.failed,
-                        orderId: order.id!,
+        //     /////////////////
+        //     (order.products!.length <= 1)
+        //         ? const SizedBox.shrink()
+        //         : const SizedBox(
+        //             width: 5,
+        //           ),
+        //     /////////////////
+        //     Expanded(
+        //       child: AppButton.normalButton(
+        //         title: 'Convert To Failed'.tr,
+        //         height: 40,
+        //         titleSize: 13,
+        //         backgroundColor: const Color.fromARGB(255, 136, 25, 17),
+        //         onPress: () {
+        //           AppDialogs.showConfirmationDialog(
+        //             context: context,
+        //             title: 'The order status will be changed to "Failed"'.tr,
+        //             onConfirm: () async {
+        //               Get.back();
+        //               await ordersController.changeOrderStatus(
+        //                 token: GlobalFunctions.getToken(),
+        //                 status: OrderStatuses.failed,
+        //                 orderId: order.id!,
+        //               );
+        //             },
+        //           );
+        //         },
+        //       ),
+        //     )
+        //   ],
+        // ),
+        AppButton.normalButton(
+                    title: 'Convert To On Hold'.tr,
+                    height: 40,
+                    titleSize: 15,
+                    shadow: false,
+                    backgroundColor: AppColors.darkGrey,
+                    onPress: () {
+                      AppDialogs.showAppDialogWidget(
+                        context: context,
+                        title: 'Enter The Note'.tr,
+                        actions: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Form(
+                              key: formKey,
+                              child: Column(
+                                children: [
+                                  CustomTextField(
+                                    textInputType: TextInputType.text,
+                                    controller: noteKey,
+                                    hintText: '',
+                                    labelText: 'Note'.tr,
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return 'note should not be empty'.tr;
+                                      }
+                                    },
+                                    prefixIcon: null,
+                                    suffixIcon: null,
+                                  ),
+                                  /////////////////////
+                                  const SizedBox(
+                                    height: 30,
+                                  ),
+                                  /////////////////////
+                                  AppButton.normalButton(
+                                    title: 'Confirm The Process'.tr,
+                                    shadow: false,
+                                    height: 35,
+                                    titleColor: AppColors.white,
+                                    backgroundColor: AppColors.primaryDark,
+                                    onPress: () async {
+                                      Get.back();
+                                      await ordersController.changeOrderStatus(
+                                        token: GlobalFunctions.getToken(),
+                                        status: OrderStatuses.onHold,
+                                        orderId: order.id!,
+                                        note: noteKey.text,
+                                      );
+                                    },
+                                  ),
+                                  /////////////////////
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  /////////////////////
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       );
                     },
-                  );
-                },
-              ),
-            )
-          ],
-        ),
+                  ),
       ],
     );
   }

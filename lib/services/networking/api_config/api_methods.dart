@@ -110,7 +110,7 @@ class ApiMethodsDelivery {
             lastApiRequest: uri.toString(),
             messageFromBackend: response.body));
 
-          debugPrint(response.body);
+        debugPrint(response.body);
       }
       await RequestConfigDelivery.storeRequestInfo(
         uri: uri,
@@ -245,7 +245,7 @@ class ApiMethodsDelivery {
             errorPath: uri.toString(),
             lastApiRequest: uri.toString(),
             messageFromBackend: response.body));
-            debugPrint(response.body);
+        debugPrint(response.body);
       }
 
       /////////////////store request info//////////////////////////////////

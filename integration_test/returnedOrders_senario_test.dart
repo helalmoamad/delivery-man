@@ -10,29 +10,67 @@ void main() {
 
   testWidgets('إسناد طلب مرتجع → نقل للخارج → إرجاع للموقع',
       (WidgetTester tester) async {
-    // غلاف try-catch لمعرفة الأخطاء الحقيقية
     try {
       app.main();
+      await tester.pump(const Duration(seconds: 15));
+      await tester.pumpAndSettle();
+      debugDumpApp();
 
-      // انتظر أول Build
-      await tester.pump(const Duration(seconds: 1));
+      final phoneNumberInput =
+          find.byKey(const Key('PhoneNumberInput')); // search about item
+      if (phoneNumberInput.evaluate().isEmpty) {
+        debugPrint('❌ PhoneNumberInput غير موجود');
+        debugDumpApp();
+        return;
+      }
 
-      // انتظر Splash / تحميل البيانات (5 ثواني تقريبا)
-      await Future.delayed(const Duration(seconds: 5));
+      expect(phoneNumberInput, findsOneWidget); // sure if exist
+      await tester.enterText(phoneNumberInput, '937549192'); // enter text
+      await tester.pump();
+      final loginButton = find.byKey(const Key('LoginButton'));
+      expect(loginButton, findsOneWidget);
+      await tester.tap(loginButton);
       await tester.pumpAndSettle();
 
-      // ابحث عن زر طلبات مرتجعة
+      final whatsappButton = find.byKey(const Key('whatsapp'));
+      expect(whatsappButton, findsOneWidget);
+      await tester.tap(whatsappButton);
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 2));
+
+      final confirmButton = find.byKey(const Key('ConfirmButton'));
+      await tester.runAsync(() async {
+        await tester.tap(confirmButton);
+        await tester.pump(); // trigger the tap
+        await Future.delayed(const Duration(seconds: 20)); // wait async call
+        await tester.pumpAndSettle(); // let navigation complete
+      });
+      await tester.pump(const Duration(seconds: 2));
+
+      const String otp = '999999';
+      debugPrint('before input otp');
+      for (int i = 0; i < otp.length; i++) {
+        await tester.enterText(find.byKey(Key('otp_field_$i')), otp[i]);
+      }
+      debugPrint('after input otp'); 
+      //await tester.testTextInput.receiveAction(TextInputAction.done);
+      //await tester.pumpAndSettle();
+      debugPrint('before 5 seconds wait'); 
+      await tester.pump(const Duration(seconds: 5));
+      debugPrint('after 5 seconds wait'); 
+      await tester.pump(const Duration(seconds: 5));
+
+      // انتقل لشاشة ReturnedOrders
+      debugPrint('before returnedOrdersButton');
       final returnedOrdersButton =
           find.byKey(const Key('returnedOrdersButton'));
       if (returnedOrdersButton.evaluate().isEmpty) {
         debugPrint('❌ returnedOrdersButton غير موجود على الشاشة!');
         return; // وقف الاختبار لتجنب crash
       }
-
+      debugPrint('after returnedOrdersButton'); 
       await tester.tap(returnedOrdersButton);
-      await tester.pumpAndSettle();
-      await Future.delayed(const Duration(seconds: 2));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 5));
 
       // تحقق من الانتقال للـ ReturnedOrdersScreen
       debugPrint('Current route: ${Get.currentRoute}');
@@ -47,8 +85,7 @@ void main() {
 
       await tester.tap(firstOrderDetailsButton);
       await tester.pumpAndSettle();
-      await Future.delayed(const Duration(seconds: 2));
-      await tester.pumpAndSettle();
+      await Future.delayed(const Duration(seconds: 10));
 
       // زر الإسناد
       final assignButton = find.byKey(const Key('assignButton'));
@@ -58,9 +95,7 @@ void main() {
       }
 
       await tester.tap(assignButton);
-      await tester.pumpAndSettle();
       await Future.delayed(const Duration(seconds: 1));
-      await tester.pumpAndSettle();
 
       // تحقق من ظهور الرسالة
       final dialogTextEn = find.text('The order will be assigned to you');
@@ -84,9 +119,7 @@ void main() {
         debugPrint('❌ زر Confirm / تأكيد غير موجود!');
       }
 
-      await tester.pumpAndSettle();
-      await Future.delayed(const Duration(seconds: 6));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 5));
 
       // انتقل لصفحة MyOrders
       // final myOrdersButton = find.byKey(const Key('myOrdersTabButton'));
@@ -98,22 +131,17 @@ void main() {
       // }
 
       debugPrint('✅ انتقلنا لـ MyOrders');
-      await Future.delayed(const Duration(seconds: 8));
+      await tester.pump(const Duration(seconds: 10));
 
       // تفاصيل أول طلب في MyOrders
       final firstOrderDetailsButtonInDelivered =
           find.byKey(const Key('showDetails_0'));
       if (firstOrderDetailsButtonInDelivered.evaluate().isNotEmpty) {
         await tester.tap(firstOrderDetailsButtonInDelivered);
-        await tester.pumpAndSettle();
-        await Future.delayed(const Duration(seconds: 5));
-        await tester.pumpAndSettle();
+        await tester.pump(const Duration(seconds: 5));
       } else {
         debugPrint('❌ showDetails_0 غير موجود في MyOrders');
       }
-
-
-      
     } catch (e, s) {
       debugPrint('❌ خطأ في الاختبار: $e');
       debugPrint('STACK: $s');

@@ -1,3 +1,4 @@
+import 'package:delivery_man_app/controllers/Auth/auth_controller.dart';
 import 'package:delivery_man_app/providers/Auth_providers/chat_login_provider.dart';
 import 'package:delivery_man_app/providers/Auth_providers/send_otp_provider.dart'
     show SendOtpProvider;
@@ -25,5 +26,7 @@ class AuthBinding implements Bindings {
     Get.lazyPut<SendOtpProvider>(() => SendOtpProvider(Get.find()));
     Get.lazyPut<VerifyOtpProvider>(() => VerifyOtpProvider(Get.find()));
     Get.lazyPut<ChatLoginProvider>(() => ChatLoginProvider(Get.find()));
+    Get.lazyPut<AuthController>(() => AuthController());
+
   }
 }

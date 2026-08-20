@@ -497,31 +497,31 @@ class _SinglePageChatState extends ThemeState<SinglePageChat> {
                                   List<Map<String, dynamic>> info =
                                       callerInfo(channelId: widget.chatId);
 
-                                  PermissionStatus mic =
-                                      await Permission.microphone.request();
-                                  PermissionStatus cam =
-                                      await Permission.camera.request();
+                              //     PermissionStatus mic =
+                              //         await Permission.microphone.request();
+                              //     PermissionStatus cam =
+                              //         await Permission.camera.request();
 
-                                  if (mic.isGranted && cam.isGranted) {
-                                    GetIt.I<CallsBloc>().add(
-                                      MakeCallEvent(
-                                        isVideo: true,
-                                        receiverCallName:
-                                            widget.fullReceiverName,
-                                        chatId: info[0]['channelId'],
-                                        payload: info[0],
-                                      ),
-                                    );
-                                  } else {
-                                    openAppSettings();
-                                  }
-                                },
-                                child: SvgPicture.asset(
-                                  AppAssets.makeVideoCallSvg,
-                                  width: 30,
-                                  height: 28,
-                                ),
-                              ),
+                              //     if (mic.isGranted && cam.isGranted) {
+                              //       GetIt.I<CallsBloc>().add(
+                              //         MakeCallEvent(
+                              //           isVideo: true,
+                              //           receiverCallName:
+                              //               widget.fullReceiverName,
+                              //           chatId: info[0]['channelId'],
+                              //           payload: info[0],
+                              //         ),
+                              //       );
+                              //     } else {
+                              //       openAppSettings();
+                              //     }
+                              //   },
+                              //   child: SvgPicture.asset(
+                              //     AppAssets.makeVideoCallSvg,
+                              //     width: 30,
+                              //     height: 28,
+                              //   ),
+                              // ),
 
                               SizedBox(width: 16),*/
                               InkWell(

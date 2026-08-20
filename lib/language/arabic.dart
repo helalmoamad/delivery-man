@@ -203,4 +203,5 @@ const Map<String, String> ar = {
   'copy': 'نسخ',
   'you_have_deleted_this_message': 'لقد قمت بحذف هذه الرسالة',
   'this_message_has_been_deleted': 'تم حذف هذه الرسالة',
+  'phone number or otp is incorrect.': 'رقم الهاتف أو رمز التحقق غير صحيح.'
 };

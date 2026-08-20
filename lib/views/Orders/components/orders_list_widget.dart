@@ -46,9 +46,8 @@ class OrderList extends StatelessWidget {
         : (myOrders != null &&
                 myOrders.isNotEmpty &&
                 myOrders.any((el) =>
-                ((el.orderStatus == 'in_delivery_center' || el.orderStatus == 'out_for_delivery') && el.parentOrderId == null) // free
-                     ||
-                ((el.orderStatus == 'delivered' ||el.orderStatus == 'out_for_return') && el.parentOrderId != null))) // return
+                ((el.orderStatus == 'in_delivery_center' || el.orderStatus == 'out_for_delivery') && el.parentOrderId == null) ||
+                ((el.orderStatus == 'delivered' ||el.orderStatus == 'out_for_return') && el.parentOrderId != null)))
             ? Center(
                 child: Text('have_orders'.tr),
               )
