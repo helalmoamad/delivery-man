@@ -49,11 +49,9 @@ class PushNotificationService {
       FlutterLocalNotificationsPlugin();
 
   static const androidChannel = AndroidNotificationChannel(
-    'high_importance_channel',
-    'High Importance Notifications',
+    'delivery_notifications',
+    "Notification",
     importance: Importance.max,
-    playSound: true,
-    enableVibration: true,
   );
   @pragma('vm:entry-point')
   static Future<void> initializeNotification() async {
@@ -146,7 +144,13 @@ class PushNotificationService {
                 androidChannel.id,
                 androidChannel.name,
                 importance: Importance.max,
-                priority: Priority.max,
+                ticker: "ticker", // Use the body as ticker text
+
+                priority:
+                    Priority.max, // Use Priority.max for maximum visibility
+                category: AndroidNotificationCategory.message,
+                visibility: NotificationVisibility.public,
+                fullScreenIntent: true,
                 channelDescription: androidChannel.description,
                 color: AppColors.primaryDark,
                 playSound: true,
@@ -720,10 +724,14 @@ class PushNotificationService {
       } else if (remoteMessage['type'] == 'RefuseCallEvent') {
         main.declineCallBecauseOfNotificationButton = true;
         Map<String, dynamic> data = remoteMessage;
-
-        if (data['duration_in_seconds']!.toString().contains("-1")) {
+        if (data['duration_in_seconds'] == null) {
           GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
+        } else {
+          if (data['duration_in_seconds']!.toString().contains("-1")) {
+            GetIt.I<CallsBloc>().add(IcreaseMissedCallEvent());
+          }
         }
+
         if (data['message_id'].toString() !=
                 GetIt.I<CallsBloc>().state.currentActiveCallId &&
             GetIt.I<CallsBloc>().state.currentActiveCallId != '-1') {
@@ -759,7 +767,9 @@ class PushNotificationService {
           type: !data["message_type"]["name"].toString().contains('Call')
               ? "message"
               : "call",
-          deleteFromId: data["deleted_by_user_id"] ?? 0));
+          deleteFromId:
+              int.tryParse((data["deleted_by_user_id"] ?? "0").toString()) ??
+                  0));
     } else if (remoteMessage['type'] == 'ChannelUpdatedEvent') {
       Map<String, dynamic> data = remoteMessage;
       GetIt.I<ChatBloc>().add(UpdateChannelObjectFromNotificationEvent(
@@ -834,6 +844,7 @@ class PushNotificationService {
                 androidChannel.name,
                 importance: Importance.max,
                 priority: Priority.max,
+                ticker: "ticker",
                 category: AndroidNotificationCategory.message,
                 tag: myMessage.channel?.id,
                 groupKey: myMessage.channel?.id,

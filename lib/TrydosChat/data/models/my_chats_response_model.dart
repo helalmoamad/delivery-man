@@ -552,7 +552,7 @@ class MessageStatus {
   factory MessageStatus.fromJson(Map<String, dynamic> json) => MessageStatus(
         id: int.tryParse(json["id"].toString()),
         userId: int.tryParse(json["user_id"].toString()),
-        isDeleted: (json["is_deleted"] == true) ? 1 : 0,
+        isDeleted: json["is_deleted"],
         deleteForAll: json["delete_for_all"],
         messageDeletedAt: json["message_deleted_at"] == null
             ? null

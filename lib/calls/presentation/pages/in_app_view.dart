@@ -103,6 +103,7 @@ class _AgoraInAppWebViewState extends State<AgoraInAppWebView> {
         'type': widget.type,
         'action': widget.action,
         'ch_id': widget.channelId,
+        'is_private': 'customer',
       },
       host: baseUrl.host,
       scheme: baseUrl.scheme,
