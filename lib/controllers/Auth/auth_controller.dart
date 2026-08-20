@@ -228,29 +228,36 @@ class AuthController extends GetxController {
   }
 
   OtpResponse? sendOtpData;
-
+  bool isLoading = false;
   Future<void> sendOtp({
     required String phone,
     required int isViaWhatsapp,
   }) async {
+    isLoading = true;
+    update();
     showSendOtpCircleIndicator();
     await GlobalFunctions.removeVerificationId();
-
+    
     final failureOrData =
         await sendOtpProvider.call(phone: phone, isViaWhatsapp: isViaWhatsapp);
     failureOrData.fold(
       (failure) {
+        isLoading = false;
+        update();
         HandlingFailures.networkErrorrHandling(
             failure: failure,
             hideCircleIndicator: hideSendOtpCircleIndicator,
             showNoInternetPage: () {});
       },
       (data) async {
+        isLoading = false;
+        update();
         sendOtpData = data;
         GlobalFunctions.setVerificationId(
           verificationId: sendOtpData!.sessionInfo,
         );
         hideSendOtpCircleIndicator();
+        Get.toNamed(Routes.otpVerificationPage);
       },
     );
   }

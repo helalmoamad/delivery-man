@@ -44,7 +44,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           stackTrace: details.stack);
     };
     super.initState();
-    Future.delayed(const Duration(seconds: 10), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         setState(() {
           _isLoading = false;

@@ -274,14 +274,14 @@ class OrderWidget extends StatelessWidget {
 
                   if (count == 1) {
                     return _buildImage(
-                        order.products[0].productDetails.image, 90, 90);
+                        order.products[0].image, 90, 90);
                   } else if (count == 2) {
                     return Row(
                       children: [
                         _buildImage(
-                            order.products[0].productDetails.image, 43, 88),
+                            order.products[0].image, 43, 88),
                         _buildImage(
-                            order.products[1].productDetails.image, 43, 88),
+                            order.products[1].image, 43, 88),
                       ],
                     );
                   } else if (count == 3) {
@@ -290,13 +290,13 @@ class OrderWidget extends StatelessWidget {
                         Row(
                           children: [
                             _buildImage(
-                                order.products[0].productDetails.image, 43, 43),
+                                order.products[0].image, 43, 43),
                             _buildImage(
-                                order.products[1].productDetails.image, 43, 43),
+                                order.products[1].image, 43, 43),
                           ],
                         ),
                         _buildImage(
-                            order.products[2].productDetails.image, 88, 43),
+                            order.products[2].image, 88, 43),
                       ],
                     );
                   } else if (count == 4) {
@@ -305,17 +305,17 @@ class OrderWidget extends StatelessWidget {
                         Row(
                           children: [
                             _buildImage(
-                                order.products[0].productDetails.image, 43, 43),
+                                order.products[0].image, 43, 43),
                             _buildImage(
-                                order.products[1].productDetails.image, 43, 43),
+                                order.products[1].image, 43, 43),
                           ],
                         ),
                         Row(
                           children: [
                             _buildImage(
-                                order.products[2].productDetails.image, 43, 43),
+                                order.products[2].image, 43, 43),
                             _buildImage(
-                                order.products[3].productDetails.image, 43, 43),
+                                order.products[3].image, 43, 43),
                           ],
                         ),
                       ],
@@ -326,15 +326,15 @@ class OrderWidget extends StatelessWidget {
                         Row(
                           children: [
                             _buildImage(
-                                order.products[0].productDetails.image, 43, 43),
+                                order.products[0].image, 43, 43),
                             _buildImage(
-                                order.products[1].productDetails.image, 43, 43),
+                                order.products[1].image, 43, 43),
                           ],
                         ),
                         Row(
                           children: [
                             _buildImage(
-                                order.products[2].productDetails.image, 43, 43),
+                                order.products[2].image, 43, 43),
                             Stack(
                               children: [
                                 Padding(

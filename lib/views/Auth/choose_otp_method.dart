@@ -125,21 +125,40 @@ class ChooseOtpMethod extends StatelessWidget {
             height: ScreenSizeUtils.getHeightInPercent(context, 5),
           ),
           ////////////
-          AppButton.normalButton(
-            key1: const Key("ConfirmButton"),
-            backgroundColor: AppColors.blackDark,
-            titleSize: 15,
-            title: 'Confirm'.tr,
-            onPress: () async {
-              ////////////////////////////////////////////////////
-              await authController.sendOtp(
-                phone: authController.countryCode +
-                    authController.currentPhoneNumber,
-                isViaWhatsapp: authController.otpMethod == 'whatsapp' ? 1 : 0,
+          ///
+          GetBuilder<AuthController>(
+            builder: (_) {
+              return AppButton.normalButton(
+                key1: const Key("ConfirmButton"),
+                backgroundColor: AppColors.blackDark,
+                titleSize: 15,
+                title: authController.isLoading == true ? 'Confirming...'.tr : 'Confirm'.tr,
+                onPress: () async {
+                  ////////////////////////////////////////////////////
+                  await authController.sendOtp(
+                    phone: authController.countryCode +
+                        authController.currentPhoneNumber,
+                    isViaWhatsapp: authController.otpMethod == 'whatsapp' ? 1 : 0,
+                  );
+                },
               );
-              Get.toNamed(Routes.otpVerificationPage);
             },
           ),
+          // AppButton.normalButton(
+          //   key1: const Key("ConfirmButton"),
+          //   backgroundColor: AppColors.blackDark,
+          //   titleSize: 15,
+          //   title: authController.isLoading == true ? 'Confirming...'.tr : 'Confirm'.tr,
+          //   onPress: () async {
+          //     ////////////////////////////////////////////////////
+          //     await authController.sendOtp(
+          //       phone: authController.countryCode +
+          //           authController.currentPhoneNumber,
+          //       isViaWhatsapp: authController.otpMethod == 'whatsapp' ? 1 : 0,
+          //     );
+              
+          //   },
+          // ),
           ///////
           SizedBox(
             height: ScreenSizeUtils.getHeightInPercent(context, 10),
