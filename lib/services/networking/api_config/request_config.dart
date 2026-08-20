@@ -60,7 +60,7 @@ class RequestConfigDelivery {
       } else {
         if (data['isSuccessful'] == false && data['code'] == 400) {
           debugPrint('wrong entry data');
-          throw WrongDataException();
+          throw WrongDataException(data['message']?.toString());
         } else {
           // Cancel the timer on successful response
           timerService.stopTimer(isGlobalTimer: isGlobalTimer);
@@ -73,10 +73,20 @@ class RequestConfigDelivery {
         }
       }
     } else if (response.statusCode == 422 && isForOtp) {
-      throw OtpTryAgainException();
+      String? errorMessage;
+      try {
+        final data = jsonDecode(response.body);
+        errorMessage = data['message']?.toString();
+      } catch (_) {}
+      throw OtpTryAgainException(errorMessage);
     } else {
       debugPrint('3');
-      throw ServerException();
+      String? errorMessage;
+      try {
+        final data = jsonDecode(response.body);
+        errorMessage = data['message']?.toString();
+      } catch (_) {}
+      throw ServerException(errorMessage);
     }
   }
 }
