@@ -193,5 +193,8 @@ const Map<String, String> en = {
   'delete_message': 'delete message',
   'delete': 'delete',
   'have_orders': 'You have orders in delivery center or out for delivery',
-  'phone number or otp is incorrect.': 'phone number or otp is incorrect.'
+  'phone number or otp is incorrect.': 'phone number or otp is incorrect.',
+  'Confirming...': 'Confirming...',
+  "Note_should_not_be_empty": "please input unAssign reason first",
+  "Error": "Error",
 };

@@ -33,6 +33,6 @@ class AssignToVehicleServiceImpWithHttp implements AssignToVehicleService {
         },
         fromJson: AssignToVehicleModel.fromJson);
 
-    return response;
+    return response!;
   }
 }

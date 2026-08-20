@@ -232,6 +232,7 @@ class ProductModel {
   final dynamic discountType;
   final dynamic odooOrderId;
   final dynamic paymentStatus;
+  final dynamic image;
   final dynamic refundRequest;
   final dynamic deliveryStatus;
   final dynamic isOdooProduct;
@@ -244,6 +245,7 @@ class ProductModel {
   ProductModel(
       {required this.id,
       required this.qty,
+      required this.image,
       required this.tax,
       required this.price,
       required this.odooId,
@@ -266,12 +268,13 @@ class ProductModel {
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
       id: json["id"] ?? '',
+      image: json["image"] ?? '',
       qty: json["qty"] ?? '',
       tax: json["tax"] ?? '',
-      price: json["price"] ?? '',
+      price: json["unit_price"] ?? '',
       odooId: json["odoo_id"] ?? '',
       variant: json["variant"] ?? '',
-      discount: json["discount"] ?? '',
+      discount: json["offer_price"] ?? '',
       orderId: json["order_id"] ?? '',
       productId: json["product_id"] ?? '',
       discountType: json["discount_type"] ?? '',
@@ -287,7 +290,7 @@ class ProductModel {
           : OrderProductDetails.fromJson(json["product_details"]),
       isStockDecreased: json["is_stock_decreased"] ?? '',
       shippingMethodId: json["shipping_method_id"] ?? '',
-      priceAfterDiscount: json["price_after_discount"] ?? '',
+      priceAfterDiscount: json["offer_price"] ?? '',
       refundRequestStatus: json["refund_request_status"] ?? '',
       );
 
@@ -352,7 +355,7 @@ class OrderProductDetails {
 
   factory OrderProductDetails.fromJson(Map<String, dynamic> json) =>
       OrderProductDetails(
-        id: json["id"] ?? '',
+        id: int.tryParse(json["id"].toString()),
         name: json["name"] ?? '',
         slug: json["slug"] ?? '',
         price: json["price"]?.toDouble(),

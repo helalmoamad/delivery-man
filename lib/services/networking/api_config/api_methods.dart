@@ -5,10 +5,13 @@ import 'package:delivery_man_app/message_error_log/device_info_util.dart';
 import 'package:delivery_man_app/message_error_log/errorLogModel.dart';
 import 'package:delivery_man_app/services/networking/api_config/api_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart' show Get;
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../controllers/Client/timer_service.dart';
+import '../../../message_error_log/PagesMonitor.dart';
 import 'request_config.dart';
 
 class ApiMethodsDelivery {
@@ -150,7 +153,7 @@ class ApiMethodsDelivery {
     }
   }
 
-  static Future<T> postRequest<T>({
+  static Future<T?> postRequest<T>({
     required String urlPath,
     required String? token,
     required Client client,
@@ -231,6 +234,26 @@ class ApiMethodsDelivery {
         final prefs = await SharedPreferences.getInstance();
         await prefs.remove('token');
 
+        if (lastFourPageVisited.last == "OtpVerificationPage") {
+          Get.snackbar("خطأ", "رمز التحقق غير صحيح",
+              snackPosition: SnackPosition.BOTTOM);
+          return null;
+        }
+
+        navigatorKey.currentState?.pushNamedAndRemoveUntil(
+          "/insertNumberPage",
+          (route) => false,
+        );
+
+        throw Exception("Unauthorized - Redirected to login");
+      }
+      if (response.statusCode == 404 &&
+          lastFourPageVisited.last == "OtpVerificationPage") {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('token');
+        Future.delayed(const Duration(seconds: 2), () {
+          
+        });
         navigatorKey.currentState?.pushNamedAndRemoveUntil(
           "/insertNumberPage",
           (route) => false,

@@ -220,7 +220,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
             },
             fromJson: UnAssignToVehicleModel.fromJson);
 
-    return response;
+    return response!;
   }
 
   @override
@@ -250,7 +250,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
             body: body,
             fromJson: AssignUnAssignOrderToMeDataModel.fromJson);
 
-    return response;
+    return response!;
   }
 
   @override
@@ -302,7 +302,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
       fromJson: ChangeStatusModel.fromJson,
     );
 
-    return response;
+    return response!!;
   }
 
   @override
@@ -325,7 +325,7 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
         },
         fromJson: OrderDataModel.fromJson);
 
-    return response;
+    return response!;
   }
 
   @override
@@ -357,6 +357,6 @@ class OrdersApiServiceImpWithHttp implements OrdersApiService {
             body: body,
             fromJson: AssignUnAssignOrderToMeDataModel.fromJson);
 
-    return response;
+    return response!;
   }
 }

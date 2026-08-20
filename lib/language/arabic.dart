@@ -193,4 +193,7 @@ const Map<String, String> ar = {
   'delete_for_me': 'الحذف لي',
   'have_orders': 'لديك طلبات قيد التوصيل',
   'phone number or otp is incorrect.': 'رقم الهاتف أو رمز التحقق غير صحيح.',
+  'Confirming...': 'جار التأكيد...',
+  "Note_should_not_be_empty": "الرجاء إدخال سبب إلغاء الإسناد أولا",
+  "Error": "خطأ",
 };

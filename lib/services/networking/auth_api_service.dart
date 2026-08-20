@@ -57,7 +57,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
       body: loginModel.toJson(),
       fromJson: UserModel.fromJson,
     );
-    return response;
+    return response!;
   }
 
   @override
@@ -76,7 +76,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
       body: {'fcm_token': fcmToken},
       fromJson: SetFcmTokenModel.fromJson,
     );
-    return response;
+    return response!;
   }
 
   @override
@@ -95,7 +95,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
       fromJson: LogOutModel.fromJson,
     );
 
-    return response;
+    return response!;
   }
 
   @override
@@ -119,7 +119,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
       fromJson: OtpResponse.fromJson,
     );
 
-    return response;
+    return response!;
   }
 
   @override
@@ -144,7 +144,7 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
       fromJson: OtpVerificationResponse.fromJson,
     );
 
-    return response;
+    return response!;
   }
 
   @override
@@ -172,6 +172,6 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
       fromJson: ChatLoginModel.fromJson,
     );
 
-    return response;
+    return response!;
   }
 }

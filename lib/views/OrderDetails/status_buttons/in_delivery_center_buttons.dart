@@ -53,7 +53,6 @@ class InDeliveryCenterButtons extends StatelessWidget {
           onPress: () async {
             if (GlobalFunctions.getUserId() != order.assignToUserId) {
               AppDialogs.showConfirmationDialog(
-                
                 context: context,
                 title: 'The order  will be assigned to you'.tr,
                 onConfirm: () async {
@@ -139,7 +138,7 @@ class InDeliveryCenterButtons extends StatelessWidget {
                                 labelText: 'Note'.tr,
                                 validator: (value) {
                                   if (value.isEmpty) {
-                                    return 'note should not be empty'.tr;
+                                    return 'Note_should_not_be_empty'.tr;
                                   }
                                 },
                                 prefixIcon: null,
@@ -157,8 +156,8 @@ class InDeliveryCenterButtons extends StatelessWidget {
                                 titleColor: AppColors.white,
                                 backgroundColor: AppColors.primaryDark,
                                 onPress: () async {
-                                  Get.back();
-                                  await ordersController
+                                  if(noteFormKey.currentState!.validate()){
+                                    await ordersController
                                       .unAssignOrderToMe(
                                     token: GlobalFunctions.getToken(),
                                     orderId: order.id!,
@@ -194,6 +193,7 @@ class InDeliveryCenterButtons extends StatelessWidget {
                                       }
                                     },
                                   );
+                                  }
                                 },
                               ),
                               /////////////////////
