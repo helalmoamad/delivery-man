@@ -203,7 +203,6 @@ const Map<String, String> ar = {
   'copy': 'نسخ',
   'you_have_deleted_this_message': 'لقد قمت بحذف هذه الرسالة',
   'this_message_has_been_deleted': 'تم حذف هذه الرسالة',
-  'phone number or otp is incorrect.': 'رقم الهاتف أو رمز التحقق غير صحيح.'
   'phone number or otp is incorrect.': 'رقم الهاتف أو رمز التحقق غير صحيح.',
   'Confirming...': 'جار التأكيد...',
   "Note_should_not_be_empty": "الرجاء إدخال سبب إلغاء الإسناد أولا",
