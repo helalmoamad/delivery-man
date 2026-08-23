@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 import 'package:app_settings/app_settings.dart';
 import 'package:delivery_man_app/Connectivity_Plus/checkInterNetByConnectivity.dart';
 import 'package:delivery_man_app/TrydosChat/di/di_container.dart';
@@ -8,8 +7,6 @@ import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_bloc.dart'
 import 'package:delivery_man_app/TrydosChat/presentation/manager/chat_event.dart';
 import 'package:delivery_man_app/controllers/Auth/auth_controller.dart';
 import 'package:delivery_man_app/message_error_log/device_info_util.dart';
-import 'package:delivery_man_app/message_error_log/dio_error_reporting_interceptor.dart';
-import 'package:delivery_man_app/message_error_log/errorLogModel.dart';
 import 'package:delivery_man_app/message_error_log/error_sender.dart';
 import 'package:delivery_man_app/providers/Auth_providers/set_fcm_token_provider.dart';
 import 'package:delivery_man_app/routes/routes.dart';
@@ -19,7 +16,6 @@ import 'package:delivery_man_app/shared/constants/color_constants.dart';
 import 'package:delivery_man_app/shared/constants/lang_constants.dart';
 import 'package:delivery_man_app/shared/global_functions/global_functions.dart';
 import 'package:delivery_man_app/themes/themes.dart';
-
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -145,7 +141,7 @@ AuthController auth = AuthController();
 SetFcmTokenProvider setFcmTokenProvider = Get.find<SetFcmTokenProvider>();
 List<String> lastFourPageVisited = [];
 late ErrorSender errorSender;
-int appVersion = 2;
+//int appVersion = 3;
 
 Future<void> main() async {
   myOrderStatusScrollController = ItemScrollController();
