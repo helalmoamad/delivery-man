@@ -145,7 +145,7 @@ AuthController auth = AuthController();
 SetFcmTokenProvider setFcmTokenProvider = Get.find<SetFcmTokenProvider>();
 List<String> lastFourPageVisited = [];
 late ErrorSender errorSender;
-int appVersion = 1;
+int appVersion = 2;
 
 Future<void> main() async {
   myOrderStatusScrollController = ItemScrollController();
