@@ -5,8 +5,23 @@ plugins {
     id "com.google.gms.google-services"
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
+// CI passes the signing material as environment variables; a developer machine
+// uses android/key.properties. Env wins so the workflow never depends on a file
+// that is deliberately kept out of version control.
+def signingStoreFile = System.getenv("ANDROID_KEYSTORE_PATH") ?: keystoreProperties['storeFile']
+def signingStorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: keystoreProperties['storePassword']
+def signingKeyAlias = System.getenv("ANDROID_KEY_ALIAS") ?: keystoreProperties['keyAlias']
+def signingKeyPassword = System.getenv("ANDROID_KEY_PASSWORD") ?: keystoreProperties['keyPassword']
+def canSignRelease = signingStoreFile != null && file(signingStoreFile).exists()
+
 android {
-    namespace "com.example.delivery_man_app"
+    namespace "com.trydos.delivery"
     compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
@@ -22,16 +37,25 @@ android {
 
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.delivery_man_app"
+        applicationId "com.trydos.delivery"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdk = 24
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
-        testInstrumentationRunnerArguments clearPackageData: "true"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            if (canSignRelease) {
+                keyAlias signingKeyAlias
+                keyPassword signingKeyPassword
+                storeFile file(signingStoreFile)
+                storePassword signingStorePassword
+            }
+        }
     }
 
     buildTypes {
@@ -39,9 +63,9 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            // Falls back to debug signing only when no keystore is available,
+            // so `flutter run --release` still works on a fresh checkout.
+            signingConfig canSignRelease ? signingConfigs.release : signingConfigs.debug
         }
     }
 }

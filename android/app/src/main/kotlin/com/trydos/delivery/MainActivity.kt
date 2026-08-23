@@ -1,4 +1,4 @@
-package com.example.delivery_man_app
+package com.trydos.delivery
 
 import android.content.Context
 import android.media.AudioDeviceInfo

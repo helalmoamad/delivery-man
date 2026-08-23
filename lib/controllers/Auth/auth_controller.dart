@@ -149,7 +149,10 @@ class AuthController extends GetxController {
               assignedVehicleName: verifyOtpData!.data!.assignedVehicle == null
                   ? ''
                   : verifyOtpData!.data!.assignedVehicle!.name ?? ''),
-          GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
+          GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin),
+          // The OTP is consumed at this point — don't leave it behind.
+          GlobalFunctions.removeOtpId(),
+          GlobalFunctions.removeOtpMobilePhone(),
         ]);
         hideVerifyOtpCircleIndicator();
         ///////////////////////////////////////////
@@ -205,6 +208,8 @@ class AuthController extends GetxController {
           prefs.remove('mobilePhone'),
           prefs.remove('name'),
           prefs.remove('email'),
+          GlobalFunctions.removeOtpId(),
+          GlobalFunctions.removeOtpMobilePhone(),
           GlobalFunctions.setIsLoggedIn(isLoggedIn: isLogin)
         ]);
         hideLogoutCircleIndicator();
@@ -236,8 +241,8 @@ class AuthController extends GetxController {
     isLoading = true;
     update();
     showSendOtpCircleIndicator();
-    await GlobalFunctions.removeVerificationId();
-    
+    await GlobalFunctions.removeOtpId();
+
     final failureOrData =
         await sendOtpProvider.call(phone: phone, isViaWhatsapp: isViaWhatsapp);
     failureOrData.fold(
@@ -253,9 +258,11 @@ class AuthController extends GetxController {
         isLoading = false;
         update();
         sendOtpData = data;
-        GlobalFunctions.setVerificationId(
-          verificationId: sendOtpData!.sessionInfo,
-        );
+        await Future.wait([
+          GlobalFunctions.setOtpId(otpId: sendOtpData!.otpId),
+          // check_and_login requires the same phone the OTP was sent to.
+          GlobalFunctions.setOtpMobilePhone(mobilePhone: phone),
+        ]);
         hideSendOtpCircleIndicator();
         Get.toNamed(Routes.otpVerificationPage);
       },
@@ -280,12 +287,16 @@ class AuthController extends GetxController {
   OtpVerificationResponse? verifyOtpData;
 
   Future<void> verifyOtp({
-    required String verificationId,
+    required String mobilePhone,
+    required String otpId,
     required String otp,
   }) async {
     showVerifyOtpCircleIndicator();
-    final failureOrData =
-        await verifyOtpProvider.call(verificationId: verificationId, otp: otp);
+    final failureOrData = await verifyOtpProvider.call(
+      mobilePhone: mobilePhone,
+      otpId: otpId,
+      otp: otp,
+    );
     failureOrData.fold(
       (failure) {
         HandlingFailures.networkErrorrHandling(

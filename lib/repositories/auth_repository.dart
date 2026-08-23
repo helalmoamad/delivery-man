@@ -63,13 +63,15 @@ class AuthRepository {
   }
 
   Future<Either<FailureDelivery, OtpVerificationResponse>> postVerifyOtp({
-    required String verificationId,
+    required String mobilePhone,
+    required String otpId,
     required String otp,
   }) async {
     return RepoNetworkRequest.makeNetworkRequest(
       networkInfo: networkInfo,
       request: () => authApiService.verifyOtpApi(
-        verificationId: verificationId,
+        mobilePhone: mobilePhone,
+        otpId: otpId,
         otp: otp,
       ),
     );

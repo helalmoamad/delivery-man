@@ -1,0 +1,90 @@
+name: Deploy to Play Store Internal
+
+on:
+  # The repository's default branch is master, not main.
+  push:
+    branches:
+      - master
+  # Lets you trigger a build from the Actions tab without pushing a commit.
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. سحب الكود من المستودع
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. تثبيت الجافا
+      # 17 لأن android/app/build.gradle يضبط sourceCompatibility على VERSION_17.
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 3. تثبيت فلاتر
+      # مثبّت على إصدار محدد عمداً: بدون flutter-version يأخذ الرَنَر أحدث stable
+      # في ذلك اليوم، فينكسر البناء في صباح لم تغيّر فيه سطراً واحداً. يجب أن
+      # تبقى هذه القيمة مطابقة لـ Flutter المحلي، وتُغيَّر في نفس التذكرة.
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.0'
+          channel: 'stable'
+          cache: true
+
+      # 4. تحميل مكاتب فلاتر
+      - name: Install Dependencies
+        run: flutter pub get
+
+      # 5. تشغيل اختبارات فلاتر (تم تعطيلها مؤقتاً)
+      # - name: Run Flutter Tests
+      #   run: flutter test
+
+      # 6. تحويل النص المشفر إلى ملف مفتاح حقيقي داخل سيرفر GitHub
+      - name: Decode Keystore
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+
+      # 7. google-services.json مستبعد من Git عمداً، فبدونه يفشل
+      # com.google.gms.google-services برسالة "No matching client found".
+      - name: Decode google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
+
+      # 8. بناء التطبيق وتمرير أرقام الإصدارات تلقائياً
+      - name: Build App Bundle
+        env:
+          # android/gradle.properties مضبوط على جهاز التطوير. رَنَر ubuntu-latest
+          # يملك 16 GB ويبني bundleRelease، فنمنحه حجمه الخاص هنا بدل وراثة
+          # قياس جهاز آخر. GRADLE_OPTS تتجاوز gradle.properties.
+          GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx5g -Dkotlin.daemon.jvmargs=-Xmx2g
+          # المسار نسبي لمجلد android/app لأن file() في build.gradle يُحلّ منه.
+          ANDROID_KEYSTORE_PATH: "upload-keystore.jks"
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          # آخر versionCode مرفوع يدوياً هو 4، فالإزاحة تضمن أن أول تشغيل
+          # آلي يبدأ فوقه ولا يتصادم معه. Play يرفض إعادة استخدام رقم.
+          BUILD_NUM=$((${{ github.run_number }} + 20))
+          echo "Building versionCode $BUILD_NUM"
+          flutter build appbundle --release --build-number=$BUILD_NUM
+
+      # 9. تأكيد أن الحزمة موقّعة بمفتاح الرفع لا بمفتاح debug.
+      # بدون هذا الفحص، خطأ في أي secret يمرّ صامتاً حتى يرفضه Play.
+      - name: Verify release signature
+        run: |
+          keytool -printcert -jarfile build/app/outputs/bundle/release/app-release.aab | tee cert.txt
+          grep -q "CN=Trydos Delivery" cert.txt || { echo "::error::AAB is not signed with the upload key"; exit 1; }
+
+      # 10. الرفع تلقائياً إلى المسار الداخلي بالمتجر (Internal Testing)
+      - name: Upload to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_JSON_KEY }}
+          packageName: com.trydos.delivery
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          tracks: internal
+          status: completed

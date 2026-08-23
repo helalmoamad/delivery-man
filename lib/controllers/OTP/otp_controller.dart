@@ -36,8 +36,11 @@ class OtpController extends GetxController {
   void resendCode() async {
     debugPrint("Resending OTP...");
     startTimer();
+    // `mobilePhone` is only written after a successful login, so on a first
+    // sign-in the resend has to reuse the number the OTP was requested for.
     await authController.sendOtp(
-      phone: GlobalFunctions.getMobilePhone(),
+      phone: GlobalFunctions.getOtpMobilePhone() ??
+          GlobalFunctions.getMobilePhone(),
       isViaWhatsapp: 1,
     );
   }

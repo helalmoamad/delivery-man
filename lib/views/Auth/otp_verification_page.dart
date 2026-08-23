@@ -163,11 +163,14 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                               '',
                             );
                           } else {
-                            if (GlobalFunctions.getVerificationId() != null) {
+                            final otpId = GlobalFunctions.getOtpId();
+                            final otpMobilePhone =
+                                GlobalFunctions.getOtpMobilePhone();
+                            if (otpId != null && otpMobilePhone != null) {
                               await authController.verifyOtp(
                                 otp: verificationCode,
-                                verificationId:
-                                    GlobalFunctions.getVerificationId()!,
+                                otpId: otpId,
+                                mobilePhone: otpMobilePhone,
                               );
                             } else {
                               SnackBarWidgets.showFailureSnackBar(

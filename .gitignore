@@ -48,3 +48,8 @@ app.*.map.json
 /firebase.json
 
 *.env
+
+# Android release signing — never commit these
+/android/key.properties
+**/*.jks
+**/*.keystore

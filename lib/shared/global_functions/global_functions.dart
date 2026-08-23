@@ -62,19 +62,33 @@ class GlobalFunctions {
     return chatToken;
   }
 
-  static Future<void> setVerificationId(
-      {required String verificationId}) async {
-    await prefs.setString('verificationId', verificationId);
+  static Future<void> setOtpId({required String otpId}) async {
+    await prefs.setString('otpId', otpId);
   }
 
-  static String? getVerificationId() {
-    String? verificationId = prefs.getString('verificationId');
+  static String? getOtpId() {
+    String? otpId = prefs.getString('otpId');
 
-    return verificationId;
+    return otpId;
   }
 
-  static Future<void> removeVerificationId() async {
-    await prefs.remove('verificationId');
+  static Future<void> removeOtpId() async {
+    await prefs.remove('otpId');
+  }
+
+  /// Phone number the current OTP was requested for. `check_and_login` needs it
+  /// alongside the otp_id, and it is not yet in `mobilePhone` at that point —
+  /// that key is only written after the login succeeds.
+  static Future<void> setOtpMobilePhone({required String mobilePhone}) async {
+    await prefs.setString('otpMobilePhone', mobilePhone);
+  }
+
+  static String? getOtpMobilePhone() {
+    return prefs.getString('otpMobilePhone');
+  }
+
+  static Future<void> removeOtpMobilePhone() async {
+    await prefs.remove('otpMobilePhone');
   }
 
   static Future<void> setIsLoggedIn({required bool isLoggedIn}) async {

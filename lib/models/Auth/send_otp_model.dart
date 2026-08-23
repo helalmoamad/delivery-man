@@ -41,24 +41,24 @@
 // }
 class OtpResponse {
   final String message;
-  final String sessionInfo;
+  final String otpId;
 
   OtpResponse({
     required this.message,
-    required this.sessionInfo,
+    required this.otpId,
   });
 
   factory OtpResponse.fromJson(Map<String, dynamic> json) {
     return OtpResponse(
       message: json['message'] ?? '',
-      sessionInfo: json['session_info'] ?? '',
+      otpId: json['otp_id'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'message': message,
-      'session_info': sessionInfo,
+      'otp_id': otpId,
     };
   }
 }

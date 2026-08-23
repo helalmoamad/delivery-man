@@ -25,7 +25,8 @@ abstract class AuthApiService {
   });
 
   Future<OtpVerificationResponse> verifyOtpApi({
-    required String verificationId,
+    required String mobilePhone,
+    required String otpId,
     required String otp,
   });
 
@@ -124,7 +125,8 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
 
   @override
   Future<OtpVerificationResponse> verifyOtpApi({
-    required String verificationId,
+    required String mobilePhone,
+    required String otpId,
     required String otp,
   }) async {
     clientController.reOpenClient();
@@ -138,7 +140,8 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
       isGlobalTimer: true,
       isForOtp: true,
       body: {
-        'session_info': verificationId,
+        'mobile_phone': mobilePhone,
+        'otp_id': otpId,
         'otp_code': otp,
       },
       fromJson: OtpVerificationResponse.fromJson,
@@ -164,7 +167,10 @@ class AuthApiServiceImpWithHttp implements AuthApiService {
       isGlobalTimer: true,
       isChatUrl: true,
       body: {
-        'mobile_phone': mobilePhone,
+        // The chat service expects the number without a leading '+'.
+        'mobile_phone': mobilePhone.startsWith('+')
+            ? mobilePhone.substring(1)
+            : mobilePhone,
         'otp_id_token': otpIdToken,
         'name': name,
         'delivery_user_id': originalUserId,

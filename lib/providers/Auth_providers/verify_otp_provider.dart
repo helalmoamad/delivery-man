@@ -10,11 +10,13 @@ class VerifyOtpProvider {
   VerifyOtpProvider(this.authRepository);
 
   Future<Either<FailureDelivery, OtpVerificationResponse>> call({
-    required String verificationId,
+    required String mobilePhone,
+    required String otpId,
     required String otp,
   }) async {
     return await authRepository.postVerifyOtp(
-      verificationId: verificationId,
+      mobilePhone: mobilePhone,
+      otpId: otpId,
       otp: otp,
     );
   }
