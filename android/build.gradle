@@ -39,8 +39,9 @@ subprojects {
         if (project.plugins.hasPlugin("com.android.application") ||
                 project.plugins.hasPlugin("com.android.library")) {
             project.android {
-                compileSdkVersion 35
-                buildToolsVersion "35.0.0"
+                compileSdkVersion 36
+                // buildToolsVersion left unpinned so AGP picks the version it
+                // was tested against, instead of forcing an extra SDK download.
             }
         }
     }
